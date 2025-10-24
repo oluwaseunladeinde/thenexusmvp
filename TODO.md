@@ -1,12 +1,13 @@
-# Set Up Code Quality Tools
+# Core Database Schema
 
-- [x] Configure Husky for pre-commit hooks
-- [x] Set up lint-staged
-- [x] Configure commitlint
-- [x] Add GitHub Actions for CI
+## Create Professionals Table
+
+- [x] Implement seed.ts with:
+    - Industries (20 entries)
+    - Skills taxonomy (50 entries)
 
 ### Acceptance Criteria:
-- Pre-commit hooks run linting
-- Commit messages follow convention
-- CI runs on pull requests
+- npx prisma db seed runs successfully
+- All reference data populated
+- Idempotent (can run multiple times)
 
