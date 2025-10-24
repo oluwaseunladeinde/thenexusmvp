@@ -403,14 +403,7 @@ See [Database Schema Documentation](https://claude.ai/chat/docs/database-schema.
 ## Authentication
 All API routes except public endpoints require authentication via Clerk.
 
-```typescript 
-// Example: Authenticated API call
-const response = await fetch('/api/professionals/me', {
-  headers: {
-    'Authorization': `Bearer ${await getToken()}`,
-  },
-});
-```
+
 
 ## Key Endpoints
 ### Professional Endpoints
@@ -433,20 +426,20 @@ DELETE /api/v1/job-roles/:id              # Delete job role (HR only)
 
 ### Introduction Request Endpoints
 ```bash 
-POST   /api/introductions/request      # Send introduction request (HR only)
-GET    /api/introductions/sent         # List sent introductions (HR only)
-GET    /api/introductions/received     # List received introductions (Professional only)
-PUT    /api/introductions/:id/accept   # Accept introduction (Professional only)
-PUT    /api/introductions/:id/decline  # Decline introduction (Professional only)
+POST   /api/v1/introductions/request      # Send introduction request (HR only)
+GET    /api/v1/introductions/sent         # List sent introductions (HR only)
+GET    /api/v1/introductions/received     # List received introductions (Professional only)
+PUT    /api/v1/introductions/:id/accept   # Accept introduction (Professional only)
+PUT    /api/v1/introductions/:id/decline  # Decline introduction (Professional only)
 ```
 
 ### Dual-Role Endpoints
 ```bash 
-POST   /api/dual-role/activate         # Activate dual-role mode (HR only)
-GET    /api/dual-role/status           # Get dual-role status
-POST   /api/dual-role/deactivate       # Deactivate dual-role mode
-POST   /api/dual-role/block-list       # Add company to block list
-DELETE /api/dual-role/block-list       # Remove company from block list
+POST   /api/v1/dual-role/activate         # Activate dual-role mode (HR only)
+GET    /api/v1/dual-role/status           # Get dual-role status
+POST   /api/v1/dual-role/deactivate       # Deactivate dual-role mode
+POST   /api/v1/dual-role/block-list       # Add company to block list
+DELETE /api/v1/dual-role/block-list       # Remove company from block list
 ```
 
 See [API Documentation](https://claude.ai/chat/docs/api/README.md) for complete endpoint reference.
@@ -525,7 +518,7 @@ npm run test:e2e:ui
 - Integration Tests: Critical API routes
 - E2E Tests: Core user flows
 
-## 🤝 Contributing
+## 🤝 Contributing (Next Stage)
 We welcome contributions from the community! Please read our [Contributing Guide](https://claude.ai/chat/CONTRIBUTING.md) before submitting a pull request.
 
 ### Development Workflow

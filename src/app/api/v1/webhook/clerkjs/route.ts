@@ -73,19 +73,30 @@ export async function POST(req: Request) {
     if (eventType === 'user.created') {
         const { id, email_addresses, first_name, last_name, public_metadata, phone_numbers } = evt.data;
         const email = email_addresses[0]?.email_address;
+        if (!email) {
+            console.error('User created without email address:', id);
+            return new Response('User must have an email address', { status: 400 });
+        }
+        const phone = phone_numbers[0]?.phone_number || null
         const name = `${first_name || ''} ${last_name || ''}`.trim();
+
+        const validUserTypes = ['PROFESSIONAL', 'HR_PARTNER', 'ADMIN'] as const;
+        const userType = validUserTypes.includes(public_metadata?.userType as any)
+            ? (public_metadata.userType as 'PROFESSIONAL' | 'HR_PARTNER' | 'ADMIN')
+            : 'PROFESSIONAL'; // or throw an error if userType is required
 
         try {
             await prisma.user.create({
                 data: {
+                    email,
                     clerkUserId: id,
-                    email: email_addresses[0].email_address,
-                    phone: phone_numbers[0]?.phone_number || null,
+                    fullName: name,
+                    emailVerified: email_addresses[0]?.verification?.status === 'verified',
+                    phoneVerified: phone_numbers?.[0]?.verification?.status === 'verified',
+                    phone,
                     passwordHash: '', // Clerk manages passwords
-                    userType: (public_metadata?.userType as 'PROFESSIONAL' | 'HR_PARTNER' | 'ADMIN') || 'PROFESSIONAL',
+                    userType,
                     status: 'PENDING',
-                    emailVerified: email_addresses[0].verification?.status === 'verified',
-                    phoneVerified: phone_numbers[0]?.verification?.status === 'verified',
                 },
             });
         } catch (error) {
@@ -97,14 +108,16 @@ export async function POST(req: Request) {
     if (eventType === 'user.updated') {
         const { id, email_addresses, first_name, last_name, phone_numbers, public_metadata } = evt.data;
         const email = email_addresses[0]?.email_address;
+        const phone = phone_numbers[0]?.phone_number || null;
         const name = `${first_name || ''} ${last_name || ''}`.trim();
 
         try {
             await prisma.user.update({
                 where: { clerkUserId: id },
                 data: {
-                    email: email_addresses[0].email_address,
-                    phone: phone_numbers[0]?.phone_number || null,
+                    email,
+                    fullName: name,
+                    phone,
                     emailVerified: email_addresses[0].verification?.status === 'verified',
                     phoneVerified: phone_numbers[0]?.verification?.status === 'verified',
                     status: public_metadata?.onboardingComplete ? 'ACTIVE' : 'PENDING',
