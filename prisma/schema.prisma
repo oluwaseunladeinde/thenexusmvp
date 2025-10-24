@@ -1,11 +1,18 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./ERD.svg" // You can use .png or .md if you prefer
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+  output   = "./prisma/ERD.dbml"
 }
 
 datasource db {
@@ -13,10 +20,801 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============================================
+// AUTHENTICATION & USER MODELS
+// ============================================
+
 model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
-  name      String?
+  id                String     @id @default(cuid())
+  email             String     @unique
+  phone             String?    @unique
+  passwordHash      String
+  userType          UserType
+  status            UserStatus @default(PENDING)
+  emailVerified     Boolean    @default(false)
+  phoneVerified     Boolean    @default(false)
+
+  clerkUserId       String?    @unique @map("clerk_user_id")
+
+  hasDualRole       Boolean   @default(false)
+  dualRoleEnabledAt DateTime?
+
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  professional      Professional?
+  hrPartner         HrPartner?
+  activityLogs      UserActivityLog[]
+  notifications     Notification[]
+
+  @@index([email])
+  @@index([userType])
+  @@index([status])
+  @@map("users")
+}
+
+enum UserType {
+  PROFESSIONAL
+  HR_PARTNER
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+// ============================================
+// PROFESSIONAL MODELS
+// ============================================
+
+model Professional {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  firstName       String
+  lastName        String
+  preferredName   String?
+  profileHeadline String? @db.VarChar(200)
+  profileSummary  String? @db.Text
+  profilePhotoUrl String?
+
+  yearsOfExperience Int     @db.SmallInt
+  currentTitle      String?
+  currentCompany    String?
+  currentIndustry   String?
+
+  locationCity      String
+  locationState     String
+  willingToRelocate Boolean @default(false)
+
+  salaryExpectationMin Int?
+  salaryExpectationMax Int?
+  noticePeriodDays     Int  @default(30)
+
+  openToOpportunities Boolean           @default(true)
+  confidentialSearch  Boolean           @default(true)
+  profileVisibility   ProfileVisibility @default(PRIVATE)
+
+  verificationStatus VerificationStatus @default(UNVERIFIED)
+  verificationDate   DateTime?
+
+  linkedinUrl  String?
+  portfolioUrl String?
+  resumeUrl    String?
+
+  isAlsoHrPartner    Boolean  @default(false)
+  hideFromCompanyIds String[]
+
+  onboardingCompleted Boolean @default(false)
+  profileCompleteness Int     @default(0) @db.SmallInt
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  deletedAt     DateTime?  @map("deleted_at")
+  lastActiveAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  workHistory          ProfessionalWorkHistory[]
+  education            ProfessionalEducation[]
+  skills               ProfessionalSkill[]
+  certifications       ProfessionalCertification[]
+  introductionRequests IntroductionRequest[]       @relation("ReceivedByProfessional")
+  profileViews         ProfileView[]               @relation("ViewedProfessional")
+  firewallLogs         PrivacyFirewallLog[]
+  hrPartnerLink        HrPartner?
+
+  @@index([userId])
+  @@index([locationCity, locationState])
+  @@index([verificationStatus])
+  @@index([profileVisibility])
+  @@index([hideFromCompanyIds], type: Gin)
+  @@index([openToOpportunities])
+  @@map("professionals")
+}
+
+enum ProfileVisibility {
+  PRIVATE
+  NETWORK
+  PUBLIC
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  BASIC
+  FULL
+  PREMIUM
+}
+
+model ProfessionalWorkHistory {
+  id             String @id @default(cuid())
+  professionalId String
+
+  companyName    String
+  jobTitle       String
+  industry       String?
+  location       String?
+  employmentType EmploymentType
+
+  startDate DateTime  @db.Date
+  endDate   DateTime? @db.Date
+  isCurrent Boolean   @default(false)
+
+  description  String? @db.Text
+  achievements Json?
+
+  sortOrder Int      @default(0)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([professionalId])
+  @@index([isCurrent])
+  @@map("professional_work_histories")
+}
+
+enum EmploymentType {
+  FULL_TIME
+  CONTRACT
+  CONSULTING
+}
+
+model ProfessionalEducation {
+  id             String @id @default(cuid())
+  professionalId String
+
+  institutionName String
+  degreeType      DegreeType
+  fieldOfStudy    String
+
+  startYear Int
+  endYear   Int?
+  grade     String?
+
+  isVerified Boolean @default(false)
+  sortOrder  Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([professionalId])
+  @@map("professional_educations")
+}
+
+enum DegreeType {
+  BACHELOR
+  MASTER
+  PHD
+  DIPLOMA
+  CERTIFICATE
+  OTHER
+}
+
+model ProfessionalSkill {
+  id             String @id @default(cuid())
+  professionalId String
+
+  skillName         String           @db.VarChar(100)
+  proficiencyLevel  ProficiencyLevel @default(INTERMEDIATE)
+  yearsOfExperience Int?
+  isPrimarySkill    Boolean          @default(false)
+
+  createdAt DateTime @default(now())
+
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([professionalId])
+  @@index([skillName])
+  @@index([isPrimarySkill])
+  @@map("professional_skills")
+}
+
+enum ProficiencyLevel {
+  BEGINNER
+  INTERMEDIATE
+  EXPERT
+}
+
+model ProfessionalCertification {
+  id             String @id @default(cuid())
+  professionalId String
+
+  certificationName   String
+  issuingOrganization String
+  issueDate           DateTime  @db.Date
+  expiryDate          DateTime? @db.Date
+
+  credentialId  String?
+  credentialUrl String?
+  isVerified    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([professionalId])
+  @@map("professional_certifications")
+}
+
+// ============================================
+// COMPANY & HR MODELS
+// ============================================
+
+model Company {
+  id String @id @default(cuid())
+
+  companyName          String      @unique
+  companyLogoUrl       String?
+  industry             String
+  companySize          CompanySize
+  headquartersLocation String
+
+  companyWebsite     String?
+  companyDescription String? @db.Text
+  linkedinUrl        String?
+
+  domain        String       @unique
+  foundedYear   Int?
+  fundingStatus String?
+  remotePolicy  RemotePolicy @default(HYBRID)
+  location      Json? // { headquarters, offices[] } 
+
+  verificationStatus CompanyVerificationStatus @default(PENDING)
+  verificationDate   DateTime?
+
+  status CompanyStatus @default(ACTIVE)
+
+  subscriptionTier      SubscriptionTier @default(TRIAL)
+  subscriptionExpiresAt DateTime?
+  introductionCredits   Int              @default(5)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  hrPartners           HrPartner[]
+  jobRoles             JobRole[]
+  introductionRequests IntroductionRequest[]
+  firewallLogs         PrivacyFirewallLog[]
+
+  @@index([companyName])
+  @@index([industry])
+  @@index([verificationStatus])
+  @@index([subscriptionTier])
+  @@map("companies")
+}
+
+enum CompanySize {
+  SMALL_1_10
+  MEDIUM_11_50
+  LARGE_51_200
+  XLARGE_201_500
+  ENTERPRISE_500_PLUS
+}
+
+enum CompanyVerificationStatus {
+  PENDING
+  VERIFIED
+  PREMIUM
+}
+
+enum CompanyStatus {
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+}
+
+enum SubscriptionTier {
+  TRIAL
+  BASIC
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum RemotePolicy {
+  REMOTE_FIRST
+  HYBRID
+  OFFICE_FIRST
+}
+
+model HrPartner {
+  id        String @id @default(cuid())
+  userId    String @unique
+  companyId String
+
+  firstName       String
+  lastName        String
+  jobTitle        String
+  department      String?
+  profilePhotoUrl String?
+  linkedinUrl     String?
+
+  roleInPlatform       HrRole  @default(MEMBER)
+  canCreateRoles       Boolean @default(true)
+  canSendIntroductions Boolean @default(true)
+  canManageBilling     Boolean @default(false)
+
+  alsoProfessional Boolean @default(false)
+  professionalId   String? @unique
+
+  status       HrStatus @default(ACTIVE)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastActiveAt DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company      Company       @relation(fields: [companyId], references: [id])
+  professional Professional? @relation(fields: [professionalId], references: [id])
+
+  sentIntroductions IntroductionRequest[] @relation("SentByHr")
+  createdRoles      JobRole[]
+  profileViews      ProfileView[]
+  firewallLogs      PrivacyFirewallLog[]
+
+  @@index([userId])
+  @@index([companyId])
+  @@index([professionalId])
+  @@index([roleInPlatform])
+  @@map("hr_partners")
+}
+
+enum HrRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum HrStatus {
+  ACTIVE
+  INACTIVE
+}
+
+// ============================================
+// JOB ROLE MODELS
+// ============================================
+
+model JobRole {
+  id            String @id @default(cuid())
+  companyId     String
+  createdByHrId String
+
+  roleTitle               String
+  roleDescription         String  @db.Text
+  responsibilities        String? @db.Text
+  requirements            String  @db.Text
+  preferredQualifications String? @db.Text
+
+  seniorityLevel SeniorityLevel
+  industry       String
+  department     String?
+
+  locationCity   String
+  locationState  String
+  remoteOption   RemoteOption   @default(ON_SITE)
+  employmentType EmploymentType @default(FULL_TIME)
+
+  salaryRangeMin Int
+  salaryRangeMax Int
+  benefits       String? @db.Text
+
+  yearsExperienceMin Int   @default(5)
+  yearsExperienceMax Int?
+  requiredSkills     Json?
+  preferredSkills    Json?
+
+  isConfidential     Boolean @default(false)
+  confidentialReason String? @db.Text
+
+  status              JobRoleStatus @default(DRAFT)
+  applicationDeadline DateTime?     @db.Date
+  expectedStartDate   DateTime?     @db.Date
+
+  introductionCount Int @default(0)
+  viewCount         Int @default(0)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+  closedAt    DateTime?
+
+  company   Company   @relation(fields: [companyId], references: [id])
+  createdBy HrPartner @relation(fields: [createdByHrId], references: [id])
+
+  introductionRequests IntroductionRequest[]
+
+  @@index([companyId])
+  @@index([status])
+  @@index([seniorityLevel])
+  @@index([locationCity, locationState])
+  @@index([createdByHrId])
+  @@map("job_roles")
+}
+
+enum SeniorityLevel {
+  DIRECTOR
+  VP
+  C_SUITE
+  EXECUTIVE
+}
+
+enum RemoteOption {
+  ON_SITE
+  HYBRID
+  REMOTE
+}
+
+enum JobRoleStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  FILLED
+  CLOSED
+}
+
+// ============================================
+// INTRODUCTION & MATCHING MODELS
+// ============================================
+
+model IntroductionRequest {
+  id                   String @id @default(cuid())
+  jobRoleId            String
+  companyId            String
+  sentByHrId           String
+  sentToProfessionalId String
+
+  personalizedMessage String? @db.Text
+
+  status               IntroductionStatus @default(PENDING)
+  professionalResponse String?            @db.Text
+  responseDate         DateTime?
+
+  expiresAt            DateTime
+  viewedByProfessional Boolean   @default(false)
+  viewedAt             DateTime?
+
+  conversationStarted Boolean @default(false)
+  interviewScheduled  Boolean @default(false)
+
+  outcome      IntroductionOutcome?
+  outcomeDate  DateTime?
+  outcomeNotes String?              @db.Text
+
+  sentAt    DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobRole      JobRole      @relation(fields: [jobRoleId], references: [id])
+  company      Company      @relation(fields: [companyId], references: [id])
+  sentBy       HrPartner    @relation("SentByHr", fields: [sentByHrId], references: [id])
+  professional Professional @relation("ReceivedByProfessional", fields: [sentToProfessionalId], references: [id])
+
+  @@unique([jobRoleId, sentToProfessionalId])
+  @@index([jobRoleId])
+  @@index([companyId])
+  @@index([sentByHrId])
+  @@index([sentToProfessionalId])
+  @@index([status])
+  @@index([outcome])
+  @@index([sentAt])
+  @@map("introduction_requests")
+}
+
+enum IntroductionStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  WITHDRAWN
+}
+
+enum IntroductionOutcome {
+  HIRED
+  REJECTED
+  WITHDREW
+  NO_RESPONSE
+}
+
+model ProfileView {
+  id                   String @id @default(cuid())
+  viewerHrId           String
+  viewedProfessionalId String
+
+  viewSource          ViewSource
+  jobRoleId           String?
+  viewDurationSeconds Int?
+
+  viewedAt DateTime @default(now())
+
+  viewer       HrPartner    @relation(fields: [viewerHrId], references: [id])
+  professional Professional @relation("ViewedProfessional", fields: [viewedProfessionalId], references: [id])
+
+  @@index([viewerHrId])
+  @@index([viewedProfessionalId])
+  @@index([viewedAt])
+  @@map("profile_views")
+}
+
+enum ViewSource {
+  SEARCH
+  SAVED
+  RECOMMENDATION
+  DIRECT
+}
+
+// ============================================
+// PRIVACY FIREWALL MODELS
+// ============================================
+
+model PrivacyFirewallLog {
+  id        String            @id @default(cuid())
+  eventType FirewallEventType
+
+  hrPartnerId    String?
+  companyId      String?
+  professionalId String?
+
+  actionTaken String
+  metadata    Json?
+
+  createdAt DateTime @default(now())
+
+  hrPartner    HrPartner?    @relation(fields: [hrPartnerId], references: [id])
+  company      Company?      @relation(fields: [companyId], references: [id])
+  professional Professional? @relation(fields: [professionalId], references: [id])
+
+  @@index([professionalId])
+  @@index([companyId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("privacy_firewall_logs")
+}
+
+enum FirewallEventType {
+  SEARCH_FILTERED
+  INTRODUCTION_BLOCKED
+  VIEW_BLOCKED
+  BYPASS_ATTEMPT
+  COMPANY_ADDED
+  COMPANY_REMOVED
+}
+
+// ============================================
+// NOTIFICATION MODELS
+// ============================================
+model Notification {
+  id     String @id @default(cuid())
+  userId String
+
+  notificationType NotificationType
+  title            String
+  message          String           @db.Text
+
+  relatedEntityType String?
+  relatedEntityId   String?
+  actionUrl         String?
+
+  channel           NotificationChannel
+  status            NotificationStatus  @default(PENDING)
+
+  isRead            Boolean   @default(false)
+  readAt            DateTime?
+
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([notificationType])
+  @@index([status])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  INTRO_REQUEST
+  INTRO_ACCEPTED
+  INTRO_DECLINED
+  MESSAGE
+  PROFILE_VIEWED
+  VERIFICATION_COMPLETE
+  SUBSCRIPTION_EXPIRING
+  SYSTEM_ALERT
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  WHATSAPP
+  SMS
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+}
+
+// ============================================
+// ANALYTICS MODELS
+// ============================================
+
+model UserActivityLog {
+  id          String @id @default(cuid())
+  userId      String
+
+  actionType  String  @db.VarChar(100)
+  entityType  String? @db.VarChar(50)
+  entityId    String?
+
+  description String? @db.Text
+  ipAddress   String? @db.VarChar(45)
+  userAgent   String? @db.Text
+  metadata    Json?
+
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([actionType])
+  @@index([createdAt])
+  @@map("user_activity_logs")
+}
+
+// ============================================
+// SYSTEM CONFIGURATION MODELS
+// ============================================
+
+model Industry {
+  id           String   @id @default(cuid())
+  industryName String   @unique
+  industrySlug String   @unique
+  description  String?  @db.Text
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  @@index([industrySlug])
+  @@map("industries")
+}
+
+model SkillTaxonomy {
+  id            String   @id @default(cuid())
+  skillName     String   @unique
+  skillSlug     String   @unique
+  skillCategory String?  @db.VarChar(50)
+  synonyms      Json?
+  usageCount    Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  @@index([skillSlug])
+  @@index([skillCategory])
+  @@map("skill_taxonomies")
+}
+
+model SystemSetting {
+  id           String           @id @default(cuid())
+  settingKey   String           @unique
+  settingValue String           @db.Text
+  valueType    SettingValueType
+  description  String?          @db.Text
+  isPublic     Boolean          @default(false)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([settingKey])
+  @@map("system_settings")
+}
+
+enum SettingValueType {
+  STRING
+  INTEGER
+  BOOLEAN
+  JSON
+}
+
+// ============================================
+// COUNTRIES | STATES | CITIES | LGAs etc
+// ============================================
+model Country {
+  id        String   @id @default(uuid())
+  name      String
+  code      String   @unique
+  currency  String
+  flagEmoji String?
+  states    State[]
+  isActive  Boolean  @default(true) @map("isActive")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([code])
+  @@map("country")
+}
+
+model State {
+  id        String   @id @default(uuid())
+  name      String
+  code      String?
+  region    String?
+  sortOrder Int      @default(0)
+  country   Country  @relation(fields: [countryId], references: [id])
+  countryId String
+  cities    City[]
+  lgas      LGA[]
+  isActive  Boolean  @default(true) @map("isActive")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, countryId]) // Prevent duplicate state names within same country
+  @@index([countryId])
+  @@index([name])
+  @@map("state")
+}
+
+model City {
+  id        String   @id @default(uuid())
+  name      String
+  state     State    @relation(fields: [stateId], references: [id])
+  stateId   String
+  isActive  Boolean  @default(true) @map("isActive")
+  lgas      LGA[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, stateId]) // City name must be unique per state
+  @@index([stateId])
+  @@index([name])
+  @@map("city")
+}
+
+model LGA {
+  id        String   @id @default(uuid())
+  name      String
+  state     State    @relation(fields: [stateId], references: [id])
+  isActive  Boolean  @default(false) @map("isActive")
+  stateId   String
+  city      City?    @relation(fields: [cityId], references: [id])
+  cityId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, stateId]) // LGA name must be unique per state
+  @@index([stateId])
+  @@index([name])
+  @@map("lga")
 }

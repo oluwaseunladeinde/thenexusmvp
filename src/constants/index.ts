@@ -1,0 +1,1 @@
+export const INTRODUCTION_EXPIRY_DAYS_COUNT = 7

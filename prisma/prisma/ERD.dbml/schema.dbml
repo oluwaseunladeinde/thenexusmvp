@@ -1,0 +1,567 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table users {
+  id String [pk]
+  email String [unique, not null]
+  phone String [unique]
+  passwordHash String [not null]
+  userType UserType [not null]
+  status UserStatus [not null, default: 'PENDING']
+  emailVerified Boolean [not null, default: false]
+  phoneVerified Boolean [not null, default: false]
+  clerkUserId String [unique]
+  hasDualRole Boolean [not null, default: false]
+  dualRoleEnabledAt DateTime
+  lastLoginAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  professional professionals
+  hrPartner hr_partners
+  activityLogs user_activity_logs [not null]
+  notifications notifications [not null]
+}
+
+Table professionals {
+  id String [pk]
+  userId String [unique, not null]
+  firstName String [not null]
+  lastName String [not null]
+  preferredName String
+  profileHeadline String
+  profileSummary String
+  profilePhotoUrl String
+  yearsOfExperience Int [not null]
+  currentTitle String
+  currentCompany String
+  currentIndustry String
+  locationCity String [not null]
+  locationState String [not null]
+  willingToRelocate Boolean [not null, default: false]
+  salaryExpectationMin Int
+  salaryExpectationMax Int
+  noticePeriodDays Int [not null, default: 30]
+  openToOpportunities Boolean [not null, default: true]
+  confidentialSearch Boolean [not null, default: true]
+  profileVisibility ProfileVisibility [not null, default: 'PRIVATE']
+  verificationStatus VerificationStatus [not null, default: 'UNVERIFIED']
+  verificationDate DateTime
+  linkedinUrl String
+  portfolioUrl String
+  resumeUrl String
+  isAlsoHrPartner Boolean [not null, default: false]
+  hideFromCompanyIds String[] [not null]
+  onboardingCompleted Boolean [not null, default: false]
+  profileCompleteness Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  lastActiveAt DateTime [default: `now()`, not null]
+  user users [not null]
+  workHistory professional_work_histories [not null]
+  education professional_educations [not null]
+  skills professional_skills [not null]
+  certifications professional_certifications [not null]
+  introductionRequests introduction_requests [not null]
+  profileViews profile_views [not null]
+  firewallLogs privacy_firewall_logs [not null]
+  hrPartnerLink hr_partners
+}
+
+Table professional_work_histories {
+  id String [pk]
+  professionalId String [not null]
+  companyName String [not null]
+  jobTitle String [not null]
+  industry String
+  location String
+  employmentType EmploymentType [not null]
+  startDate DateTime [not null]
+  endDate DateTime
+  isCurrent Boolean [not null, default: false]
+  description String
+  achievements Json
+  sortOrder Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  professional professionals [not null]
+}
+
+Table professional_educations {
+  id String [pk]
+  professionalId String [not null]
+  institutionName String [not null]
+  degreeType DegreeType [not null]
+  fieldOfStudy String [not null]
+  startYear Int [not null]
+  endYear Int
+  grade String
+  isVerified Boolean [not null, default: false]
+  sortOrder Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  professional professionals [not null]
+}
+
+Table professional_skills {
+  id String [pk]
+  professionalId String [not null]
+  skillName String [not null]
+  proficiencyLevel ProficiencyLevel [not null, default: 'INTERMEDIATE']
+  yearsOfExperience Int
+  isPrimarySkill Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  professional professionals [not null]
+}
+
+Table professional_certifications {
+  id String [pk]
+  professionalId String [not null]
+  certificationName String [not null]
+  issuingOrganization String [not null]
+  issueDate DateTime [not null]
+  expiryDate DateTime
+  credentialId String
+  credentialUrl String
+  isVerified Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  professional professionals [not null]
+}
+
+Table companies {
+  id String [pk]
+  companyName String [unique, not null]
+  companyLogoUrl String
+  industry String [not null]
+  companySize CompanySize [not null]
+  headquartersLocation String [not null]
+  companyWebsite String
+  companyDescription String
+  linkedinUrl String
+  domain String [unique, not null]
+  foundedYear Int
+  fundingStatus String
+  remotePolicy RemotePolicy [not null, default: 'HYBRID']
+  location Json
+  verificationStatus CompanyVerificationStatus [not null, default: 'PENDING']
+  verificationDate DateTime
+  status CompanyStatus [not null, default: 'ACTIVE']
+  subscriptionTier SubscriptionTier [not null, default: 'TRIAL']
+  subscriptionExpiresAt DateTime
+  introductionCredits Int [not null, default: 5]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  hrPartners hr_partners [not null]
+  jobRoles job_roles [not null]
+  introductionRequests introduction_requests [not null]
+  firewallLogs privacy_firewall_logs [not null]
+}
+
+Table hr_partners {
+  id String [pk]
+  userId String [unique, not null]
+  companyId String [not null]
+  firstName String [not null]
+  lastName String [not null]
+  jobTitle String [not null]
+  department String
+  profilePhotoUrl String
+  linkedinUrl String
+  roleInPlatform HrRole [not null, default: 'MEMBER']
+  canCreateRoles Boolean [not null, default: true]
+  canSendIntroductions Boolean [not null, default: true]
+  canManageBilling Boolean [not null, default: false]
+  alsoProfessional Boolean [not null, default: false]
+  professionalId String [unique]
+  status HrStatus [not null, default: 'ACTIVE']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  lastActiveAt DateTime [default: `now()`, not null]
+  user users [not null]
+  company companies [not null]
+  professional professionals
+  sentIntroductions introduction_requests [not null]
+  createdRoles job_roles [not null]
+  profileViews profile_views [not null]
+  firewallLogs privacy_firewall_logs [not null]
+}
+
+Table job_roles {
+  id String [pk]
+  companyId String [not null]
+  createdByHrId String [not null]
+  roleTitle String [not null]
+  roleDescription String [not null]
+  responsibilities String
+  requirements String [not null]
+  preferredQualifications String
+  seniorityLevel SeniorityLevel [not null]
+  industry String [not null]
+  department String
+  locationCity String [not null]
+  locationState String [not null]
+  remoteOption RemoteOption [not null, default: 'ON_SITE']
+  employmentType EmploymentType [not null, default: 'FULL_TIME']
+  salaryRangeMin Int [not null]
+  salaryRangeMax Int [not null]
+  benefits String
+  yearsExperienceMin Int [not null, default: 5]
+  yearsExperienceMax Int
+  requiredSkills Json
+  preferredSkills Json
+  isConfidential Boolean [not null, default: false]
+  confidentialReason String
+  status JobRoleStatus [not null, default: 'DRAFT']
+  applicationDeadline DateTime
+  expectedStartDate DateTime
+  introductionCount Int [not null, default: 0]
+  viewCount Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  publishedAt DateTime
+  closedAt DateTime
+  company companies [not null]
+  createdBy hr_partners [not null]
+  introductionRequests introduction_requests [not null]
+}
+
+Table introduction_requests {
+  id String [pk]
+  jobRoleId String [not null]
+  companyId String [not null]
+  sentByHrId String [not null]
+  sentToProfessionalId String [not null]
+  personalizedMessage String
+  status IntroductionStatus [not null, default: 'PENDING']
+  professionalResponse String
+  responseDate DateTime
+  expiresAt DateTime [not null]
+  viewedByProfessional Boolean [not null, default: false]
+  viewedAt DateTime
+  conversationStarted Boolean [not null, default: false]
+  interviewScheduled Boolean [not null, default: false]
+  outcome IntroductionOutcome
+  outcomeDate DateTime
+  outcomeNotes String
+  sentAt DateTime [default: `now()`, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  jobRole job_roles [not null]
+  company companies [not null]
+  sentBy hr_partners [not null]
+  professional professionals [not null]
+
+  indexes {
+    (jobRoleId, sentToProfessionalId) [unique]
+  }
+}
+
+Table profile_views {
+  id String [pk]
+  viewerHrId String [not null]
+  viewedProfessionalId String [not null]
+  viewSource ViewSource [not null]
+  jobRoleId String
+  viewDurationSeconds Int
+  viewedAt DateTime [default: `now()`, not null]
+  viewer hr_partners [not null]
+  professional professionals [not null]
+}
+
+Table privacy_firewall_logs {
+  id String [pk]
+  eventType FirewallEventType [not null]
+  hrPartnerId String
+  companyId String
+  professionalId String
+  actionTaken String [not null]
+  metadata Json
+  createdAt DateTime [default: `now()`, not null]
+  hrPartner hr_partners
+  company companies
+  professional professionals
+}
+
+Table notifications {
+  id String [pk]
+  userId String [not null]
+  notificationType NotificationType [not null]
+  title String [not null]
+  message String [not null]
+  relatedEntityType String
+  relatedEntityId String
+  actionUrl String
+  channel NotificationChannel [not null]
+  status NotificationStatus [not null, default: 'PENDING']
+  isRead Boolean [not null, default: false]
+  readAt DateTime
+  sentAt DateTime
+  deliveredAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  user users [not null]
+}
+
+Table user_activity_logs {
+  id String [pk]
+  userId String [not null]
+  actionType String [not null]
+  entityType String
+  entityId String
+  description String
+  ipAddress String
+  userAgent String
+  metadata Json
+  createdAt DateTime [default: `now()`, not null]
+  user users [not null]
+}
+
+Table industries {
+  id String [pk]
+  industryName String [unique, not null]
+  industrySlug String [unique, not null]
+  description String
+  isActive Boolean [not null, default: true]
+  sortOrder Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table skill_taxonomies {
+  id String [pk]
+  skillName String [unique, not null]
+  skillSlug String [unique, not null]
+  skillCategory String
+  synonyms Json
+  usageCount Int [not null, default: 0]
+  isActive Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table system_settings {
+  id String [pk]
+  settingKey String [unique, not null]
+  settingValue String [not null]
+  valueType SettingValueType [not null]
+  description String
+  isPublic Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Enum UserType {
+  PROFESSIONAL
+  HR_PARTNER
+  ADMIN
+}
+
+Enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+Enum ProfileVisibility {
+  PRIVATE
+  NETWORK
+  PUBLIC
+}
+
+Enum VerificationStatus {
+  UNVERIFIED
+  BASIC
+  FULL
+  PREMIUM
+}
+
+Enum EmploymentType {
+  FULL_TIME
+  CONTRACT
+  CONSULTING
+}
+
+Enum DegreeType {
+  BACHELOR
+  MASTER
+  PHD
+  DIPLOMA
+  CERTIFICATE
+  OTHER
+}
+
+Enum ProficiencyLevel {
+  BEGINNER
+  INTERMEDIATE
+  EXPERT
+}
+
+Enum CompanySize {
+  SMALL_1_10
+  MEDIUM_11_50
+  LARGE_51_200
+  XLARGE_201_500
+  ENTERPRISE_500_PLUS
+}
+
+Enum CompanyVerificationStatus {
+  PENDING
+  VERIFIED
+  PREMIUM
+}
+
+Enum CompanyStatus {
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+}
+
+Enum SubscriptionTier {
+  TRIAL
+  BASIC
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+Enum RemotePolicy {
+  REMOTE_FIRST
+  HYBRID
+  OFFICE_FIRST
+}
+
+Enum HrRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+Enum HrStatus {
+  ACTIVE
+  INACTIVE
+}
+
+Enum SeniorityLevel {
+  DIRECTOR
+  VP
+  C_SUITE
+  EXECUTIVE
+}
+
+Enum RemoteOption {
+  ON_SITE
+  HYBRID
+  REMOTE
+}
+
+Enum JobRoleStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  FILLED
+  CLOSED
+}
+
+Enum IntroductionStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  WITHDRAWN
+}
+
+Enum IntroductionOutcome {
+  HIRED
+  REJECTED
+  WITHDREW
+  NO_RESPONSE
+}
+
+Enum ViewSource {
+  SEARCH
+  SAVED
+  RECOMMENDATION
+  DIRECT
+}
+
+Enum FirewallEventType {
+  SEARCH_FILTERED
+  INTRODUCTION_BLOCKED
+  VIEW_BLOCKED
+  BYPASS_ATTEMPT
+  COMPANY_ADDED
+  COMPANY_REMOVED
+}
+
+Enum NotificationType {
+  INTRO_REQUEST
+  INTRO_ACCEPTED
+  INTRO_DECLINED
+  MESSAGE
+  PROFILE_VIEWED
+  VERIFICATION_COMPLETE
+  SUBSCRIPTION_EXPIRING
+  SYSTEM_ALERT
+}
+
+Enum NotificationChannel {
+  IN_APP
+  EMAIL
+  WHATSAPP
+  SMS
+}
+
+Enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+}
+
+Enum SettingValueType {
+  STRING
+  INTEGER
+  BOOLEAN
+  JSON
+}
+
+Ref: professionals.userId - users.id [delete: Cascade]
+
+Ref: professional_work_histories.professionalId > professionals.id [delete: Cascade]
+
+Ref: professional_educations.professionalId > professionals.id [delete: Cascade]
+
+Ref: professional_skills.professionalId > professionals.id [delete: Cascade]
+
+Ref: professional_certifications.professionalId > professionals.id [delete: Cascade]
+
+Ref: hr_partners.userId - users.id [delete: Cascade]
+
+Ref: hr_partners.companyId > companies.id
+
+Ref: hr_partners.professionalId - professionals.id
+
+Ref: job_roles.companyId > companies.id
+
+Ref: job_roles.createdByHrId > hr_partners.id
+
+Ref: introduction_requests.jobRoleId > job_roles.id
+
+Ref: introduction_requests.companyId > companies.id
+
+Ref: introduction_requests.sentByHrId > hr_partners.id
+
+Ref: introduction_requests.sentToProfessionalId > professionals.id
+
+Ref: profile_views.viewerHrId > hr_partners.id
+
+Ref: profile_views.viewedProfessionalId > professionals.id
+
+Ref: privacy_firewall_logs.hrPartnerId > hr_partners.id
+
+Ref: privacy_firewall_logs.companyId > companies.id
+
+Ref: privacy_firewall_logs.professionalId > professionals.id
+
+Ref: notifications.userId > users.id
+
+Ref: user_activity_logs.userId > users.id
