@@ -1,20 +1,90 @@
 # theNexus - Nigeria's Premier Senior Professional Network
 
-**Turn Conversations Into Careers**
+## 🎯 About
+theNexus is Nigeria's premier network connecting verified senior professionals with forward-thinking companies through confidential, opt-in introductions. We're disrupting traditional recruitment by replacing mass job applications with curated, high-quality professional introductions.
 
-theNexus is Nigeria's most trusted network connecting verified senior professionals (Director-level and above) with forward-thinking companies through curated, opt-in introductions. We focus on quality over quantity, ensuring meaningful connections that drive real career advancement and successful hiring.
+## The Problem We Solve
+### For Professionals:
+- ❌ Hundreds of applications with no responses
+- ❌ CVs disappearing into the void
+- ❌ No feedback, no respect for time
+- ❌ Confidentiality concerns while employed
 
-## 🎯 Our Mission
-To create Nigeria's most trusted professional network where senior talent meets visionary companies through verified, confidential introductions that respect privacy and deliver results.
+### For Companies:
+- ❌ Drowning in unqualified CVs
+- ❌ Months to fill senior roles
+- ❌ Expensive executive search fees
+- ❌ Low response rates from candidates
+
+## Our Solution
+- ✅ Quality Introductions, Not Mass Applications
+- ✅ 70%+ Response Rate (vs 10% traditional)
+- ✅ 50% Faster Hiring (2-3 weeks vs 6-8 weeks)
+- ✅ 60% Cost Savings vs executive search
+- ✅ 100% Verified Professionals
+- ✅ Complete Confidentiality for job seekers
+
+
+# ✨ Key Features
+## For Senior Professionals
+
+- 🎯 Verified Profile Badge - Stand out with professional verification
+- 📬 Quality Introductions - Receive relevant senior-level opportunities
+- 🔒 Complete Confidentiality - Your job search remains private
+- 💬 Direct Access - Speak with hiring managers, not recruiters
+- 📊 Market Intelligence - Salary insights and industry trends
+- 👥 Dual-Role Mode - HR professionals can also job search confidentially
+
+## For Companies & HR Leaders
+
+- ✅ Pre-Vetted Talent - Every professional is verified and referenced
+- ⚡ 50% Faster Hiring - 2-3 weeks vs 6-8 weeks traditional
+- 💰 60% Lower Cost - Fraction of executive search fees
+- 🔒 Confidential Search - Hire senior roles discreetly
+- 📈 Better Quality - 40% higher interview-to-offer conversion
+- 🎯 Smart Matching - AI-powered candidate recommendations
+
+## Unique Privacy Firewall
+Our **dual-role system** allows HR professionals to job search while employed, with a **privacy firewall** that ensures:
+
+- Their company **cannot see** their professional profile
+- Their company **cannot search** for them
+- Their company **will not receive** any alerts
+- This protection is automatic and permanent
+
+# 🛠 Tech Stack
+## Frontend
+- Framework: [Next.js 14+ ](https://nextjs.org/) (App Router)
+- Language: [TypeScript 5+](https://www.typescriptlang.org/)
+- Styling: [Tailwind CSS 3+](https://tailwindcss.com/)
+- UI Components: [ShadcnUI](https://ui.shadcn.com/) + Custom components + [Lucide Icons](https://lucide.dev/)
+- Forms: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
+
+## Backend
+- API: Next.js API Routes (REST)
+- Database: [PostgreSQL 15+](https://www.postgresql.org/)
+- ORM: [Prisma 5+](https://www.prisma.io/)
+- Authentication: [Clerk](https://clerk.com/)
+- File Storage: AWS S3 / Cloudflare R2
+- Email: [SendGrid](https://sendgrid.com) / [Resend](https://resend.com/)
+- WhatsApp: [Twilio](https://www.twilio.com "Go to Twilio Website")
+
+## DevOps
+- Hosting: [Vercel (Frontend)](https://vercel.com/) + [Railway (Database)](https://railway.com/)
+- CI/CD: [GitHub Actions](https://github.com/features/actions)
+- Monitoring: [Sentry](https://sentry.io/) + Vercel Analytics
+- Testing: [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)
+
 
 ## 🚀 Getting Started
-
 ### Prerequisites
-- Node.js 18+ 
-- npm, yarn, pnpm, or bun
+
+- **Node.js 22+** - [Download](https://nodejs.org/)
+- **PostgreSQL 15+** - [Download](https://www.postgresql.org/download/) or use [Railway](https://railway.com/)
+- **Git** - [Download](https://git-scm.com/)
+- **Clerk Account** - [Sign up](https://clerk.com/)
 
 ### Installation
-
 1. Clone the repository:
 ```bash
 git clone <repository-url>
@@ -32,7 +102,27 @@ pnpm install
 bun install
 ```
 
-3. Start the development server:
+3. Set up environment variables
+```bash
+cp .env.example .env.local
+```
+
+Edit .env.local with your credentials ([see Environment Variables](https://claude.ai/chat/0d462027-3754-4217-b43a-7eedc9001b15#environment-variables))
+
+4. Set up the database
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run migrations
+npx prisma migrate dev
+
+# Seed database with initial data
+npx prisma db seed
+
+```
+
+5. Run the development server
 ```bash
 npm run dev
 # or
@@ -43,7 +133,7 @@ pnpm dev
 bun dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Build for Production
 
@@ -54,7 +144,7 @@ npm start
 
 ### Testing
 
-**Note**: Automated testing suite not yet implemented. Manual testing completed for core user flows.
+**Note**: Not started.
 
 **Planned Test Commands** (when implemented):
 ```bash
@@ -92,492 +182,463 @@ This will create:
 - Professional profiles with work experience and education
 - Realistic user data for testing
 
-**Sample Users Created:**
-- **Professionals**: john.doe@example.com, sarah.wilson@example.com, mike.chen@example.com
-- **HR Leaders**: lisa.martinez@techcorp.com, david.brown@innovatelabs.com
-- All users have password-less authentication via email/OAuth
-
 ## 📁 Project Structure
 
-```
-theNexus/
-├── prisma/
-│   └── schema.prisma             # Database schema and models
-├── src/
-│   ├── app/                      # Next.js App Router
-│   │   ├── (landing)/           # Landing page routes
-│   │   ├── about/               # About Us page
-│   │   ├── admin/               # Admin dashboard
-│   │   ├── api/                 # API routes
-│   │   ├── dashboard/           # User dashboards (professional/HR)
-│   │   ├── onboarding/          # User onboarding flows
-│   │   ├── pricing/             # Pricing page
-│   │   ├── sign-in/             # Authentication pages
-│   │   ├── sign-up/             # Registration pages
-│   │   ├── globals.css          # Global styles
-│   │   ├── layout.tsx           # Root layout
-│   │   └── page.tsx             # Home page
-│   ├── components/              # Reusable UI components
-│   │   ├── admin/               # Admin-specific components
-│   │   ├── dashboard/           # Dashboard components
-│   │   ├── onboarding/          # Onboarding components
-│   │   ├── ui/                  # Base UI components (Radix/Shadcn)
-│   │   ├── IntroductionRequestModal.tsx
-│   │   ├── PhoneVerification.tsx
-│   │   ├── UserButton.tsx
-│   │   └── logo.tsx             # Brand components
-│   ├── constants/               # App constants and configuration
-│   ├── docs/                    # Documentation and data models
-│   ├── hooks/                   # Custom React hooks
-│   ├── lib/                     # Utility libraries and services
-│   │   ├── data/                # Data processing utilities
-│   │   ├── mqtt/                # MQTT/WebSocket services
-│   │   ├── validations/         # Form validation schemas
-│   │   ├── auth.ts              # Authentication utilities
-│   │   ├── clerk-utils.ts       # Clerk-specific utilities
-│   │   ├── prisma.ts            # Database client
-│   │   ├── s3.ts                # AWS S3 utilities
-│   │   ├── sms.ts               # SMS service integration
-│   │   ├── upload.ts            # File upload utilities
-│   │   └── utils.ts             # Common utilities
-│   ├── types/                   # TypeScript type definitions
-│   │   └── index.d.ts           # Global type definitions
-│   ├── utils/                   # Additional utilities
-│   └── web/                     # Web-specific utilities
-├── public/                      # Static assets
-├── components.json              # Shadcn/ui configuration
-├── middleware.ts                # Next.js middleware
-└── package.json
-```
-
-## 🎨 Design System
-
-### Color Palette
-- **Primary**: `#2E8B57` (theNexus Green)
-- **Secondary**: `#0A2540` (theNexus Navy)
-- **Background**: `#ffffff` (White)
-- **Text**: `#0A2540` (theNexus Navy)
-- **Text Secondary**: `#666666` (Gray)
-- **Accent**: `#F8F9FA` (Light Gray)
-
-### Typography
-- **Font Family**: Manrope (Google Fonts)
-- **Weights**: 400 (Regular), 600 (Semibold), 700 (Bold), 800 (Extrabold)
-
-## 💼 Business Model
-
-### Professional Tiers
-- **Free**: Basic access with limited introductions
-- **Professional (₦12k/month)**: Unlimited browsing, priority search, networking
-- **Executive (₦25k/month)**: Market intelligence, salary data, dedicated support
-
-### Organization Tiers
-- **Starter (₦50k/month)**: 25 credits, 3 users, 5 job posts
-- **Professional (₦150k/month)**: 100 credits, 10 users, 20 job posts
-- **Enterprise**: Custom pricing, unlimited usage, dedicated account management
-
-### Nigerian Market Focus
-- Local currency pricing (₦)
-- WhatsApp integration for communication
-- Understanding of local business culture
-- Mobile-first design for connectivity challenges
-
-
-### RBAC Design Recommendations
-
-#### 1. Role-Based Access Control Structure
-```typescript
-// Define permissions as granular actions
-enum Permission {
-  // User Management
-  USER_VIEW = 'user.view',
-  USER_EDIT = 'user.edit',
-  USER_SUSPEND = 'user.suspend',
-  USER_DELETE = 'user.delete',
-  USER_CHANGE_TYPE = 'user.change_type',
-
-  // Bulk Operations
-  USER_BULK_EDIT = 'user.bulk_edit',
-  USER_BULK_SUSPEND = 'user.bulk_suspend',
-  USER_BULK_DELETE = 'user.bulk_delete',
-
-  // System Administration
-  SYSTEM_VIEW_LOGS = 'system.view_logs',
-  SYSTEM_MANAGE_SETTINGS = 'system.manage_settings',
-  SYSTEM_SEND_ALERTS = 'system.send_alerts',
-
-  // Analytics
-  ANALYTICS_VIEW = 'analytics.view',
-  ANALYTICS_EXPORT = 'analytics.export',
-}
-
-// Define roles with associated permissions
-const ROLE_PERMISSIONS: Record<UserType, Permission[]> = {
-  PROFESSIONAL: [],
-  HR_LEADER: [],
-  ADMIN: [
-    Permission.USER_VIEW,
-    Permission.USER_EDIT,
-    Permission.USER_SUSPEND,
-    Permission.USER_BULK_EDIT,
-    Permission.USER_BULK_SUSPEND,
-    Permission.SYSTEM_VIEW_LOGS,
-    Permission.ANALYTICS_VIEW,
-  ],
-  SUPER_ADMIN: [
-    // All permissions
-    ...Object.values(Permission),
-  ],
-};
-```
-
-
-
-## 🔧 API Documentation
-
-The API is organized into versioned endpoints under `/api/v1/` for production use. All endpoints require authentication via Bearer token (Clerk JWT) unless specified otherwise.
-
-### Authentication & Authorization
-- **Method**: Bearer Token (Clerk JWT)
-- **Header**: `Authorization: Bearer <token>`
-- **Admin Access**: Requires `ADMIN` or `SUPER_ADMIN` user type
-- **Rate Limiting**: 100 requests/minute per user, 1000/minute for admins
-
-### Core API Endpoints
-
-#### Professionals API
-**Base Path**: `/api/professionals/`
-
-| Method | Endpoint | Description | Auth Required | Admin Only |
-|--------|----------|-------------|---------------|------------|
-| GET | `/me` | Get current professional profile with stats | ✓ | ✗ |
-| PUT | `/me` | Update professional profile | ✓ | ✗ |
-| POST | `/create` | Create professional profile | ✓ | ✗ |
-| GET | `/browse` | Browse/search professionals (HR only) | ✓ | ✗ |
-| GET | `/introductions` | Get professional's introduction requests | ✓ | ✗ |
-| GET | `/experience` | Get professional's work experience | ✓ | ✗ |
-| POST | `/experience` | Add work experience | ✓ | ✗ |
-| PUT | `/experience/:id` | Update work experience | ✓ | ✗ |
-| DELETE | `/experience/:id` | Delete work experience | ✓ | ✗ |
-| GET | `/skills` | Get professional's skills | ✓ | ✗ |
-| POST | `/skills` | Add skill | ✓ | ✗ |
-| PUT | `/skills/:id` | Update skill | ✓ | ✗ |
-| DELETE | `/skills/:id` | Delete skill | ✓ | ✗ |
-| GET | `/references` | Get professional's references | ✓ | ✗ |
-| POST | `/references` | Add reference | ✓ | ✗ |
-| PUT | `/references/:id` | Update reference | ✓ | ✗ |
-| DELETE | `/references/:id` | Delete reference | ✓ | ✗ |
-| GET | `/portfolio` | Get portfolio items | ✓ | ✗ |
-| POST | `/portfolio` | Add portfolio item | ✓ | ✗ |
-| PUT | `/portfolio/:id` | Update portfolio item | ✓ | ✗ |
-| DELETE | `/portfolio/:id` | Delete portfolio item | ✓ | ✗ |
-
-#### HR Partners API
-**Base Path**: `/api/hr-partners/`
-
-| Method | Endpoint | Description | Auth Required | Admin Only |
-|--------|----------|-------------|---------------|------------|
-| GET | `/me` | Get current HR partner profile | ✓ | ✗ |
-| POST | `/create` | Create HR partner profile | ✓ | ✗ |
-| GET | `/talent` | Browse talent pool | ✓ | ✗ |
-| GET | `/introductions` | Get sent introduction requests | ✓ | ✗ |
-| GET | `/pipeline` | Get recruitment pipeline | ✓ | ✗ |
-| GET | `/pipeline/:id` | Get pipeline details | ✓ | ✗ |
-| PUT | `/pipeline/:id` | Update pipeline status | ✓ | ✗ |
-| GET | `/job-roles` | Get job roles | ✓ | ✗ |
-| POST | `/job-roles` | Create job role | ✓ | ✗ |
-| PUT | `/job-roles/:id` | Update job role | ✓ | ✗ |
-| DELETE | `/job-roles/:id` | Delete job role | ✓ | ✗ |
-
-#### Introductions API
-**Base Path**: `/api/introductions/`
-
-| Method | Endpoint | Description | Auth Required | Admin Only |
-|--------|----------|-------------|---------------|------------|
-| POST | `/request` | Send introduction request | ✓ | ✗ |
-| PUT | `/respond` | Accept/decline introduction request | ✓ | ✗ |
-
-#### Admin API
-**Base Path**: `/api/admin/`
-
-| Method | Endpoint | Description | Auth Required | Admin Only |
-|--------|----------|-------------|---------------|------------|
-| GET | `/users` | List all users with filtering | ✓ | ✓ |
-| GET | `/users/:id` | Get user details | ✓ | ✓ |
-| PUT | `/users/:id` | Update user status/type | ✓ | ✓ |
-| POST | `/users/bulk` | Bulk user operations | ✓ | ✓ |
-| GET | `/analytics` | Get platform analytics | ✓ | ✓ |
-| GET | `/analytics/revenue` | Get revenue analytics | ✓ | ✓ |
-| GET | `/analytics/export` | Export analytics data | ✓ | ✓ |
-| GET | `/content` | List content items | ✓ | ✓ |
-| GET | `/content/:id` | Get content details | ✓ | ✓ |
-| PUT | `/content/:id` | Update content | ✓ | ✓ |
-| GET | `/content/moderation` | Get content moderation queue | ✓ | ✓ |
-| GET | `/content/stats` | Get content statistics | ✓ | ✓ |
-| GET | `/settings` | Get system settings | ✓ | ✓ |
-| PUT | `/settings` | Update system settings | ✓ | ✓ |
-| GET | `/settings/system-status` | Get system health status | ✓ | ✓ |
-| POST | `/auth/login` | Admin login | ✓ | ✓ |
-| GET | `/auth/me` | Get admin profile | ✓ | ✓ |
-
-#### Utility API
-**Base Path**: `/api/`
-
-| Method | Endpoint | Description | Auth Required | Admin Only |
-|--------|----------|-------------|---------------|------------|
-| POST | `/upload` | Upload file to S3 | ✓ | ✗ |
-| POST | `/phone/send-code` | Send SMS verification code | ✓ | ✗ |
-| POST | `/phone/verify-code` | Verify SMS code | ✓ | ✗ |
-| POST | `/webhooks/clerk` | Clerk webhook handler | ✗ | ✗ |
-| GET | `/docs` | API documentation (Swagger) | ✗ | ✗ |
-| GET | `/v1/docs` | V1 API documentation | ✗ | ✗ |
-
-#### Client API
-**Base Path**: `/api/client/`
-
-| Method | Endpoint | Description | Auth Required | Admin Only |
-|--------|----------|-------------|---------------|------------|
-| GET | `/customer-device-map` | Get customer device mapping | ✓ | ✗ |
-
-### Request/Response Examples
-
-#### Get Professional Profile
-```http
-GET /api/professionals/me
-Authorization: Bearer <jwt_token>
-```
-
-**Response (200):**
-```json
-{
-  "message": "Professional profile retrieved successfully",
-  "data": {
-    "professional": {
-      "id": "prof_123",
-      "userId": "user_456",
-      "profileHeadline": "Senior Product Manager",
-      "currentTitle": "VP of Product",
-      "currentCompany": "TechCorp",
-      "profileCompleteness": 85,
-      "skills": [...],
-      "workHistory": [...],
-      "education": [...]
-    },
-    "stats": {
-      "pending": 2,
-      "accepted": 5,
-      "declined": 1,
-      "profileViews": 24
-    }
-  }
-}
-```
-
-#### Send Introduction Request
-```http
-POST /api/introductions/request
-Authorization: Bearer <jwt_token>
-Content-Type: application/json
-
-{
-  "professionalId": "prof_123",
-  "jobRoleId": "role_456",
-  "message": "We'd love to discuss the Senior PM role with you",
-  "urgency": "high"
-}
-```
-
-**Response (200):**
-```json
-{
-  "message": "Introduction request sent successfully",
-  "data": {
-    "id": "intro_789",
-    "status": "pending",
-    "sentAt": "2024-01-15T10:30:00Z",
-    "expiresAt": "2024-02-14T10:30:00Z"
-  }
-}
-```
-
-#### Admin Get Users
-```http
-GET /api/admin/users?page=1&limit=10&userType=PROFESSIONAL&status=ACTIVE
-Authorization: Bearer <admin_jwt_token>
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": "user_123",
-      "firstName": "John",
-      "lastName": "Doe",
-      "email": "john@example.com",
-      "userType": "PROFESSIONAL",
-      "status": "ACTIVE",
-      "createdAt": "2024-01-01T00:00:00Z",
-      "professional": {
-        "currentJobTitle": "Senior Developer",
-        "currentCompany": "TechCorp"
-      }
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 10,
-    "total": 150,
-    "pages": 15
-  }
-}
-```
-
-### Error Responses
-
-All endpoints return standardized error responses:
-
-```json
-{
-  "error": "Error message",
-  "details": [
-    {
-      "field": "email",
-      "message": "Invalid email format"
-    }
-  ]
-}
-```
-
-**Common HTTP Status Codes:**
-- `200` - Success
-- `201` - Created
-- `400` - Bad Request
-- `401` - Unauthorized
-- `403` - Forbidden
-- `404` - Not Found
-- `422` - Validation Error
-- `429` - Rate Limited
-- `500` - Internal Server Error
-
-### Rate Limiting
-- **Standard Users**: 100 requests/minute
-- **Admin Users**: 1000 requests/minute
-- **Headers**: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
-
-### File Upload
-Files are uploaded to AWS S3 with the following constraints:
-- **Max Size**: 10MB per file
-- **Allowed Types**: PDF, DOC, DOCX, JPG, PNG
-- **Storage**: Secure, temporary URLs generated for access
-
-### Webhooks
-Clerk webhooks are handled at `/api/webhooks/clerk` for user lifecycle events.
-
-### API Versioning
-- **Current**: `/api/v1/` (recommended for new integrations)
-- **Legacy**: `/api/` (deprecated, will be removed in future versions)
-
-For complete OpenAPI specification, visit `/api/docs` or `/api/v1/docs` in your running application.
-
-## 🚀 Deployment
-
-### Environment Setup
-1. **Database**: PostgreSQL database (production)
-2. **Redis**: Redis instance for caching and queues
-3. **AWS S3**: File storage bucket
-4. **Clerk**: Authentication service
-5. **Vercel**: Hosting platform
-
-### Environment Variables
-```env
-# Database
-DATABASE_URL=postgresql://...
-
-# Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=...
-CLERK_SECRET_KEY=...
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-
-# AWS S3
-AWS_ACCESS_KEY_ID=...
-AWS_SECRET_ACCESS_KEY=...
-AWS_S3_BUCKET_NAME=...
-AWS_REGION=...
-
-# Redis
-REDIS_URL=redis://...
-
-# Email (Optional)
-RESEND_API_KEY=...
-
-# WhatsApp/SMS (Optional)
-TWILIO_ACCOUNT_SID=...
-TWILIO_AUTH_TOKEN=...
-TWILIO_PHONE_NUMBER=...
-```
-
-### Production Deployment
 ```bash
+
+npm run dev
+```
+
+6. **Open your browser**
+Navigate to [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 📁 Project Structure
+```
+thenexus/
+├── app/                          # Next.js App Router
+│   ├── (auth)/                   # Authentication routes
+│   │   ├── sign-in/
+│   │   └── sign-up/
+│   ├── (marketing)/              # Marketing pages
+│   │   ├── page.tsx              # Landing page
+│   │   ├── about/
+│   │   └── contact/
+│   ├── dashboard/                # HR Partner dashboard
+│   │   ├── page.tsx
+│   │   ├── search/
+│   │   ├── roles/
+│   │   └── introductions/
+│   ├── professional/             # Professional dashboard
+│   │   ├── dashboard/
+│   │   ├── profile/
+│   │   └── introductions/
+│   ├── settings/                 # User settings
+│   │   └── dual-role/
+│   ├── api/                      # API routes
+│   │   ├── auth/
+│   │   ├── professionals/
+│   │   ├── companies/
+│   │   ├── job-roles/
+│   │   ├── introductions/
+│   │   ├── dual-role/
+│   │   └── webhooks/
+│   ├── layout.tsx                # Root layout
+│   └── globals.css               # Global styles
+├── components/                   # React components
+│   ├── auth/
+│   ├── dashboard/
+│   ├── onboarding/
+│   ├── professional/
+│   ├── settings/
+│   ├── ui/                       # Reusable UI components
+│   └── RoleSwitcher.tsx
+├── lib/                          # Utility libraries
+│   ├── prisma.ts                 # Prisma client
+│   ├── clerk.ts                  # Clerk configuration
+│   ├── services/                 # Business logic
+│   │   ├── privacyFirewall.ts
+│   │   ├── dualRole.ts
+│   │   ├── matching.ts
+│   │   └── notifications.ts
+│   ├── utils/
+│   └── constants/
+├── prisma/                       # Database
+│   ├── schema.prisma             # Prisma schema
+│   ├── migrations/               # Database migrations
+│   └── seed.ts                   # Seed script
+├── public/                       # Static assets
+│   ├── logo.svg
+│   └── images/
+├── tests/                        # Tests
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+├── docs/                         # Documentation
+│   ├── api/
+│   ├── deployment/
+│   └── user-guides/
+├── .env.example                  # Environment variables template
+├── .gitignore
+├── next.config.js
+├── package.json
+├── tsconfig.json
+├── tailwind.config.ts
+├── README.md
+└── LICENSE
+```
+
+## 🔐 Environment Variables
+Update a .env.local file in the root directory:
+```bash 
+# ============================================
+# DATABASE
+# ============================================
+DATABASE_URL="postgresql://user:password@localhost:5432/thenexus"
+
+# ============================================
+# CLERK AUTHENTICATION
+# ============================================
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
+CLERK_SECRET_KEY="sk_test_..."
+
+# Clerk URLs
+NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
+NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/dashboard"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/onboarding"
+
+# Clerk Webhook Secret
+CLERK_WEBHOOK_SECRET="whsec_..."
+
+# ============================================
+# AWS S3 (File Storage)
+# ============================================
+AWS_REGION="us-east-1"
+AWS_ACCESS_KEY_ID="..."
+AWS_SECRET_ACCESS_KEY="..."
+AWS_S3_BUCKET="thenexus-uploads"
+
+# Alternative: Cloudflare R2
+# R2_ACCOUNT_ID="..."
+# R2_ACCESS_KEY_ID="..."
+# R2_SECRET_ACCESS_KEY="..."
+# R2_BUCKET_NAME="thenexus-uploads"
+
+# ============================================
+# EMAIL (SendGrid)
+# ============================================
+SENDGRID_API_KEY="SG...."
+SENDGRID_FROM_EMAIL="noreply@jointhenexus.com"
+SENDGRID_FROM_NAME="theNexus"
+
+# Alternative: Resend
+# RESEND_API_KEY="re_..."
+
+# ============================================
+# WHATSAPP (Twilio)
+# ============================================
+TWILIO_ACCOUNT_SID="AC..."
+TWILIO_AUTH_TOKEN="..."
+TWILIO_WHATSAPP_NUMBER="whatsapp:+1234567890"
+
+# ============================================
+# ANALYTICS & MONITORING
+# ============================================
+NEXT_PUBLIC_VERCEL_ANALYTICS_ID="..."
+SENTRY_DSN="https://...@sentry.io/..."
+
+# ============================================
+# FEATURE FLAGS
+# ============================================
+NEXT_PUBLIC_DUAL_ROLE_ENABLED="true"
+NEXT_PUBLIC_WHATSAPP_NOTIFICATIONS_ENABLED="true"
+
+# ============================================
+# APP CONFIGURATION
+# ============================================
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_API_URL="http://localhost:3000/api/v1"
+
+# ============================================
+# SECURITY
+# ============================================
+NEXTAUTH_SECRET="your-secret-key-here-generate-with-openssl"
+ENCRYPTION_KEY="your-encryption-key-32-characters"
+
+# ============================================
+# RATE LIMITING
+# ============================================
+REDIS_URL="redis://localhost:6379"
+
+# ============================================
+# DEVELOPMENT
+# ============================================
+NODE_ENV="development"
+LOG_LEVEL="debug"
+```
+
+### Generating Secrets
+```bash 
+# Generate NEXTAUTH_SECRET
+openssl rand -base64 32
+
+# Generate ENCRYPTION_KEY (32 characters)
+openssl rand -hex 16
+```
+
+## 🗄 Database Schema
+### Core Models
+- **User** - Base authentication and user management
+- **Professional** - Senior professional profiles
+- **Company** - Company/organization accounts
+- **HrPartner** - HR team members
+- **JobRole** - Open positions
+- **IntroductionRequest** - Core matching workflow
+- **PrivacyFirewallLog** - Dual-role privacy audit trail
+
+### Key Relationships
+```bash 
+User (1:1) → Professional
+User (1:1) → HrPartner
+Company (1:many) → HrPartner
+Company (1:many) → JobRole
+JobRole (1:many) → IntroductionRequest
+Professional (1:many) → IntroductionRequest
+HrPartner (1:1) → Professional (dual-role link)
+```
+
+## Privacy Firewall
+The hideFromCompanyIds array on Professional ensures:
+
+- HR partners' own companies cannot see their professional profiles
+- Automatic filtering in all search queries
+- Logged audit trail for compliance
+
+See [Database Schema Documentation](https://claude.ai/chat/docs/database-schema.md) for full details.
+
+
+# 📚 API Documentation
+## Authentication
+All API routes except public endpoints require authentication via Clerk.
+
+```typescript 
+// Example: Authenticated API call
+const response = await fetch('/api/professionals/me', {
+  headers: {
+    'Authorization': `Bearer ${await getToken()}`,
+  },
+});
+```
+
+## Key Endpoints
+### Professional Endpoints
+```bash 
+GET    /api/v1/professionals/me           # Get current user's professional profile
+PUT    /api/v1/professionals/me           # Update professional profile
+POST   /api/v1/professionals/work-history # Add work experience
+POST   /api/v1/professionals/skills       # Add skills
+GET    /api/v1/professionals/search       # Search professionals (HR only)
+```
+
+### Job Role Endpoints
+```bash 
+GET    /api/v1/job-roles                  # List job roles (HR only)
+POST   /api/v1/job-roles                  # Create job role (HR only)
+GET    /api/v1/job-roles/:id              # Get job role details
+PUT    /api/v1/job-roles/:id              # Update job role (HR only)
+DELETE /api/v1/job-roles/:id              # Delete job role (HR only)
+```
+
+### Introduction Request Endpoints
+```bash 
+POST   /api/introductions/request      # Send introduction request (HR only)
+GET    /api/introductions/sent         # List sent introductions (HR only)
+GET    /api/introductions/received     # List received introductions (Professional only)
+PUT    /api/introductions/:id/accept   # Accept introduction (Professional only)
+PUT    /api/introductions/:id/decline  # Decline introduction (Professional only)
+```
+
+### Dual-Role Endpoints
+```bash 
+POST   /api/dual-role/activate         # Activate dual-role mode (HR only)
+GET    /api/dual-role/status           # Get dual-role status
+POST   /api/dual-role/deactivate       # Deactivate dual-role mode
+POST   /api/dual-role/block-list       # Add company to block list
+DELETE /api/dual-role/block-list       # Remove company from block list
+```
+
+See [API Documentation](https://claude.ai/chat/docs/api/README.md) for complete endpoint reference.
+
+# 🚢 Deployment
+## Vercel (Recommended)
+
+1. **Push to GitHub**
+```bash 
+git push origin main
+```
+
+2. **Import to Vercel**
+- Go to [vercel.com](https://vercel.com/)
+- Click "Import Project"
+- Select your GitHub repository
+- Configure environment variables
+- Deploy
+
+3. **Set up Database**
+- Use Railway for PostgreSQL
+- Copy database URL to Vercel environment variables
+- Run migrations: npx prisma migrate deploy
+
+## Docker
+```bash 
+# Build image
+docker build -t thenexus .
+
+# Run container
+docker run -p 3000:3000 \
+  -e DATABASE_URL="..." \
+  -e NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="..." \
+  thenexus
+```
+
+## Manual Deployment
+```bash 
 # Build for production
 npm run build
 
 # Start production server
-npm start
+npm run start
 ```
 
-## 🔧 Troubleshooting
+# 🧪 Testing
+## Unit Tests
 
-### Common Issues
+```bash 
+# Run all tests
+npm run test
 
-**Database Connection Issues**
-```bash
-# Check database connectivity
-npx prisma db push
+# Run tests in watch mode
+npm run test:watch
 
-# Reset database
-npx prisma migrate reset
+# Run tests with coverage
+npm run test:coverage
 ```
 
-**Authentication Problems**
-- Verify Clerk configuration in environment variables
-- Check middleware.ts for proper route protection
-- Ensure user roles are correctly assigned
-
-**File Upload Issues**
-- Verify AWS S3 credentials and bucket permissions
-- Check file size limits in upload configuration
-- Ensure proper CORS settings for S3 bucket
-
-**Performance Issues**
-- Check Redis connectivity for caching
-- Monitor database query performance
-- Review rate limiting configuration
-
-### Debug Mode
-```bash
-# Enable debug logging
-DEBUG=* npm run dev
-
-# Check system health
-curl http://localhost:3000/api/admin/health
+## Integration Tests
+```bash 
+npm run test:integration
 ```
 
-## 📈 Performance Metrics
+## E2E Tests
+```bash 
+# Run Playwright tests
+npm run test:e2e
 
-### Current Performance Benchmarks
-- **Page Load Time**: < 2 seconds (Nigeria, 4G)
-- **Search Response**: < 500ms for typical queries
-- **API Response Time**: < 200ms average
-- **Database Query Time**: < 100ms average
+# Run Playwright tests in UI mode
+npm run test:e2e:ui
+```
 
-### Monitoring
-- Real-time performance monitoring via Vercel Analytics
-- Database performance tracking with Prisma
-- Redis cache hit rates monitoring
-- Error tracking and alerting
+## Test Coverage Goals
+- Unit Tests: >80% coverage
+- Integration Tests: Critical API routes
+- E2E Tests: Core user flows
+
+## 🤝 Contributing
+We welcome contributions from the community! Please read our [Contributing Guide](https://claude.ai/chat/CONTRIBUTING.md) before submitting a pull request.
+
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch
+```bash 
+git checkout -b feature/amazing-feature
+```
+3. Make your changes
+4. Run tests
+```bash 
+npm run test
+npm run test:e2e
+```
+5. Commit your changes
+```bash 
+git commit -m "feat: add amazing feature"
+```
+6. Push to your fork
+```bash 
+git push origin feature/amazing-feature
+```
+7. **Open a Pull Request**
+
+### Commit Convention
+We use [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation changes
+- `style:` - Code style changes (formatting, etc.)
+- `refactor:` - Code refactoring
+- `test:` - Adding or updating tests
+- `chore:` - Maintenance tasks
+
+## 📋 Roadmap
+### Phase 1: MVP (Current)
+Professional profiles with verification
+- ✅ Company accounts with HR team management
+- ✅ Job role creation and management
+- ✅ Introduction request workflow
+- ✅ Dual-role system with privacy firewall
+- ✅ Basic notifications (email + WhatsApp)
+
+### Phase 2: Enhanced Features (Q2 2025)
+- 🔄 Advanced search with AI matching
+- 🔄 In-app messaging system
+- 🔄 Skill endorsements
+- 🔄 Professional references system
+- 🔄 Saved searches and candidates
+- 🔄 Calendar integration for interviews
+
+### Phase 3: Scale & Optimize (Q3 2025)
+- 🔄 Mobile app (React Native)
+- 🔄 Advanced analytics dashboard
+- 🔄 Video introductions
+- 🔄 Salary benchmarking tool
+- 🔄 API for third-party integrations
+- 🔄 Multi-language support
+
+### Phase 4: Enterprise Features (Q4 2025)
+- 🔄 White-label solution
+- 🔄 Custom workflows
+- 🔄 Advanced reporting
+- 🔄 Bulk operations
+- 🔄 SSO integration
+- 🔄 Dedicated account managers
+
+## 🎨 Brand Guidelines
+### Colors
+- **Primary Green:** `#2E8B57` (Emerald Green)
+- **Primary Light:** `#3ABF7A`
+- **Primary Dark:** `#1F5F3F`
+- **Secondary Navy:** `#0A2540`
+- **Accent Gold:** `#CFAF50`
+
+### Typography
+- **Font Family:** Manrope (via Google Fonts)
+- **Weights:** Regular (400), Medium (500), SemiBold (600), Bold (700)
+
+### Logo
+Download brand assets from [/public/brand/](./public/brand/)
+
+# 📞 Contact
+## Team
+
+- **Founder & CEO**: Oluwaseun Ladeinde
+- **Email**: info@jointhenexus.ng
+- **Phone/WhatsApp**: +234 703 943 1793
+- **Website**: jointhenexus.ng
+- **LinkedIn**: @thenexus
+
+## Support
+- **Email**: support@jointhenexus.ng
+- **Documentation**: docs.jointhenexus.com
+- **Status Page**: status.jointhenexus.com
+
+## Legal
+- **Company**: Everstream Nexus Limited
+- **Location**: Lagos, Nigeria
+- **Privacy Policy**: jointhenexus.ng/privacy
+- **Terms of Service**: jointhenexus.ng/terms
+
+## 🙏 Acknowledgments
+
+- Next.js - The React framework for production
+- Clerk - Authentication and user management
+- Prisma - Next-generation ORM
+- Tailwind CSS - Utility-first CSS framework
+- Vercel - Deployment and hosting
+- Lucide - Beautiful icons
+- Nigerian tech ecosystem for inspiration and support
+
 
 ## 🤝 Contributing
 
@@ -589,4 +650,4 @@ Private project - All rights reserved.
 
 ---
 
-**Built with ❤️ for the professional community**
+**Built with ❤️ for the professional community in Nigeria 🇳🇬**
