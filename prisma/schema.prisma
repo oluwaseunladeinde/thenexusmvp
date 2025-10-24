@@ -35,8 +35,9 @@ model User {
   phoneVerified     Boolean    @default(false)
 
   clerkUserId       String?    @unique @map("clerk_user_id")
+  fullName          String?    @map("fullname")
 
-  hasDualRole       Boolean   @default(false)
+  hasDualRole       Boolean    @default(false)
   dualRoleEnabledAt DateTime?
 
   lastLoginAt       DateTime?
@@ -84,31 +85,31 @@ model Professional {
   profilePhotoUrl String?
 
   yearsOfExperience Int     @db.SmallInt
-  currentTitle      String?
-  currentCompany    String?
-  currentIndustry   String?
+  currentTitle         String?
+  currentCompany       String?
+  currentIndustry      String?
 
-  locationCity      String
-  locationState     String
-  willingToRelocate Boolean @default(false)
+  locationCity         String
+  locationState        String
+  willingToRelocate    Boolean @default(false)
 
   salaryExpectationMin Int?
   salaryExpectationMax Int?
   noticePeriodDays     Int  @default(30)
 
-  openToOpportunities Boolean           @default(true)
-  confidentialSearch  Boolean           @default(true)
-  profileVisibility   ProfileVisibility @default(PRIVATE)
+  openToOpportunities  Boolean           @default(true)
+  confidentialSearch   Boolean           @default(true)
+  profileVisibility    ProfileVisibility @default(PRIVATE)
 
-  verificationStatus VerificationStatus @default(UNVERIFIED)
-  verificationDate   DateTime?
+  verificationStatus   VerificationStatus @default(UNVERIFIED)
+  verificationDate     DateTime?
 
-  linkedinUrl  String?
-  portfolioUrl String?
-  resumeUrl    String?
+  linkedinUrl          String?
+  portfolioUrl         String?
+  resumeUrl            String?
 
-  isAlsoHrPartner    Boolean  @default(false)
-  hideFromCompanyIds String[]
+  isAlsoHrPartner      Boolean  @default(false)
+  hideFromCompanyIds   String[]
 
   onboardingCompleted Boolean @default(false)
   profileCompleteness Int     @default(0) @db.SmallInt

@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     const eventType = evt.type;
 
     if (eventType === 'user.created') {
-        const { id, email_addresses, first_name, last_name } = evt.data;
+        const { id, email_addresses, first_name, last_name, public_metadata, phone_numbers } = evt.data;
         const email = email_addresses[0]?.email_address;
         const name = `${first_name || ''} ${last_name || ''}`.trim();
 
@@ -79,8 +79,13 @@ export async function POST(req: Request) {
             await prisma.user.create({
                 data: {
                     clerkUserId: id,
-                    email: email || '',
-                    name: name || null,
+                    email: email_addresses[0].email_address,
+                    phone: phone_numbers[0]?.phone_number || null,
+                    passwordHash: '', // Clerk manages passwords
+                    userType: (public_metadata?.userType as 'PROFESSIONAL' | 'HR_PARTNER' | 'ADMIN') || 'PROFESSIONAL',
+                    status: 'PENDING',
+                    emailVerified: email_addresses[0].verification?.status === 'verified',
+                    phoneVerified: phone_numbers[0]?.verification?.status === 'verified',
                 },
             });
         } catch (error) {
@@ -90,16 +95,19 @@ export async function POST(req: Request) {
     }
 
     if (eventType === 'user.updated') {
-        const { id, email_addresses, first_name, last_name } = evt.data;
+        const { id, email_addresses, first_name, last_name, phone_numbers, public_metadata } = evt.data;
         const email = email_addresses[0]?.email_address;
         const name = `${first_name || ''} ${last_name || ''}`.trim();
 
         try {
             await prisma.user.update({
-                where: { clerkId: id },
+                where: { clerkUserId: id },
                 data: {
-                    email: email || '',
-                    name: name || null,
+                    email: email_addresses[0].email_address,
+                    phone: phone_numbers[0]?.phone_number || null,
+                    emailVerified: email_addresses[0].verification?.status === 'verified',
+                    phoneVerified: phone_numbers[0]?.verification?.status === 'verified',
+                    status: public_metadata?.onboardingComplete ? 'ACTIVE' : 'PENDING',
                 },
             });
         } catch (error) {
@@ -113,7 +121,7 @@ export async function POST(req: Request) {
 
         try {
             await prisma.user.delete({
-                where: { clerkId: id },
+                where: { clerkUserId: id },
             });
         } catch (error) {
             console.error('Error deleting user:', error);

@@ -12,6 +12,7 @@ Table users {
   emailVerified Boolean [not null, default: false]
   phoneVerified Boolean [not null, default: false]
   clerkUserId String [unique]
+  fullName String
   hasDualRole Boolean [not null, default: false]
   dualRoleEnabledAt DateTime
   lastLoginAt DateTime
@@ -57,6 +58,7 @@ Table professionals {
   profileCompleteness Int [not null, default: 0]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
+  deletedAt DateTime
   lastActiveAt DateTime [default: `now()`, not null]
   user users [not null]
   workHistory professional_work_histories [not null]
@@ -349,6 +351,68 @@ Table system_settings {
   updatedAt DateTime [not null]
 }
 
+Table country {
+  id String [pk]
+  name String [not null]
+  code String [unique, not null]
+  currency String [not null]
+  flagEmoji String
+  states state [not null]
+  isActive Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table state {
+  id String [pk]
+  name String [not null]
+  code String
+  region String
+  sortOrder Int [not null, default: 0]
+  country country [not null]
+  countryId String [not null]
+  cities city [not null]
+  lgas lga [not null]
+  isActive Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (name, countryId) [unique]
+  }
+}
+
+Table city {
+  id String [pk]
+  name String [not null]
+  state state [not null]
+  stateId String [not null]
+  isActive Boolean [not null, default: true]
+  lgas lga [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (name, stateId) [unique]
+  }
+}
+
+Table lga {
+  id String [pk]
+  name String [not null]
+  state state [not null]
+  isActive Boolean [not null, default: false]
+  stateId String [not null]
+  city city
+  cityId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (name, stateId) [unique]
+  }
+}
+
 Enum UserType {
   PROFESSIONAL
   HR_PARTNER
@@ -565,3 +629,11 @@ Ref: privacy_firewall_logs.professionalId > professionals.id
 Ref: notifications.userId > users.id
 
 Ref: user_activity_logs.userId > users.id
+
+Ref: state.countryId > country.id
+
+Ref: city.stateId > state.id
+
+Ref: lga.stateId > state.id
+
+Ref: lga.cityId > city.id
