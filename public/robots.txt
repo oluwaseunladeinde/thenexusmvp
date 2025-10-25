@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Block access to admin areas
+Disallow: /admin/
+Disallow: /api/admin/
+
+# Block access to user-specific pages
+Disallow: /dashboard/
+Disallow: /profile/
+
+# Allow access to sitemap
+Sitemap: https://jointhenexus.ng/sitemap.xml
