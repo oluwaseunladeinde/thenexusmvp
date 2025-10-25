@@ -22,9 +22,7 @@ const StatsSection = () => {
         }
 
         return () => {
-            if (element) {
-                observer.unobserve(element)
-            }
+            observer.disconnect()
         }
     }, [])
 

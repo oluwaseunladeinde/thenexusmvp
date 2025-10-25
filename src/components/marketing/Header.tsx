@@ -120,6 +120,7 @@ const Header = () => {
                             <Link
                                 href="/about"
                                 className="text-left text-[#0A2540] hover:text-[#2E8B57] transition-colors font-medium"
+                                onClick={() => setIsMenuOpen(false)}
                             >
                                 About
                             </Link>
@@ -127,12 +128,14 @@ const Header = () => {
                                 <Link
                                     href="/sign-in"
                                     className="text-[#0A2540] hover:text-[#2E8B57] transition-colors font-medium"
+                                    onClick={() => setIsMenuOpen(false)}
                                 >
                                     Sign In
                                 </Link>
                                 <Link
                                     href="/sign-up"
                                     className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-6 py-2 rounded-lg font-semibold transition-colors text-center"
+                                    onClick={() => setIsMenuOpen(false)}
                                 >
                                     Get Started
                                 </Link>

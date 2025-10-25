@@ -6,6 +6,7 @@
 - [ ] Create src/components/marketing/ directory
 - [ ] Implement Header.tsx (sticky header with nav and mobile menu)
 - [ ] Implement Footer.tsx (links, contact, social)
+- [ ] Install react-countup for stats animations
 - [ ] Implement HeroSection.tsx (headline, dual CTAs, gradient background, floating animations)
 - [ ] Implement HowItWorksSection.tsx
 - [ ] Implement StatsSection.tsx (with counter animations)
@@ -17,6 +18,5 @@
 - [ ] Update src/app/layout.tsx for enhanced SEO metadata, OG tags, and JSON-LD structured data
 - [ ] Create public/sitemap.xml
 - [ ] Create public/robots.txt
-- [ ] Install react-countup for stats animations
 - [ ] Test locally with `npm run dev`, check responsiveness and animations
 - [ ] Run Lighthouse for SEO/performance checks

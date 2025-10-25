@@ -2,13 +2,20 @@
 
 import React, { useState } from 'react'
 
+interface Testimonial {
+    name: string
+    role: string
+    company: string
+    content: string
+    rating: number
+}
+
 const TestimonialsSection = () => {
     const testimonials = [
         {
             name: 'Sarah Chen',
             role: 'Senior Software Engineer',
             company: 'TechCorp',
-            image: '/api/placeholder/64/64',
             content: 'theNexus helped me connect with the right people at my dream company. Within two months of joining, I had meaningful conversations that led to my current role. The platform\'s focus on quality over quantity made all the difference.',
             rating: 5
         },
@@ -16,7 +23,6 @@ const TestimonialsSection = () => {
             name: 'Michael Rodriguez',
             role: 'VP of Engineering',
             company: 'InnovateLabs',
-            image: '/api/placeholder/64/64',
             content: 'As someone hiring top talent, theNexus has been invaluable. The candidates I\'ve connected with through the platform are not just qualified, but also culturally aligned with our company values. Highly recommended.',
             rating: 5
         },
@@ -24,7 +30,6 @@ const TestimonialsSection = () => {
             name: 'Emily Johnson',
             role: 'Product Manager',
             company: 'GlobalTech',
-            image: '/api/placeholder/64/64',
             content: 'The privacy-focused approach of theNexus gave me confidence to explore new opportunities without compromising my current position. The connections I made were genuine and led to exciting career developments.',
             rating: 5
         },
@@ -32,7 +37,6 @@ const TestimonialsSection = () => {
             name: 'David Kim',
             role: 'CTO',
             company: 'StartupXYZ',
-            image: '/api/placeholder/64/64',
             content: 'Finding the right technical leadership is challenging, but theNexus made it effortless. The platform\'s verification process ensures that every connection is legitimate and valuable.',
             rating: 5
         }
