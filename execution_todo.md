@@ -1,110 +1,131 @@
 # Execution Plan
 
-## Epic 1.3: Landing Page & Brand Assets
-**Sprint Goal:** Create public-facing landing page
-Landing page to be built in src/app/(marketing)/page.tsx
+## Epic 2.1: Professional Onboarding
+**Sprint Goal:** CSprint Goal: Build complete professional onboarding flow
+This feature focuses on building a complete professional onboarding flow to enhance user experience. The goal is to design and develop a seamless process that ensures new users can efficiently integrate and navigate the platform. Key areas include interface design, functionality development, and user guidance.
 
-### Implementation Path
-1. **Create Reusable Components**: Build header, footer, and section components in src/components/marketing/ for modularity and reusability.
-2. **Build Landing Page Sections**: Implement hero, how it works, stats, benefits, testimonials, and CTA sections in src/app/(marketing)/page.tsx.
-3. **Integrate with Layout**: Update src/app/layout.tsx for SEO metadata and ensure components integrate seamlessly.
-4. **Add Animations and SEO**: Incorporate scroll reveals, counter animations, and create sitemap.xml/robots.txt in public/.
-5. **Testing and Optimization**: Test responsiveness, run performance checks, and add unit tests.
-
-### 1. Design Landing Page (Figma)
+### 1. Design Professional Onboarding Flow (Figma)
 #### Description:
-- [ ] Design hero section with headline and dual CTAs
-- [ ] Design "How It Works" section for professionals and companies
-- [ ] Design benefits grid and stats section
-- [ ] Design testimonials carousel and final CTA
-- [ ] Ensure mobile responsive designs
+- Design a 3-step onboarding wizard
+- Step 1: Basic info
+- Step 2: Career expectations
+- Step 3: Skills & profile links
+- Design progress indicator
+- Mobile responsive designs
 #### Acceptance Criteria:
-- Figma file completed with desktop, tablet, mobile views
-- Brand colors applied (#2E8B57, #3ABF7A, #1F5F3F, #0A2540, #CFAF50)
-- Design approved by stakeholders
+- All 3 steps designed
+- Progress bar included
+- Form validation states designed
+- Success confirmation designed
 #### Files to Create/Update:
 - Design assets (external Figma file)
 
-### 2. Implement Landing Page Hero
+### 2. Create Onboarding Layout Component
 #### Description:
-- [ ] Create HeroSection component in src/components/marketing/HeroSection.tsx
-- [ ] Build hero with headline, dual CTA buttons (Professional / Hiring linking to /sign-up)
-- [ ] Implement gradient background using Tailwind
-- [ ] Add floating profile cards animation (CSS/Framer Motion)
-- [ ] Integrate HeroSection into src/app/(marketing)/page.tsx
+- Create multi-step form layout
+- Implement progress bar
+- Add step navigation (back/next)
+- Handle form state management (zustand | useState | useReducer)
 #### Acceptance Criteria:
-- Matches Figma design
-- Responsive on mobile (Tailwind breakpoints)
-- CTAs link to sign-up flow
-#### Files to Create/Update:
-- src/components/marketing/HeroSection.tsx (new)
-- src/app/(marketing)/page.tsx (update)
+- Can navigate between steps
+- Form data persists across steps
+- Progress indicator updates correctly
 
-### 3. Implement Landing Page Content Sections
+### 3. Build Onboarding Step 1: Basic Info
 #### Description:
-- [ ] Create HowItWorksSection in src/components/marketing/HowItWorksSection.tsx
-- [ ] Create StatsSection in src/components/marketing/StatsSection.tsx with counter animations
-- [ ] Create BenefitsSection in src/components/marketing/BenefitsSection.tsx
-- [ ] Create TestimonialsSection in src/components/marketing/TestimonialsSection.tsx (static carousel)
-- [ ] Create CTASection in src/components/marketing/CTASection.tsx
-- [ ] Integrate all sections into src/app/(marketing)/page.tsx
+- Build form fields: 
+    - First name, last name
+    - Profile headline
+    - Location (city, state dropdowns) Note: Selected state determines sity selection, reference the state and city tables.
+    - Years of experience
+    - Current title, company, industry
+- Add form validation (Zod)
+- Handle form submission
 #### Acceptance Criteria:
-- All sections responsive and match brand voice
-- Animations smooth (60fps) using Intersection Observer
-- Mobile responsive
-#### Files to Create/Update:
-- src/components/marketing/HowItWorksSection.tsx (new)
-- src/components/marketing/StatsSection.tsx (new)
-- src/components/marketing/BenefitsSection.tsx (new)
-- src/components/marketing/TestimonialsSection.tsx (new)
-- src/components/marketing/CTASection.tsx (new)
-- src/app/(marketing)/page.tsx (update)
+- All fields validate correctly
+- Nigerian states in the dropdown
+- Can proceed to step 2
 
-### 4. Create Header & Footer Components
+### 4. Build Onboarding Step 2: Career Expectations
 #### Description:
-- [ ] Create Header component in src/components/marketing/Header.tsx (sticky, logo, nav, mobile menu)
-- [ ] Create Footer component in src/components/marketing/Footer.tsx (links, contact, social)
-- [ ] Implement smooth scroll for anchor links
-- [ ] Integrate Header and Footer into src/app/(marketing)/page.tsx
+- Build form fields: 
+    - Salary expectations (min/max)
+    - Notice period dropdown
+    - Willing to relocate checkbox
+    - Open to opportunities checkbox
+- Add validation
+- Add privacy notice banner
 #### Acceptance Criteria:
-- Header sticky on scroll, mobile menu functional
-- Footer links accurate (to /about, /contact, etc.)
-#### Files to Create/Update:
-- src/components/marketing/Header.tsx (new)
-- src/components/marketing/Footer.tsx (new)
-- src/app/(marketing)/page.tsx (update)
+- Salary inputs formatted as currency (Naira)
+- Privacy guarantee visible
+- Can proceed to step 3
 
-### 5. Add Landing Page Animations
+### 5. Build Onboarding Step 3: Skills & Links
 #### Description:
-- [ ] Add scroll reveal animations to sections in src/app/(marketing)/page.tsx
-- [ ] Implement counter animations for stats (using react-countup)
-- [ ] Add hover effects on cards and buttons
-- [ ] Optimize for performance (lazy load, 60fps)
+- Build skill input with add/remove
+- LinkedIn URL input
+- Portfolio URL input
+- Resume upload component
+- Add validation
+- Implement final submission
 #### Acceptance Criteria:
-- Animations enhance UX without distraction
-- Intersection Observer used for reveals
-- 60fps maintained on mobile
-#### Files to Create/Update:
-- src/app/(marketing)/page.tsx (update)
-- Install react-countup if needed (npm install react-countup)
+- Can add up to 10 skills.
+- URLs validate correctly
+- Resume uploads to storage
+- Shows completion confirmation
 
-### 6. Implement SEO & Metadata
+### 6. Create Professional Profile API Endpoint
 #### Description:
-- [ ] Update metadata in src/app/layout.tsx (title, description, OG tags)
-- [ ] Create public/sitemap.xml
-- [ ] Create public/robots.txt
-- [ ] Add structured data (JSON-LD) in layout.tsx
+- Create POST /api/professionals/create
+- Validate input with Zod
+- Create professional record in database
+- Link to Clerk user
+- Update Clerk metadata (onboardingComplete: true)
+- Handle errors gracefully
 #### Acceptance Criteria:
-- Meta tags present, Google rich snippets show correctly
-- Lighthouse SEO score >90
-#### Files to Create/Update:
-- src/app/layout.tsx (update)
-- public/sitemap.xml (new)
-- public/robots.txt (new)
+- Returns 201 on success
+- Validates all required fields
+- Creates professional and related records
+- Returns helpful error messages
+
+### 7. Implement Resume Upload to Cloud Storage
+#### Description:
+- Set up AWS S3 or Cloudflare R2
+- Create upload API endpoint
+- Implement file validation (PDF only, <5MB)
+- Generate secure URLs
+- Handle upload errors
+#### Acceptance Criteria:
+- PDF files upload successfully
+- File size validated
+- Returns secure URL
+- Handles errors gracefully
+
+### 8. Connect Onboarding to API
+#### Description:
+- Integrate form submission with API
+- Handle loading states
+- Handle success/error states
+- Redirect to professional dashboard on success
+#### Acceptance Criteria:
+- Shows loading spinner during submission
+- Displays success message
+- Shows error messages
+- Redirects to /professional/dashboard
+
+### 9. Add Onboarding Progress Persistence
+#### Description:
+- Save form data to localStorage
+- Restore data on page refresh
+- Clear data on successful completion 
+#### Acceptance Criteria
+- Form data persists across refreshes
+- Can resume from any step
+- Data cleared on success
 
 ### Additional Notes
 - Use Tailwind CSS for styling, ShadcnUI for any UI components.
 - Ensure all components are TypeScript (.tsx).
 - Test locally with npm run dev, check responsiveness in browser dev tools.
-- After implementation, run performance tests as per README.
+- After implementation, run performance tests as per README and update README with features additions as necessary.
 

@@ -50,7 +50,6 @@ export async function POST(req: Request) {
 
     // Create a new Webhook instance with your secret
     const wh = new Webhook(WEBHOOK_SECRET);
-
     let evt: WebhookEvent;
 
     // Verify the webhook
@@ -67,78 +66,95 @@ export async function POST(req: Request) {
         });
     }
 
-    // Handle the webhook
+    // Handle the webhook events
     const eventType = evt.type;
 
+    // ============================================
+    // USER CREATED - Sync to Prisma
+    // ============================================
     if (eventType === 'user.created') {
-        const { id, email_addresses, first_name, last_name, public_metadata, phone_numbers } = evt.data;
-        const email = email_addresses[0]?.email_address;
-        if (!email) {
-            console.error('User created without email address:', id);
-            return new Response('User must have an email address', { status: 400 });
-        }
-        const phone = phone_numbers[0]?.phone_number || null;
-        const name = `${first_name || ''} ${last_name || ''}`.trim();
 
         const validUserTypes = ['PROFESSIONAL', 'HR_PARTNER', 'ADMIN'] as const;
-        const userType = validUserTypes.includes(public_metadata?.userType as any)
-            ? (public_metadata.userType as 'PROFESSIONAL' | 'HR_PARTNER' | 'ADMIN')
-            : 'PROFESSIONAL'; // or throw an error if userType is required
+        const { id, email_addresses, phone_numbers, unsafe_metadata, public_metadata } = evt.data;
 
         try {
+            const userType = validUserTypes.includes(unsafe_metadata?.userType as any)
+                ? (public_metadata.userType as 'PROFESSIONAL' | 'HR_PARTNER' | 'ADMIN')
+                : 'PROFESSIONAL'; // or throw an error if userType is required
+
+            const email = email_addresses[0]?.email_address;
+            if (!email) {
+                console.error('User created without email address:', id);
+                return new Response('User must have an email address', { status: 400 });
+            }
+
             await prisma.user.create({
                 data: {
+                    id, // Use Clerk user ID as primary key
                     email,
-                    clerkUserId: id,
-                    fullName: name,
-                    emailVerified: email_addresses[0]?.verification?.status === 'verified',
-                    phoneVerified: phone_numbers?.[0]?.verification?.status === 'verified',
-                    phone,
+                    phone: phone_numbers[0]?.phone_number || null,
                     passwordHash: '', // Clerk manages passwords
-                    userType,
+                    userType: userType.toUpperCase() as any,
                     status: 'PENDING',
+                    emailVerified: email_addresses[0].verification?.status === 'verified',
+                    phoneVerified: phone_numbers[0]?.verification?.status === 'verified',
                 },
             });
+            console.log(`✅ User synced to Prisma: ${id}`);
+
         } catch (error) {
             console.error('Error creating user:', error);
             return new Response('Error creating user', { status: 500 });
         }
     }
 
+    // ============================================
+    // USER UPDATED - Update Prisma
+    // ============================================
     if (eventType === 'user.updated') {
-        const { id, email_addresses, first_name, last_name, phone_numbers, public_metadata } = evt.data;
+
+        const { id, email_addresses, first_name, last_name, phone_numbers, unsafe_metadata } = evt.data;
         const email = email_addresses[0]?.email_address;
         if (!email) {
             console.error('User update without email address:', id);
             return new Response('User must have an email address', { status: 400 });
         }
-        const phone = phone_numbers[0]?.phone_number || null;
-        const name = `${first_name || ''} ${last_name || ''}`.trim();
 
         try {
+
+            const onboardingComplete = unsafe_metadata?.onboardingComplete as boolean;
+
             await prisma.user.update({
                 where: { clerkUserId: id },
                 data: {
                     email,
-                    fullName: name,
-                    phone,
-                    emailVerified: email_addresses[0]?.verification?.status === 'verified',
+                    phone: phone_numbers[0]?.phone_number || null,
+                    emailVerified: email_addresses[0].verification?.status === 'verified',
                     phoneVerified: phone_numbers[0]?.verification?.status === 'verified',
-                    status: public_metadata?.onboardingComplete ? 'ACTIVE' : 'PENDING',
+                    status: onboardingComplete ? 'ACTIVE' : 'PENDING',
                 },
             });
+
+            console.log(`✅ User updated in Prisma: ${id}`);
         } catch (error) {
             console.error('Error updating user:', error);
             return new Response('Error updating user', { status: 500 });
         }
     }
 
+    // ============================================
+    // USER DELETED - Soft Delete in Prisma
+    // ============================================
     if (eventType === 'user.deleted') {
         const { id } = evt.data;
 
         try {
-            await prisma.user.delete({
+            await prisma.user.update({
                 where: { clerkUserId: id },
+                data: {
+                    status: 'DELETED',
+                    deletedAt: new Date(),
+                },
             });
         } catch (error) {
             console.error('Error deleting user:', error);

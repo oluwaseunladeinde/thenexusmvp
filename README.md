@@ -33,6 +33,7 @@ theNexus is Nigeria's premier network connecting verified senior professionals w
 - 🔒 Complete Confidentiality - Your job search remains private
 - 💬 Direct Access - Speak with hiring managers, not recruiters
 - 📊 Market Intelligence - Salary insights and industry trends
+- 📈 Profile Completeness Tracker - Get detailed insights on profile completion with weighted categories and personalized recommendations
 - 👥 Dual-Role Mode - HR professionals can also job search confidentially
 
 ## For Companies & HR Leaders
@@ -182,7 +183,7 @@ This will create:
 - Professional profiles with work experience and education
 - Realistic user data for testing
 
-## 📁 Project Structure
+## 📁 Run Dev Server
 
 ```bash
 
@@ -196,54 +197,56 @@ Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Project Structure
 ```
-thenexus/
-├── app/                          # Next.js App Router
-│   ├── (auth)/                   # Authentication routes
-│   │   ├── sign-in/
-│   │   └── sign-up/
-│   ├── (marketing)/              # Marketing pages
-│   │   ├── page.tsx              # Landing page
-│   │   ├── about/
-│   │   └── contact/
-│   ├── dashboard/                # HR Partner dashboard
-│   │   ├── page.tsx
-│   │   ├── search/
-│   │   ├── roles/
-│   │   └── introductions/
-│   ├── professional/             # Professional dashboard
-│   │   ├── dashboard/
-│   │   ├── profile/
-│   │   └── introductions/
-│   ├── settings/                 # User settings
-│   │   └── dual-role/
-│   ├── api/                      # API routes
+thenexusmvp/
+├── src/
+│   ├── app/                          # Next.js App Router
+│   │   ├── (auth)/                   # Authentication routes
+│   │   │   ├── sign-in/
+│   │   │   └── sign-up/
+│   │   ├── (marketing)/              # Marketing pages
+│   │   │   ├── page.tsx              # Landing page
+│   │   │   ├── about/
+│   │   │   └── contact/
+│   │   ├── dashboard/                # HR Partner dashboard
+│   │   │   ├── page.tsx
+│   │   │   ├── search/
+│   │   │   ├── roles/
+│   │   │   └── introductions/
+│   │   ├── professional/             # Professional dashboard
+│   │   │   ├── dashboard/
+│   │   │   ├── profile/
+│   │   │   └── introductions/
+│   │   ├── settings/                 # User settings
+│   │   │   └── dual-role/
+│   │   ├── api/                      # API routes
+│   │   │   └── v1/                   # Version 1 API endpoints
+│   │   │       ├── auth/
+│   │   │       ├── professionals/
+│   │   │       ├── companies/
+│   │   │       ├── job-roles/
+│   │   │       ├── introductions/
+│   │   │       ├── dual-role/
+│   │   │       └── webhooks/
+│   │   ├── layout.tsx                # Root layout
+│   │   └── globals.css               # Global styles
+│   ├── components/                   # React components
 │   │   ├── auth/
-│   │   ├── professionals/
-│   │   ├── companies/
-│   │   ├── job-roles/
-│   │   ├── introductions/
-│   │   ├── dual-role/
-│   │   └── webhooks/
-│   ├── layout.tsx                # Root layout
-│   └── globals.css               # Global styles
-├── components/                   # React components
-│   ├── auth/
-│   ├── dashboard/
-│   ├── onboarding/
-│   ├── professional/
-│   ├── settings/
-│   ├── ui/                       # Reusable UI components
-│   └── RoleSwitcher.tsx
-├── lib/                          # Utility libraries
-│   ├── prisma.ts                 # Prisma client
-│   ├── clerk.ts                  # Clerk configuration
-│   ├── services/                 # Business logic
-│   │   ├── privacyFirewall.ts
-│   │   ├── dualRole.ts
-│   │   ├── matching.ts
-│   │   └── notifications.ts
-│   ├── utils/
-│   └── constants/
+│   │   ├── dashboard/
+│   │   ├── onboarding/
+│   │   ├── professional/
+│   │   ├── settings/
+│   │   ├── ui/                       # Reusable UI components
+│   │   └── RoleSwitcher.tsx
+│   ├── lib/                          # Utility libraries
+│   │   ├── prisma.ts                 # Prisma client
+│   │   ├── clerk.ts                  # Clerk configuration
+│   │   ├── services/                 # Business logic
+│   │   │   ├── privacyFirewall.ts
+│   │   │   ├── dualRole.ts
+│   │   │   ├── matching.ts
+│   │   │   └── notifications.ts
+│   │   ├── utils/
+│   │   └── constants/
 ├── prisma/                       # Database
 │   ├── schema.prisma             # Prisma schema
 │   ├── migrations/               # Database migrations
@@ -407,12 +410,13 @@ All API routes except public endpoints require authentication via Clerk.
 
 ## Key Endpoints
 ### Professional Endpoints
-```bash 
-GET    /api/v1/professionals/me           # Get current user's professional profile
-PUT    /api/v1/professionals/me           # Update professional profile
+```bash
+GET    /api/v1/professionals/me           # Get current user's professional profile (includes profile completeness)
+PUT    /api/v1/professionals/me           # Update professional profile (auto-calculates completeness)
 POST   /api/v1/professionals/work-history # Add work experience
 POST   /api/v1/professionals/skills       # Add skills
 GET    /api/v1/professionals/search       # Search professionals (HR only)
+POST   /api/v1/professionals/upload       # Upload profile photo or resume (updates completeness)
 ```
 
 ### Job Role Endpoints
