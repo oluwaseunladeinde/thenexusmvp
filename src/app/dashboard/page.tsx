@@ -1,12 +1,32 @@
 // app/dashboard/page.tsx
-import { currentUser } from '@clerk/nextjs/server'
+import RoleSwitcher from '@/components/platform/RoleSwitcher';
+import { auth, currentUser } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 
 export default async function Dashboard() {
-    const user = await currentUser()
+    const { userId, sessionClaims } = await auth();
+
+    if (!userId) {
+        redirect('/sign-in');
+    }
+
+    // Type-safe access to metadata
+    const userType = sessionClaims?.metadata?.userType;
+    const hasDualRole = sessionClaims?.metadata?.hasDualRole ?? false;
+
+    // Get full user object for more metadata
+    const user = await currentUser();
+    const onboardingComplete = user?.publicMetadata?.onboardingComplete as boolean;
+
+    if (!onboardingComplete) {
+        redirect('/onboarding');
+    }
 
     return (
         <div className="p-6">
             <h1 className="text-2xl">Welcome, {user?.firstName || 'User'} 👋</h1>
+            <p>User Type: {userType}</p>
+            {hasDualRole && <RoleSwitcher />}
         </div>
     )
 }

@@ -2,6 +2,7 @@
 
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { clerkClient } from '@clerk/nextjs/server';
 
 const isPublicRoute = createRouteMatcher([
     '/',
@@ -41,7 +42,59 @@ export default clerkMiddleware(async (auth, req) => {
         return NextResponse.next();
     }
 
-    // Allow all authenticated users to access any route
+    const { userId, sessionClaims } = await auth();
+
+    // Not authenticated - allow (handled by publicRoutes)
+    if (!userId) return;
+
+    // Type-safe access to metadata
+    const metadata = sessionClaims?.metadata;
+    let onboardingComplete = metadata?.onboardingComplete ?? false;
+    let userType = metadata?.userType;
+
+    if (userType === undefined || onboardingComplete === undefined) {
+        // Fetch user from Clerk to access publicMetadata
+        const clerk = await clerkClient();
+        const user = await clerk.users.getUser(userId);
+
+        onboardingComplete = user.unsafeMetadata?.onboardingComplete as boolean;
+        userType = user.unsafeMetadata?.userType as 'professional' | 'hr_partner' | 'admin' | undefined;
+    }
+
+    // Redirect to onboarding if incomplete
+    // if (!onboardingComplete && req.nextUrl.pathname !== '/onboarding') {
+    //     const onboardingUrl = new URL('/onboarding', req.url);
+    //     return NextResponse.redirect(onboardingUrl);
+    // }
+
+    // Role-based route protection
+    const pathname = req.nextUrl.pathname;
+
+    // HR/Dashboard routes - require HR partner or admin
+    if (pathname.startsWith('/hr') || pathname.startsWith('/dashboard')) {
+        if (userType !== 'hr_partner' && userType !== 'admin') {
+            const unauthorizedUrl = new URL('/unauthorized', req.url);
+            return NextResponse.redirect(unauthorizedUrl);
+        }
+    }
+
+    // Professional routes - require professional or admin
+    if (pathname.startsWith('/professional')) {
+        if (userType !== 'professional' && userType !== 'admin') {
+            const unauthorizedUrl = new URL('/unauthorized', req.url);
+            return NextResponse.redirect(unauthorizedUrl);
+        }
+    }
+
+    // Admin routes - require admin only
+    if (pathname.startsWith('/admin')) {
+        if (userType !== 'admin') {
+            const unauthorizedUrl = new URL('/unauthorized', req.url);
+            return NextResponse.redirect(unauthorizedUrl);
+        }
+    }
+
+    // Allow the request to proceed
     return NextResponse.next();
 })
 
