@@ -16,7 +16,7 @@ export const professionalOnboardingSchema = z.object({
     salaryExpectationMin: z.number().min(0, 'Salary must be positive').optional(),
     salaryExpectationMax: z.number().min(0, 'Salary must be positive').optional(),
     noticePeriod: z.enum(['immediate', '1_week', '2_weeks', '1_month', '2_months', '3_months', '6_months'], {
-        required_error: 'Notice period is required',
+        message: 'Notice period is required',
     }),
     willingToRelocate: z.boolean().default(false),
     openToOpportunities: z.boolean().default(true),

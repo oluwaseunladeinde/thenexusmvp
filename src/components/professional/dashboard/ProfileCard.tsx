@@ -1,4 +1,35 @@
-import { MapPin, Building, Eye, TrendingUp, CheckCircle } from 'lucide-react';
+import { MapPin, Building, Eye, TrendingUp, CheckCircle, User } from 'lucide-react';
+
+// Profile Avatar Component
+const ProfileAvatar = ({ src, size = 'md', className = '' }: { src?: string; size?: 'sm' | 'md' | 'lg'; className?: string }) => {
+    const sizeClasses = {
+        sm: 'w-8 h-8',
+        md: 'w-10 h-10',
+        lg: 'w-20 h-20'
+    };
+
+    const iconSizes = {
+        sm: 'w-3 h-3',
+        md: 'w-4 h-4',
+        lg: 'w-8 h-8'
+    };
+
+    if (src) {
+        return (
+            <img
+                src={src}
+                alt="Profile"
+                className={`${sizeClasses[size]} rounded-full object-cover ${className}`}
+            />
+        );
+    }
+
+    return (
+        <div className={`${sizeClasses[size]} rounded-full bg-gray-200 flex items-center justify-center ${className}`}>
+            <User className={`${iconSizes[size]} text-gray-400`} />
+        </div>
+    );
+};
 
 interface ProfileCardProps {
     profileData?: {
@@ -9,6 +40,7 @@ interface ProfileCardProps {
         verificationStatus?: string;
         cityName?: string;
         stateName?: string;
+        profilePhotoUrl?: string;
     };
     stats: {
         profileViews: number;
@@ -21,10 +53,12 @@ export default function ProfileCard({ profileData, stats, premiumText }: Profile
     return (
         <div className="bg-white rounded-lg shadow border border-gray-200">
             <div className="p-6 text-center">
-                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-primary">
-                        {profileData?.firstName?.[0]}{profileData?.lastName?.[0]}
-                    </span>
+                <div className="flex justify-center mb-4">
+                    <ProfileAvatar
+                        src={profileData?.profilePhotoUrl}
+                        size="lg"
+                        className="border-2 border-gray-100"
+                    />
                 </div>
                 <div className="flex items-center justify-center gap-2 mb-2">
                     <h3 className="font-semibold text-[#0D1B2A]">

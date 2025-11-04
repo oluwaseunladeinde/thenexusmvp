@@ -185,7 +185,7 @@ const declineSchema = z.object({
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = await currentUser();
@@ -197,6 +197,8 @@ export async function POST(
         if (!userType || userType !== 'professional') {
             return NextResponse.json({ error: 'Forbidden: Professional access required' }, { status: 403 });
         }
+
+        const { id } = await params;
 
         const body = await request.json();
         const { message } = declineSchema.parse(body);
@@ -214,7 +216,7 @@ export async function POST(
         // Find and validate introduction request
         const introductionRequest = await prisma.introductionRequest.findFirst({
             where: {
-                id: params.id,
+                id: id,
                 sentToProfessionalId: professional.id,
                 status: 'PENDING'
             },
@@ -239,7 +241,7 @@ export async function POST(
 
         // Update introduction request status
         const updatedIntroduction = await prisma.introductionRequest.update({
-            where: { id: params.id },
+            where: { id: id },
             data: {
                 status: 'DECLINED',
                 professionalResponse: message || null,
@@ -277,8 +279,8 @@ export async function POST(
                 title: 'Introduction Request Declined',
                 message: `${professional.firstName} ${professional.lastName} has declined your introduction request for ${introductionRequest.jobRole.roleTitle}`,
                 relatedEntityType: 'introduction_request',
-                relatedEntityId: params.id,
-                actionUrl: `/dashboard/introductions/${params.id}`,
+                relatedEntityId: id,
+                actionUrl: `/dashboard/introductions/${id}`,
                 channel: 'IN_APP',
             }
         });

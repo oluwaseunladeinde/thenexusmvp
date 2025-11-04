@@ -53,7 +53,7 @@ export default clerkMiddleware(async (auth, req) => {
     // Type-safe access to metadata
     const metadata = sessionClaims?.metadata;
     let onboardingComplete = metadata?.onboardingComplete ?? false;
-    let userType = metadata?.userType;
+    let userType: 'professional' | 'hr_partner' | 'admin' | undefined = metadata?.userType;
 
     if (userType === undefined || onboardingComplete === undefined) {
         // Fetch user from Clerk to access publicMetadata

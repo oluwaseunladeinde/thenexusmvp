@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from '@clerk/nextjs';
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import { UserProfileProvider } from '@/contexts/UserProfileContext';
 // import { Toaster } from "@/components/ui/sonner";
 
 const manRope = Manrope({
@@ -58,7 +59,9 @@ export default function RootLayout({
         <body
           className={`${manRope.variable} antialiased`}
         >
-          {children}
+          <UserProfileProvider>
+            {children}
+          </UserProfileProvider>
           {/* <Toaster position="top-right" richColors /> */}
         </body>
       </html>

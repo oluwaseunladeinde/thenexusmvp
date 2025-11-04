@@ -15,6 +15,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import CustomUserButton from '@/components/platform/CustomUserButton';
 
 interface DashboardNavBarProps {
     userType: string;
@@ -99,7 +100,7 @@ const DashboardNavBar = ({ userType }: DashboardNavBarProps) => {
                         <input
                             type="text"
                             placeholder="Search professionals, companies..."
-                            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         />
                     </div>
                 </div>
@@ -144,7 +145,7 @@ const DashboardNavBar = ({ userType }: DashboardNavBarProps) => {
 
             {/* User Button at bottom */}
             <div className="border-t pt-4 px-4">
-                <UserButton />
+                <CustomUserButton />
             </div>
         </div>
     );
@@ -177,7 +178,7 @@ const DashboardNavBar = ({ userType }: DashboardNavBarProps) => {
                             <input
                                 type="text"
                                 placeholder="Search professionals, companies..."
-                                className="pl-10 pr-4 py-2 w-80 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="pl-10 pr-4 py-2 w-80 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                             />
                         </div>
 
@@ -243,12 +244,7 @@ const DashboardNavBar = ({ userType }: DashboardNavBarProps) => {
                         <button className="p-2 text-gray-600 hover:text-primary">
                             <Settings className="w-5 h-5" />
                         </button>
-                        <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-                            <div className="w-10 h-10 bg-linear-to-br from-primary to-[#3ABF7A] rounded-full flex items-center justify-center text-white font-bold">
-                                OL
-                            </div>
-                            <ChevronDown className="w-4 h-4 text-gray-600" />
-                        </div>
+                        <CustomUserButton />
                     </div>
 
                     {/* <UserButton /> */}
