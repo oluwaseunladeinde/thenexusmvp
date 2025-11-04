@@ -6,7 +6,9 @@ import { useState } from 'react';
 
 export default function SignUpPage() {
     const searchParams = useSearchParams();
-    const initialUserType = searchParams.get('type') as 'professional' | 'hr_partner' | null;
+    const typeParam = searchParams.get('type');
+    const initialUserType = (typeParam === 'professional' || typeParam === 'hr_partner') ? typeParam : null;
+
     const [selectedUserType, setSelectedUserType] = useState<'professional' | 'hr_partner'>(
         initialUserType || 'professional'
     );

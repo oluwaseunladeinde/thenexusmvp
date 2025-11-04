@@ -5,13 +5,16 @@ import {
     Briefcase, LayoutDashboard,
     MessageSquare, Sparkles, User,
     Users, Search,
-    ChevronDown, Menu
+    ChevronDown, Menu,
+    Bell,
+    Settings
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface DashboardNavBarProps {
     userType: string;
@@ -24,20 +27,22 @@ const professionalNavItems = [
         icon: LayoutDashboard
     },
     {
-        href: '/professional/dashboard/introductions',
+        href: '/professional/introductions',
         label: 'Introductions',
         icon: Sparkles
     },
     {
-        href: '/professional/dashboard/profile',
-        label: 'Profile',
-        icon: User
+        href: '/professional/conversations',
+        label: 'Opportunities',
+        icon: Sparkles
     },
-    {
-        href: '/professional/dashboard/messages',
-        label: 'Messages',
-        icon: MessageSquare
-    }
+];
+
+const professionalMoreItems = [
+    { href: '/professional/dashboard/messages', label: 'Messages', icon: MessageSquare },
+    { href: '/professional/dashboard/skills', label: 'Skills', icon: Sparkles },
+    { href: '/professional/dashboard/experience', label: 'Experience', icon: Briefcase },
+    { href: '/professional/dashboard/references', label: 'References', icon: Users }
 ];
 
 const hrPartnersNavItems = [
@@ -58,18 +63,8 @@ const hrPartnersNavItems = [
     }
 ];
 
-const professionalMoreItems = [
-    { href: '/dashboard/professional/skills', label: 'Skills', icon: Sparkles },
-    { href: '/dashboard/professional/experience', label: 'Experience', icon: Briefcase },
-    { href: '/dashboard/professional/references', label: 'References', icon: Users }
-];
-
 const hrPartnerMoreItems = [
-    {
-        href: '/dashboard/hr-partner/jobs',
-        label: 'Jobs',
-        icon: Briefcase
-    },
+    { href: '/dashboard/hr-partner/jobs', label: 'Jobs', icon: Briefcase },
     { href: '/dashboard/hr-partner/pipeline', label: 'Pipeline', icon: Users },
     { href: '/dashboard/hr-partner/team', label: 'Team', icon: Users },
     { href: '/dashboard/hr-partner/analytics', label: 'Analytics', icon: LayoutDashboard }
@@ -112,9 +107,9 @@ const DashboardNavBar = ({ userType }: DashboardNavBarProps) => {
                 {/* Navigation Items */}
                 <div className="space-y-2 px-4">
                     {navItems.map((item) => {
-                        const isActive = pathname === item.href || (item.href !== '/dashboard/professional' && item.href !== '/dashboard/hr-partner' && pathname.startsWith(item.href));
+                        const isActive = pathname === item.href || (item.href !== '/professional/dashboard' && item.href !== '/dashboard/hr-partner' && pathname.startsWith(item.href + '/'));
                         return (
-                            <a
+                            <Link
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center px-3 py-3 rounded-md text-gray-700 hover:bg-gray-100 ${isActive ? 'bg-green-50 text-green-700' : ''}`}
@@ -122,12 +117,12 @@ const DashboardNavBar = ({ userType }: DashboardNavBarProps) => {
                             >
                                 <item.icon className="w-5 h-5 mr-3" />
                                 <span className="text-sm font-semibold">{item.label}</span>
-                            </a>
+                            </Link>
                         );
                     })}
 
                     {/* More Items */}
-                    <div className="pt-4 border-t">
+                    <div className="pt-4 border-t z-50">
                         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">More</h3>
                         {moreItems.map((item) => {
                             const isActive = pathname === item.href || pathname.startsWith(item.href);
@@ -207,7 +202,10 @@ const DashboardNavBar = ({ userType }: DashboardNavBarProps) => {
                             {/* More Dropdown */}
                             <div className="relative">
                                 <button
-                                    onClick={() => setShowMoreDropdown(!showMoreDropdown)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowMoreDropdown(!showMoreDropdown);
+                                    }}
                                     className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
                                 >
                                     {/* <MoreHorizontal className="w-5 h-5 mr-2" /> */}
@@ -237,7 +235,23 @@ const DashboardNavBar = ({ userType }: DashboardNavBarProps) => {
                             </div>
                         </div>
                     </div>
-                    <UserButton />
+                    <div className="flex items-center gap-4">
+                        <button className="p-2 text-gray-600 hover:text-primary relative">
+                            <Bell className="w-5 h-5" />
+                            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <button className="p-2 text-gray-600 hover:text-primary">
+                            <Settings className="w-5 h-5" />
+                        </button>
+                        <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
+                            <div className="w-10 h-10 bg-linear-to-br from-primary to-[#3ABF7A] rounded-full flex items-center justify-center text-white font-bold">
+                                OL
+                            </div>
+                            <ChevronDown className="w-4 h-4 text-gray-600" />
+                        </div>
+                    </div>
+
+                    {/* <UserButton /> */}
                 </div>
             </div>
         </nav>

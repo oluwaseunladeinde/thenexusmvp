@@ -292,7 +292,7 @@ async function main() {
             },
         })
 
-        console.log("Creating ciities for " + nstate.name + "...")
+        console.log("Creating cities for " + nstate.name + "...")
         for (const cityName of nstate.cities) {
             await prisma.city.upsert({
                 where: {

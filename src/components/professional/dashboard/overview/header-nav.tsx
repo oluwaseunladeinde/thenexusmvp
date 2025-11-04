@@ -7,7 +7,7 @@ import { useState } from "react";
 const HeaderNav = () => {
 
     const [activeTab, setActiveTab] = useState('overview');
-    const [selectedRequest, setSelectedRequest] = useState(null);
+
 
     // Mock data
     const professionalData = {
@@ -71,19 +71,25 @@ const HeaderNav = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="p-2 text-gray-600 hover:text-primary relative">
+                        <button
+                            className="p-2 text-gray-600 hover:text-primary relative"
+                            aria-label="Notifications"
+                        >
                             <Bell className="w-5 h-5" />
-                            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" aria-label="You have unread notifications"></span>
                         </button>
-                        <button className="p-2 text-gray-600 hover:text-primary">
+                        <button className="p-2 text-gray-600 hover:text-primary" aria-label="Settings">
                             <Settings className="w-5 h-5" />
                         </button>
-                        <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
+                        <button
+                            className="flex items-center gap-3 pl-4 border-l border-gray-200"
+                            aria-label="Profile menu"
+                        >
                             <div className="w-10 h-10 bg-linear-to-br from-primary to-[#3ABF7A] rounded-full flex items-center justify-center text-white font-bold">
                                 {professionalData.profilePhoto}
                             </div>
                             <ChevronDown className="w-4 h-4 text-gray-600" />
-                        </div>
+                        </button>
                     </div>
                 </div>
             </div>

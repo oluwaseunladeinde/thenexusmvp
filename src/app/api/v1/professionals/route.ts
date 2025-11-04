@@ -204,7 +204,7 @@ export async function POST(req: Request) {
         // Create professional profile
         const professional = await prisma.professional.create({
             data: {
-                userId: validatedData.userId,
+                userId,
                 firstName: validatedData.firstName,
                 lastName: validatedData.lastName,
                 profileHeadline: validatedData.profileHeadline,
@@ -263,6 +263,6 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Proceed with HProfessional-specific logic
+    // Proceed with Professional-specific logic
     return NextResponse.json({ success: true, companyId });
 }

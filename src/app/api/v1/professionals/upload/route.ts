@@ -5,6 +5,128 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 
+/**
+ * @swagger
+ * /api/v1/professionals/upload:
+ *   post:
+ *     summary: Upload a file for professional profile
+ *     tags: [Professionals, Upload]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - file
+ *               - type
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: File to upload (PDF, JPEG, PNG)
+ *               type:
+ *                 type: string
+ *                 enum: [profile, resume]
+ *                 description: Type of file being uploaded
+ *     responses:
+ *       200:
+ *         description: File uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "File uploaded successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     fileUrl:
+ *                       type: string
+ *                       description: Public URL of the uploaded file
+ *                       example: "/uploads/professionals/user123_profile_abc123.jpg"
+ *                     fileName:
+ *                       type: string
+ *                       description: Original filename
+ *                       example: "profile_photo.jpg"
+ *                     fileSize:
+ *                       type: number
+ *                       description: File size in bytes
+ *                       example: 2048576
+ *                     fileType:
+ *                       type: string
+ *                       description: MIME type of the file
+ *                       example: "image/jpeg"
+ *                     profileCompleteness:
+ *                       type: number
+ *                       description: Updated profile completeness percentage
+ *                       example: 85
+ *       400:
+ *         description: Invalid file or missing parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "No file provided"
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *       403:
+ *         description: Forbidden - professional access required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: Professional access required"
+ *       413:
+ *         description: File too large
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "File size too large. Maximum 5MB allowed"
+ *       422:
+ *         description: Invalid file type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid file type. Only PDF, JPEG, JPG, and PNG files are allowed"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to upload file"
+ */
+
 export async function POST(request: NextRequest) {
     try {
         const user = await currentUser();
@@ -35,7 +157,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate file type
-        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
             return NextResponse.json({
                 error: 'Invalid file type. Only PDF, JPEG, JPG, and PNG files are allowed'
@@ -44,14 +166,23 @@ export async function POST(request: NextRequest) {
 
         // Create uploads directory if it doesn't exist
         const uploadsDir = join(process.cwd(), 'public', 'uploads', 'professionals');
-        try {
-            await mkdir(uploadsDir, { recursive: true });
-        } catch (error) {
-            // Directory might already exist, continue
-        }
 
-        // Generate unique filename
-        const fileExtension = file.name.split('.').pop();
+        // Create uploads directory if it doesn't exist
+        await mkdir(uploadsDir, { recursive: true });
+
+
+        //const fileName = `${user.id}_${type}_${randomUUID()}.${fileExtension}`;
+        // Generate unique filename - derive extension from validated MIME type
+        const mimeToExt: Record<string, string> = {
+            'application/pdf': 'pdf',
+            'image/jpeg': 'jpg',
+            'image/jpg': 'jpg',
+            'image/png': 'png'
+        };
+        const fileExtension = mimeToExt[file.type];
+        if (!fileExtension) {
+            return NextResponse.json({ error: 'Unable to determine file extension' }, { status: 400 });
+        }
         const fileName = `${user.id}_${type}_${randomUUID()}.${fileExtension}`;
         const filePath = join(uploadsDir, fileName);
 

@@ -3,7 +3,7 @@ export interface ClerkPublicMetadata {
     userType: 'professional' | 'hr_partner' | 'admin';
     onboardingComplete: boolean;
     hasDualRole?: boolean;
-    activeRole?: 'hr' | 'professional'; // For dual-role users
+    activeRole?: 'hr_partner' | 'professional'; // For dual-role users
 }
 
 // Private Metadata (server-only)

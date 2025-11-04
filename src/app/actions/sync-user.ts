@@ -36,24 +36,32 @@ export async function syncUserToDatabase() {
         const { emailAddresses, phoneNumbers, unsafeMetadata } = clerkUser;
 
         const userType = (unsafeMetadata?.userType as string) || 'professional';
-        const email = emailAddresses[0]?.emailAddress;
-        const phone = phoneNumbers[0]?.phoneNumber;
+        const email = emailAddresses?.[0]?.emailAddress;
+        const phone = phoneNumbers?.[0]?.phoneNumber;
 
         if (!email) {
             throw new Error('No email address found for user');
         }
 
-        console.log(`👤 Syncing user to Prisma: ${email} (${userType})`);
+        console.log(`👤 Syncing user to Prisma: ${userId} (${userType})`);
+
+        const validUserTypes = ['PROFESSIONAL', 'HR_PARTNER', 'ADMIN'] as const;
+        const upperUserType = userType.toUpperCase();
+        if (!validUserTypes.includes(upperUserType as any)) {
+            throw new Error(`Invalid user type: ${userType}`);
+        }
 
         // Create user in Prisma
-        const newDBUser = await prisma.user.create({
-            data: {
+        const newDBUser = await prisma.user.upsert({
+            where: { id: userId },
+            update: {},
+            create: {
                 id: userId, // Use Clerk ID as primary key
                 clerkUserId: userId, // Set clerkUserId for consistency
                 email,
                 phone: phone || null,
                 passwordHash: '', // Clerk manages passwords
-                userType: userType.toUpperCase() as 'PROFESSIONAL' | 'HR_PARTNER' | 'ADMIN',
+                userType: upperUserType as 'PROFESSIONAL' | 'HR_PARTNER' | 'ADMIN',
                 status: 'PENDING',
                 emailVerified: emailAddresses[0].verification?.status === 'verified',
                 phoneVerified: phoneNumbers[0]?.verification?.status === 'verified',

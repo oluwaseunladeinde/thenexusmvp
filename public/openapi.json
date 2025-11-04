@@ -27,9 +27,11 @@
             "type": "string"
           },
           "data": {
-            "type": "object"
+            "type": "object",
+            "additionalProperties": true
           }
-        }
+        },
+        "required": ["message"]
       },
       "ApiError": {
         "type": "object",
@@ -43,7 +45,8 @@
               "type": "object"
             }
           }
-        }
+        },
+        "required": ["error"]
       },
       "ProfessionalUpdateData": {
         "type": "object",
@@ -1275,33 +1278,382 @@
         }
       }
     },
-    "/api/v1/introductions/respond": {
-      "post": {
-        "summary": "Accept or decline an introduction request",
+    "/api/v1/introductions/received": {
+      "get": {
+        "summary": "Get introduction requests received by the professional",
         "tags": [
-          "Introductions"
+          "Introductions",
+          "Professionals"
         ],
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "ACCEPTED",
+                "DECLINED",
+                "all"
+              ]
+            },
+            "description": "Filter by introduction status (default: all)",
+            "example": "PENDING"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "description": "Number of items per page",
+            "example": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Introduction requests retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Introduction requests retrieved successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "introductions": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Introduction request ID"
+                              },
+                              "sentToProfessionalId": {
+                                "type": "string"
+                              },
+                              "sentById": {
+                                "type": "string"
+                              },
+                              "jobRoleId": {
+                                "type": "string"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "PENDING",
+                                  "ACCEPTED",
+                                  "DECLINED"
+                                ]
+                              },
+                              "message": {
+                                "type": "string",
+                                "description": "Message from HR partner"
+                              },
+                              "professionalResponse": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "sentAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "responseDate": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              },
+                              "expiresAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "viewedByProfessional": {
+                                "type": "boolean"
+                              },
+                              "viewedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              },
+                              "jobRole": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "roleTitle": {
+                                    "type": "string"
+                                  },
+                                  "roleDescription": {
+                                    "type": "string"
+                                  },
+                                  "seniorityLevel": {
+                                    "type": "string"
+                                  },
+                                  "locationCity": {
+                                    "type": "string",
+                                    "nullable": true
+                                  },
+                                  "locationState": {
+                                    "type": "string",
+                                    "nullable": true
+                                  },
+                                  "salaryRangeMin": {
+                                    "type": "number",
+                                    "nullable": true
+                                  },
+                                  "salaryRangeMax": {
+                                    "type": "number",
+                                    "nullable": true
+                                  },
+                                  "remoteOption": {
+                                    "type": "string"
+                                  },
+                                  "employmentType": {
+                                    "type": "string"
+                                  },
+                                  "responsibilities": {
+                                    "type": "string",
+                                    "nullable": true
+                                  },
+                                  "requirements": {
+                                    "type": "string",
+                                    "nullable": true
+                                  },
+                                  "preferredQualifications": {
+                                    "type": "string",
+                                    "nullable": true
+                                  },
+                                  "benefits": {
+                                    "type": "string",
+                                    "nullable": true
+                                  },
+                                  "isConfidential": {
+                                    "type": "boolean"
+                                  },
+                                  "confidentialReason": {
+                                    "type": "string",
+                                    "nullable": true
+                                  }
+                                }
+                              },
+                              "company": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "companyName": {
+                                    "type": "string"
+                                  },
+                                  "companyLogoUrl": {
+                                    "type": "string",
+                                    "nullable": true
+                                  },
+                                  "industry": {
+                                    "type": "string"
+                                  },
+                                  "companySize": {
+                                    "type": "string"
+                                  },
+                                  "headquartersLocation": {
+                                    "type": "string"
+                                  },
+                                  "companyWebsite": {
+                                    "type": "string",
+                                    "nullable": true
+                                  },
+                                  "companyDescription": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "sentBy": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "firstName": {
+                                    "type": "string"
+                                  },
+                                  "lastName": {
+                                    "type": "string"
+                                  },
+                                  "jobTitle": {
+                                    "type": "string"
+                                  },
+                                  "profilePhotoUrl": {
+                                    "type": "string",
+                                    "nullable": true
+                                  },
+                                  "linkedinUrl": {
+                                    "type": "string",
+                                    "nullable": true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "total": {
+                              "type": "integer"
+                            },
+                            "totalPages": {
+                              "type": "integer"
+                            },
+                            "hasNext": {
+                              "type": "boolean"
+                            },
+                            "hasPrev": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - professional access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden: Professional access required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Professional profile not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Professional profile not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to fetch introduction requests"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/introductions/{id}/accept": {
+      "post": {
+        "summary": "Accept an introduction request",
+        "tags": [
+          "Introductions",
+          "Professionals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Introduction request ID",
+            "example": "intro_123"
+          }
+        ],
         "requestBody": {
-          "required": true,
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "introductionId": {
-                    "type": "string"
-                  },
-                  "action": {
+                  "message": {
                     "type": "string",
-                    "enum": [
-                      "accept",
-                      "decline"
-                    ]
+                    "description": "Optional response message to the HR partner",
+                    "maxLength": 500,
+                    "example": "I'm interested in this opportunity and would like to discuss further."
                   }
                 }
               }
@@ -1310,11 +1662,194 @@
         },
         "responses": {
           "200": {
-            "description": "Introduction response recorded",
+            "description": "Introduction request accepted successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiSuccess"
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Introduction request accepted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "introduction": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "sentToProfessionalId": {
+                              "type": "string"
+                            },
+                            "sentById": {
+                              "type": "string"
+                            },
+                            "jobRoleId": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "ACCEPTED"
+                              ]
+                            },
+                            "message": {
+                              "type": "string"
+                            },
+                            "professionalResponse": {
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "sentAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "responseDate": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "expiresAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "viewedByProfessional": {
+                              "type": "boolean"
+                            },
+                            "viewedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "jobRole": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "roleTitle": {
+                                  "type": "string"
+                                },
+                                "roleDescription": {
+                                  "type": "string"
+                                },
+                                "seniorityLevel": {
+                                  "type": "string"
+                                },
+                                "locationCity": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "locationState": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "salaryRangeMin": {
+                                  "type": "number",
+                                  "nullable": true
+                                },
+                                "salaryRangeMax": {
+                                  "type": "number",
+                                  "nullable": true
+                                },
+                                "remoteOption": {
+                                  "type": "string"
+                                },
+                                "employmentType": {
+                                  "type": "string"
+                                },
+                                "responsibilities": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "requirements": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "preferredQualifications": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "benefits": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "isConfidential": {
+                                  "type": "boolean"
+                                },
+                                "confidentialReason": {
+                                  "type": "string",
+                                  "nullable": true
+                                }
+                              }
+                            },
+                            "company": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "companyName": {
+                                  "type": "string"
+                                },
+                                "companyLogoUrl": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "industry": {
+                                  "type": "string"
+                                },
+                                "companySize": {
+                                  "type": "string"
+                                },
+                                "headquartersLocation": {
+                                  "type": "string"
+                                },
+                                "companyWebsite": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "companyDescription": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "sentBy": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "firstName": {
+                                  "type": "string"
+                                },
+                                "lastName": {
+                                  "type": "string"
+                                },
+                                "jobTitle": {
+                                  "type": "string"
+                                },
+                                "profilePhotoUrl": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "linkedinUrl": {
+                                  "type": "string",
+                                  "nullable": true
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "contactDetailsUnlocked": {
+                          "type": "boolean",
+                          "description": "Whether contact details are now available",
+                          "example": true
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1324,17 +1859,377 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiError"
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Introduction request not found or already responded to"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - professional access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden: Professional access required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Introduction request not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Introduction request not found or already responded to"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Validation failed"
+                    },
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "field": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           },
           "500": {
-            "description": "Failed to process introduction response",
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiError"
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to accept introduction request"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/introductions/{id}/decline": {
+      "post": {
+        "summary": "Decline an introduction request",
+        "tags": [
+          "Introductions",
+          "Professionals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Introduction request ID",
+            "example": "intro_123"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Optional response message to the HR partner",
+                    "maxLength": 500,
+                    "example": "Thank you for considering me, but I'm not interested in this opportunity at this time."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Introduction request declined successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Introduction request declined successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "introduction": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "sentToProfessionalId": {
+                              "type": "string"
+                            },
+                            "sentById": {
+                              "type": "string"
+                            },
+                            "jobRoleId": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "DECLINED"
+                              ]
+                            },
+                            "message": {
+                              "type": "string"
+                            },
+                            "professionalResponse": {
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "sentAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "responseDate": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "expiresAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "viewedByProfessional": {
+                              "type": "boolean"
+                            },
+                            "viewedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "jobRole": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "roleTitle": {
+                                  "type": "string"
+                                },
+                                "seniorityLevel": {
+                                  "type": "string"
+                                },
+                                "locationCity": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "locationState": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "salaryRangeMin": {
+                                  "type": "number",
+                                  "nullable": true
+                                },
+                                "salaryRangeMax": {
+                                  "type": "number",
+                                  "nullable": true
+                                }
+                              }
+                            },
+                            "company": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "companyName": {
+                                  "type": "string"
+                                },
+                                "industry": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or introduction not actionable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Introduction request not found or already responded to"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - professional access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden: Professional access required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Introduction request not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Introduction request not found or already responded to"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Validation failed"
+                    },
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "field": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to decline introduction request"
+                    }
+                  }
                 }
               }
             }
@@ -1909,10 +2804,11 @@
         }
       }
     },
-    "/api/v1/upload": {
+    "/api/v1/professionals/upload": {
       "post": {
-        "summary": "Upload a file",
+        "summary": "Upload a file for professional profile",
         "tags": [
+          "Professionals",
           "Upload"
         ],
         "security": [
@@ -1926,20 +2822,21 @@
             "multipart/form-data": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "file",
+                  "type"
+                ],
                 "properties": {
                   "file": {
                     "type": "string",
                     "format": "binary",
-                    "description": "File to upload"
+                    "description": "File to upload (PDF, JPEG, PNG)"
                   },
                   "type": {
                     "type": "string",
                     "enum": [
-                      "resume",
-                      "portfolio",
-                      "certificate",
-                      "cover_letter",
-                      "other"
+                      "profile",
+                      "resume"
                     ],
                     "description": "Type of file being uploaded"
                   }
@@ -1957,18 +2854,36 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "File uploaded successfully"
                     },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "url": {
+                        "fileUrl": {
                           "type": "string",
-                          "description": "Public URL of the uploaded file"
+                          "description": "Public URL of the uploaded file",
+                          "example": "/uploads/professionals/user123_profile_abc123.jpg"
                         },
-                        "key": {
+                        "fileName": {
                           "type": "string",
-                          "description": "S3 key of the uploaded file"
+                          "description": "Original filename",
+                          "example": "profile_photo.jpg"
+                        },
+                        "fileSize": {
+                          "type": "number",
+                          "description": "File size in bytes",
+                          "example": 2048576
+                        },
+                        "fileType": {
+                          "type": "string",
+                          "description": "MIME type of the file",
+                          "example": "image/jpeg"
+                        },
+                        "profileCompleteness": {
+                          "type": "number",
+                          "description": "Updated profile completeness percentage",
+                          "example": 85
                         }
                       }
                     }
@@ -1978,19 +2893,100 @@
             }
           },
           "400": {
-            "description": "Invalid file or missing parameters"
+            "description": "Invalid file or missing parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "No file provided"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - professional access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden: Professional access required"
+                    }
+                  }
+                }
+              }
+            }
           },
           "413": {
-            "description": "File too large"
+            "description": "File too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "File size too large. Maximum 5MB allowed"
+                    }
+                  }
+                }
+              }
+            }
           },
           "422": {
-            "description": "Validation failed"
+            "description": "Invalid file type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid file type. Only PDF, JPEG, JPG, and PNG files are allowed"
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Upload failed"
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to upload file"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

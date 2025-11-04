@@ -24,7 +24,15 @@ export const professionalCreateSchema = z.object({
     linkedinUrl: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")),
     portfolioUrl: z.string().url("Invalid portfolio URL").optional().or(z.literal("")),
     skills: z.array(z.string().min(1)).min(1, "At least one skill is required").max(10, "Maximum 10 skills allowed"),
-});
+}).refine((data) => {
+    if (data.salaryExpectationMin && data.salaryExpectationMax) {
+        return data.salaryExpectationMax >= data.salaryExpectationMin;
+    }
+    return true;
+}, {
+    message: "Maximum salary must be greater than or equal to minimum salary",
+    path: ["salaryExpectationMax"]
+});;
 
 // HR Partner Create API Schema
 export const hrPartnerCreateSchema = z.object({
@@ -49,7 +57,7 @@ export const introductionRequestSchema = z.object({
 
 // Phone Send Code API Schema
 export const phoneSendCodeSchema = z.object({
-    phone: z.string().regex(/^234[0-9]{10}$/, "Invalid Nigerian phone number. Format: +234XXXXXXXXXX"),
+    phone: z.string().regex(/^\+234[0-9]{10}$/, "Invalid Nigerian phone number. Format: +234XXXXXXXXXX"),
 });
 
 // Phone Verify Code API Schema
@@ -92,8 +100,10 @@ export const professionalUpdateSchema = z.object({
     willingToRelocate: z.boolean().optional(),
     openToOpportunities: z.boolean().optional(),
     confidentialSearch: z.boolean().optional(),
-    linkedinUrl: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")).optional(),
-    portfolioUrl: z.string().url("Invalid portfolio URL").optional().or(z.literal("")).optional(),
+    linkedinUrl: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")),
+    portfolioUrl: z.string().url("Invalid portfolio URL").optional().or(z.literal("")),
+    profilePhotoUrl: z.string().url("Invalid profile photo URL").optional().or(z.literal("")),
+    resumeUrl: z.string().url("Invalid resume URL").optional().or(z.literal("")),
     skills: z.array(z.string().min(1)).min(1, "At least one skill is required").max(10, "Maximum 10 skills allowed").optional(),
     workHistory: z.array(z.object({
         jobTitle: z.string().min(1, "Job title is required"),
@@ -124,7 +134,11 @@ export const professionalUpdateSchema = z.object({
     message: "At least one field must be provided for update"
 });
 
-// Response Schemas
+// ============================================
+// RESPONSE SCHEMAS FOR API DOCUMENTATION
+// ============================================
+
+// Base Response Schemas
 export const apiSuccessResponseSchema = z.object({
     message: z.string(),
     data: z.any(),
@@ -132,6 +146,267 @@ export const apiSuccessResponseSchema = z.object({
 
 export const apiErrorResponseSchema = z.object({
     error: z.string(),
+    details: z.array(z.object({
+        field: z.string(),
+        message: z.string(),
+    })).optional(),
+});
+
+// Professional Response Schemas
+export const professionalProfileResponseSchema = z.object({
+    id: z.string(),
+    userId: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    preferredName: z.string().nullable(),
+    profileHeadline: z.string(),
+    profileSummary: z.string().nullable(),
+    locationCity: z.string().nullable(),
+    locationState: z.string().nullable(),
+    yearsOfExperience: z.number(),
+    currentTitle: z.string(),
+    currentCompany: z.string().nullable(),
+    currentIndustry: z.string(),
+    salaryExpectationMin: z.number().nullable(),
+    salaryExpectationMax: z.number().nullable(),
+    noticePeriodDays: z.number().nullable(),
+    willingToRelocate: z.boolean(),
+    openToOpportunities: z.boolean(),
+    confidentialSearch: z.boolean(),
+    linkedinUrl: z.string().nullable(),
+    portfolioUrl: z.string().nullable(),
+    profilePhotoUrl: z.string().nullable(),
+    resumeUrl: z.string().nullable(),
+    profileCompleteness: z.number(),
+    skills: z.array(z.object({
+        id: z.string(),
+        skillName: z.string(),
+        proficiencyLevel: z.string(),
+        isPrimarySkill: z.boolean(),
+    })),
+    workHistory: z.array(z.object({
+        id: z.string(),
+        jobTitle: z.string(),
+        companyName: z.string(),
+        startDate: z.string(),
+        endDate: z.string().nullable(),
+        description: z.string().nullable(),
+    })).optional(),
+    education: z.array(z.object({
+        id: z.string(),
+        institution: z.string(),
+        degree: z.string(),
+        fieldOfStudy: z.string(),
+        startYear: z.number(),
+        endYear: z.number().nullable(),
+    })).optional(),
+    certifications: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        issuer: z.string(),
+        issueDate: z.string(),
+        expiryDate: z.string().nullable(),
+    })).optional(),
+    introductionRequests: z.array(z.object({
+        id: z.string(),
+        status: z.string(),
+        sentAt: z.string(),
+        jobRole: z.object({
+            id: z.string(),
+            roleTitle: z.string(),
+            company: z.object({
+                companyName: z.string(),
+            }),
+        }),
+    })).optional(),
+    user: z.object({
+        email: z.string(),
+        phone: z.string().nullable(),
+        phoneVerified: z.boolean(),
+        emailVerified: z.boolean(),
+    }),
+    stats: z.object({
+        pending: z.number(),
+        accepted: z.number(),
+        declined: z.number(),
+        profileViews: z.number(),
+    }).optional(),
+    completeness: z.object({
+        overall: z.number(),
+        sections: z.object({
+            basicInfo: z.number(),
+            experience: z.number(),
+            skills: z.number(),
+            education: z.number(),
+            documents: z.number(),
+        }),
+    }).optional(),
+});
+
+// Introduction Response Schemas
+export const introductionRequestResponseSchema = z.object({
+    id: z.string(),
+    sentToProfessionalId: z.string(),
+    sentById: z.string(),
+    jobRoleId: z.string(),
+    status: z.enum(['PENDING', 'ACCEPTED', 'DECLINED']),
+    message: z.string(),
+    professionalResponse: z.string().nullable(),
+    sentAt: z.string(),
+    responseDate: z.string().nullable(),
+    expiresAt: z.string(),
+    viewedByProfessional: z.boolean(),
+    viewedAt: z.string().nullable(),
+    jobRole: z.object({
+        id: z.string(),
+        roleTitle: z.string(),
+        roleDescription: z.string(),
+        seniorityLevel: z.string(),
+        locationCity: z.string().nullable(),
+        locationState: z.string().nullable(),
+        salaryRangeMin: z.number().nullable(),
+        salaryRangeMax: z.number().nullable(),
+        remoteOption: z.string(),
+        employmentType: z.string(),
+        responsibilities: z.string().nullable(),
+        requirements: z.string().nullable(),
+        preferredQualifications: z.string().nullable(),
+        benefits: z.string().nullable(),
+        isConfidential: z.boolean(),
+        confidentialReason: z.string().nullable(),
+    }),
+    company: z.object({
+        id: z.string(),
+        companyName: z.string(),
+        companyLogoUrl: z.string().nullable(),
+        industry: z.string(),
+        companySize: z.string(),
+        headquartersLocation: z.string(),
+        companyWebsite: z.string().nullable(),
+        companyDescription: z.string(),
+    }),
+    sentBy: z.object({
+        id: z.string(),
+        firstName: z.string(),
+        lastName: z.string(),
+        jobTitle: z.string(),
+        profilePhotoUrl: z.string().nullable(),
+        linkedinUrl: z.string().nullable(),
+    }),
+});
+
+export const introductionListResponseSchema = z.object({
+    introductions: z.array(introductionRequestResponseSchema),
+    pagination: z.object({
+        page: z.number(),
+        limit: z.number(),
+        total: z.number(),
+        totalPages: z.number(),
+        hasNext: z.boolean(),
+        hasPrev: z.boolean(),
+    }),
+});
+
+// File Upload Response Schema
+export const fileUploadResponseSchema = z.object({
+    message: z.string(),
+    data: z.object({
+        fileUrl: z.string(),
+        fileName: z.string(),
+        fileSize: z.number(),
+        fileType: z.string(),
+        profileCompleteness: z.number(),
+    }),
+});
+
+// States/Cities Response Schemas
+export const stateResponseSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    code: z.string(),
+});
+
+export const cityResponseSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+});
+
+// HR Partner Response Schemas
+export const hrPartnerProfileResponseSchema = z.object({
+    id: z.string(),
+    userId: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    jobTitle: z.string(),
+    department: z.string().nullable(),
+    linkedinUrl: z.string().nullable(),
+    companyId: z.string(),
+    roleInPlatform: z.string(),
+    canCreateRoles: z.boolean(),
+    canSendIntroductions: z.boolean(),
+    canManageBilling: z.boolean(),
+    alsoProfessional: z.boolean(),
+    professionalId: z.string().nullable(),
+    status: z.string(),
+    company: z.object({
+        id: z.string(),
+        companyName: z.string(),
+        industry: z.string(),
+        companySize: z.string(),
+        headquartersLocation: z.string(),
+        companyWebsite: z.string(),
+        companyDescription: z.string(),
+    }),
+});
+
+// Privacy Status Response Schema
+export const privacyStatusResponseSchema = z.object({
+    blockedCompaniesCount: z.number(),
+    lastFirewallEvent: z.string().nullable(),
+    lastEventType: z.string().nullable(),
+});
+
+// User Response Schema
+export const userResponseSchema = z.object({
+    id: z.string(),
+    email: z.string(),
+    createdAt: z.string(),
+});
+
+// Professional Create Response Schema
+export const professionalCreateResponseSchema = z.object({
+    success: z.boolean(),
+    message: z.string(),
+    data: z.object({
+        professionalId: z.string(),
+        onboardingCompleted: z.boolean(),
+    }),
+});
+
+// HR Partner Create Response Schema
+export const hrPartnerCreateResponseSchema = z.object({
+    success: z.boolean(),
+    hrPartner: hrPartnerProfileResponseSchema,
+    company: z.object({
+        id: z.string(),
+        companyName: z.string(),
+        industry: z.string(),
+        companySize: z.string(),
+        headquartersLocation: z.string(),
+        companyWebsite: z.string(),
+        companyDescription: z.string(),
+    }),
+    professional: professionalProfileResponseSchema.nullable(),
+    message: z.string(),
+});
+
+// Introduction Accept/Decline Response Schema
+export const introductionActionResponseSchema = z.object({
+    message: z.string(),
+    data: z.object({
+        introduction: introductionRequestResponseSchema,
+        contactDetailsUnlocked: z.boolean().optional(),
+    }),
 });
 
 // Type exports
@@ -142,6 +417,23 @@ export type PhoneSendCodeData = z.infer<typeof phoneSendCodeSchema>;
 export type PhoneVerifyCodeData = z.infer<typeof phoneVerifyCodeSchema>;
 export type FileUploadData = z.infer<typeof fileUploadSchema>;
 export type ProfessionalUpdateData = z.infer<typeof professionalUpdateSchema>;
+export type PortfolioFileData = z.infer<typeof portfolioFileSchema>;
+
+// Response Type Exports
+export type ApiSuccessResponse = z.infer<typeof apiSuccessResponseSchema>;
+export type ApiErrorResponse = z.infer<typeof apiErrorResponseSchema>;
+export type ProfessionalProfileResponse = z.infer<typeof professionalProfileResponseSchema>;
+export type IntroductionRequestResponse = z.infer<typeof introductionRequestResponseSchema>;
+export type IntroductionListResponse = z.infer<typeof introductionListResponseSchema>;
+export type FileUploadResponse = z.infer<typeof fileUploadResponseSchema>;
+export type StateResponse = z.infer<typeof stateResponseSchema>;
+export type CityResponse = z.infer<typeof cityResponseSchema>;
+export type HrPartnerProfileResponse = z.infer<typeof hrPartnerProfileResponseSchema>;
+export type PrivacyStatusResponse = z.infer<typeof privacyStatusResponseSchema>;
+export type UserResponse = z.infer<typeof userResponseSchema>;
+export type ProfessionalCreateResponse = z.infer<typeof professionalCreateResponseSchema>;
+export type HrPartnerCreateResponse = z.infer<typeof hrPartnerCreateResponseSchema>;
+export type IntroductionActionResponse = z.infer<typeof introductionActionResponseSchema>;
 
 // Pagination Query Schema for list endpoints
 export const paginationQuerySchema = z.object({
@@ -157,11 +449,11 @@ export const professionalBrowseQuerySchema = paginationQuerySchema.extend({
     industry: z.string().optional(),
     locationCity: z.string().optional(),
     locationState: z.string().optional(),
-    salaryExpectationMin: z.number().int().positive().optional(),
-    salaryExpectationMax: z.number().int().positive().optional(),
-    yearsOfExperienceMin: z.number().int().min(0).optional(),
-    openToOpportunities: z.boolean().optional(),
-    skills: z.array(z.string()).optional(),
+    salaryExpectationMin: z.coerce.number().int().positive().optional(),
+    salaryExpectationMax: z.coerce.number().int().positive().optional(),
+    yearsOfExperienceMin: z.coerce.number().int().min(0).optional(),
+    openToOpportunities: z.coerce.boolean().optional(),
+    skills: z.string().transform((val) => val.split(',')).pipe(z.array(z.string())).optional(),
     sortBy: z.enum(['relevance', 'experience', 'recent']).default('relevance'),
 });
 
@@ -181,7 +473,15 @@ export const jobRoleSchema = z.object({
     salaryMax: z.number().int().positive().optional(),
     companyId: z.string().min(1, "Company ID is required"),
     status: z.enum(['draft', 'active', 'closed']).default('draft'),
-});
+}).refine((data) => {
+    if (data.salaryMin && data.salaryMax) {
+        return data.salaryMax >= data.salaryMin;
+    }
+    return true;
+}, {
+    message: "Maximum salary must be greater than or equal to minimum salary",
+    path: ["salaryMax"]
+});;
 
 // Experience Schema
 export const experienceSchema = z.object({

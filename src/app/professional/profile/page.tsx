@@ -15,6 +15,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, Circle, Upload, Phone, Shield, FileText, User, Briefcase, Award } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { FileUploader } from '@/components/ui/FileUploader';
 import { toast } from 'sonner';
 
 // Form schemas
@@ -50,6 +52,37 @@ type PersonalInfoData = z.infer<typeof personalInfoSchema>;
 type ProfessionalDetailsData = z.infer<typeof professionalDetailsSchema>;
 type SkillsData = z.infer<typeof skillsSchema>;
 
+// Profile Avatar Component
+const ProfileAvatar = ({ src, size = 'md', className = '' }: { src?: string; size?: 'sm' | 'md' | 'lg'; className?: string }) => {
+    const sizeClasses = {
+        sm: 'w-8 h-8',
+        md: 'w-10 h-10',
+        lg: 'w-20 h-20'
+    };
+
+    const iconSizes = {
+        sm: 'w-3 h-3',
+        md: 'w-4 h-4',
+        lg: 'w-8 h-8'
+    };
+
+    if (src) {
+        return (
+            <img
+                src={src}
+                alt="Profile"
+                className={`${sizeClasses[size]} rounded-full object-cover ${className}`}
+            />
+        );
+    }
+
+    return (
+        <div className={`${sizeClasses[size]} rounded-full bg-gray-200 flex items-center justify-center ${className}`}>
+            <User className={`${iconSizes[size]} text-gray-400`} />
+        </div>
+    );
+};
+
 interface State {
     id: string;
     name: string;
@@ -61,8 +94,7 @@ interface City {
 }
 
 export default function ProfessionalProfilePage() {
-    const { user } = useUser();
-    const router = useRouter();
+
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [profileData, setProfileData] = useState<any>(null);
@@ -71,8 +103,7 @@ export default function ProfessionalProfilePage() {
     const [cities, setCities] = useState<City[]>([]);
     const [selectedState, setSelectedState] = useState<string>('');
     const [skillInput, setSkillInput] = useState('');
-    const [uploadingResume, setUploadingResume] = useState(false);
-    const [uploadingPhoto, setUploadingPhoto] = useState(false);
+    const [currentSkills, setCurrentSkills] = useState<string[]>([]);
 
     // Forms
     const personalInfoForm = useForm<PersonalInfoData>({
@@ -126,9 +157,11 @@ export default function ProfessionalProfilePage() {
                     portfolioUrl: data.data.professional.portfolioUrl || '',
                 });
 
+                const skillsData = data.data.professional.skills?.map((s: any) => s.skillName) || [];
                 skillsForm.reset({
-                    skills: data.data.professional.skills?.map((s: any) => s.skillName) || [],
+                    skills: skillsData,
                 });
+                setCurrentSkills(skillsData);
 
                 setSelectedState(data.data.professional.locationState || '');
             }
@@ -174,35 +207,62 @@ export default function ProfessionalProfilePage() {
         }
     };
 
-    const handleFileUpload = async (file: File, type: 'profile' | 'resume') => {
-        const setUploading = type === 'profile' ? setUploadingPhoto : setUploadingResume;
-        setUploading(true);
-
+    const handleFileUploadSuccess = async (url: string, type: 'profile' | 'resume', publicId?: string) => {
         try {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('type', type);
+            // Update profile with the new file URL
+            const updateData = {
+                [type === 'profile' ? 'profilePhotoUrl' : 'resumeUrl']: url,
+                ...(publicId && { [`${type}PublicId`]: publicId }),
+            };
 
-            const response = await fetch('/api/v1/professionals/upload', {
-                method: 'POST',
-                body: formData,
+            console.log('Profile update data:', updateData);
+
+            const response = await fetch('/api/v1/professionals/me', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updateData),
             });
 
             if (response.ok) {
-                const data = await response.json();
                 toast.success(`${type === 'profile' ? 'Profile photo' : 'Resume'} uploaded successfully`);
-
-                // Refresh profile data
+                // Refresh profile data to get updated completeness and file URLs
                 await fetchProfileData();
             } else {
                 const error = await response.json();
-                toast.error(error.error || 'Upload failed');
+                toast.error(error.error || 'Failed to update profile');
             }
         } catch (error) {
-            console.error('Upload error:', error);
-            toast.error('Upload failed');
+            console.error('Profile update error:', error);
+            toast.error('Failed to update profile');
+        }
+    };
+
+    const handleFileUploadError = (error: string) => {
+        toast.error(error);
+    };
+
+    const saveSkills = async () => {
+        setSaving(true);
+        try {
+            const response = await fetch('/api/v1/professionals/me', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ skills: currentSkills }),
+            });
+
+            if (response.ok) {
+                toast.success('Skills updated successfully');
+                await fetchProfileData();
+            } else {
+                const error = await response.json();
+                console.error('Skills save error:', error);
+                toast.error(error.error || 'Failed to save skills');
+            }
+        } catch (error) {
+            console.error('Skills save error:', error);
+            toast.error('Failed to save skills');
         } finally {
-            setUploading(false);
+            setSaving(false);
         }
     };
 
@@ -232,25 +292,124 @@ export default function ProfessionalProfilePage() {
 
     const addSkill = () => {
         if (skillInput.trim()) {
-            const currentSkills = skillsForm.getValues('skills') || [];
-            if (!currentSkills.includes(skillInput.trim())) {
-                skillsForm.setValue('skills', [...currentSkills, skillInput.trim()]);
+            const currentSkillsList = skillsForm.getValues('skills') || [];
+            if (!currentSkillsList.includes(skillInput.trim())) {
+                const newSkills = [...currentSkillsList, skillInput.trim()];
+                skillsForm.setValue('skills', newSkills);
+                setCurrentSkills(newSkills);
                 setSkillInput('');
             }
         }
     };
 
     const removeSkill = (skillToRemove: string) => {
-        const currentSkills = skillsForm.getValues('skills') || [];
-        skillsForm.setValue('skills', currentSkills.filter(skill => skill !== skillToRemove));
+        const currentSkillsList = skillsForm.getValues('skills') || [];
+        const newSkills = currentSkillsList.filter(skill => skill !== skillToRemove);
+        skillsForm.setValue('skills', newSkills);
+        setCurrentSkills(newSkills);
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p>Loading profile...</p>
+            <div className="min-h-screen bg-gray-50">
+                <div className="max-w-4xl mx-auto px-4 py-8">
+                    {/* Profile Header Skeleton */}
+                    <div className="mb-8">
+                        <div className="flex items-start gap-6 mb-6">
+                            <Skeleton className="w-20 h-20 rounded-full" />
+                            <div className="flex-1 space-y-3">
+                                <Skeleton className="h-8 w-64" />
+                                <Skeleton className="h-5 w-80" />
+                                <Skeleton className="h-4 w-48" />
+                                <Skeleton className="h-4 w-96" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Completeness Overview Skeleton */}
+                    <Card className="mb-8">
+                        <CardHeader>
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="w-5 h-5" />
+                                <Skeleton className="h-6 w-48" />
+                            </div>
+                            <Skeleton className="h-4 w-32" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {[1, 2, 3, 4].map((i) => (
+                                    <div key={i} className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <Skeleton className="h-4 w-24" />
+                                            <Skeleton className="h-4 w-8" />
+                                        </div>
+                                        <Skeleton className="h-2 w-full" />
+                                        <Skeleton className="h-3 w-16" />
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Tabs Skeleton */}
+                    <div className="space-y-6">
+                        <div className="grid w-full grid-cols-5 gap-2">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                                <Skeleton key={i} className="h-10 w-full" />
+                            ))}
+                        </div>
+
+                        {/* Form Content Skeleton */}
+                        <Card>
+                            <CardHeader>
+                                <Skeleton className="h-6 w-48" />
+                                <Skeleton className="h-4 w-64" />
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                {/* Form Fields Skeleton */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-20" />
+                                        <Skeleton className="h-11 w-full" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-20" />
+                                        <Skeleton className="h-11 w-full" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-32" />
+                                    <Skeleton className="h-11 w-full" />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-36" />
+                                    <Skeleton className="h-11 w-full" />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-16" />
+                                        <Skeleton className="h-11 w-full" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-16" />
+                                        <Skeleton className="h-11 w-full" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-32" />
+                                    <Skeleton className="h-24 w-full" />
+                                </div>
+
+                                <div className="pt-4 border-t">
+                                    <Skeleton className="h-11 w-full" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </div>
         );
@@ -259,9 +418,34 @@ export default function ProfessionalProfilePage() {
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="max-w-4xl mx-auto px-4 py-8">
+                {/* Profile Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Complete Your Profile</h1>
-                    <p className="text-gray-600">A complete profile increases your chances of getting introduction requests by 5x</p>
+                    <div className="flex items-start gap-6 mb-6">
+                        <div className="flex-shrink-0">
+                            <ProfileAvatar
+                                src={profileData?.profilePhotoUrl}
+                                size="lg"
+                                className="border-4 border-white shadow-lg"
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                                {profileData?.firstName && profileData?.lastName
+                                    ? `${profileData.firstName} ${profileData.lastName}`
+                                    : 'Complete Your Profile'
+                                }
+                            </h1>
+                            {profileData?.profileHeadline && (
+                                <p className="text-lg text-gray-600 mb-2">{profileData.profileHeadline}</p>
+                            )}
+                            {profileData?.locationCity && profileData?.locationState && (
+                                <p className="text-sm text-gray-500">
+                                    {states.find(s => s.id === profileData.locationState)?.name}, {cities.find(c => c.id === profileData.locationCity)?.name}
+                                </p>
+                            )}
+                            <p className="text-gray-600 mt-2">A complete profile increases your chances of getting introduction requests by 5x</p>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Completeness Overview */}
@@ -330,50 +514,50 @@ export default function ProfessionalProfilePage() {
                                 <CardTitle>Personal Information</CardTitle>
                                 <CardDescription>Basic information about yourself</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <form onSubmit={personalInfoForm.handleSubmit((data) => saveSection('Personal Information', data))}>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">First Name *</label>
-                                            <Input {...personalInfoForm.register('firstName')} />
+                            <CardContent className="space-y-6">
+                                <form onSubmit={personalInfoForm.handleSubmit((data) => saveSection('Personal Information', data))} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700">First Name *</label>
+                                            <Input {...personalInfoForm.register('firstName')} className="h-11" />
                                             {personalInfoForm.formState.errors.firstName && (
-                                                <p className="text-red-500 text-sm mt-1">
+                                                <p className="text-red-500 text-sm">
                                                     {personalInfoForm.formState.errors.firstName.message}
                                                 </p>
                                             )}
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Last Name *</label>
-                                            <Input {...personalInfoForm.register('lastName')} />
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700">Last Name *</label>
+                                            <Input {...personalInfoForm.register('lastName')} className="h-11" />
                                             {personalInfoForm.formState.errors.lastName && (
-                                                <p className="text-red-500 text-sm mt-1">
+                                                <p className="text-red-500 text-sm">
                                                     {personalInfoForm.formState.errors.lastName.message}
                                                 </p>
                                             )}
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Preferred Name</label>
-                                        <Input {...personalInfoForm.register('preferredName')} />
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Preferred Name</label>
+                                        <Input {...personalInfoForm.register('preferredName')} className="h-11" placeholder="How would you like to be addressed?" />
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Profile Headline *</label>
-                                        <Input {...personalInfoForm.register('profileHeadline')} />
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Profile Headline *</label>
+                                        <Input {...personalInfoForm.register('profileHeadline')} className="h-11" placeholder="e.g., Senior Software Engineer at Tech Company" />
                                         {personalInfoForm.formState.errors.profileHeadline && (
-                                            <p className="text-red-500 text-sm mt-1">
+                                            <p className="text-red-500 text-sm">
                                                 {personalInfoForm.formState.errors.profileHeadline.message}
                                             </p>
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">State *</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700">State *</label>
                                             <Select value={selectedState} onValueChange={handleStateChange}>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select state" />
+                                                <SelectTrigger className="h-11 w-full">
+                                                    <SelectValue placeholder="Select your state" />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {states.map((state) => (
@@ -384,14 +568,14 @@ export default function ProfessionalProfilePage() {
                                                 </SelectContent>
                                             </Select>
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">City *</label>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700">City *</label>
                                             <Select
                                                 value={personalInfoForm.watch('locationCity')}
                                                 onValueChange={(value) => personalInfoForm.setValue('locationCity', value)}
                                             >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select city" />
+                                                <SelectTrigger className="h-11 w-full">
+                                                    <SelectValue placeholder="Select your city" />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {cities.map((city) => (
@@ -404,9 +588,11 @@ export default function ProfessionalProfilePage() {
                                         </div>
                                     </div>
 
-                                    <Button type="submit" disabled={saving} className="w-full">
-                                        {saving ? 'Saving...' : 'Save Personal Information'}
-                                    </Button>
+                                    <div className="pt-4 border-t">
+                                        <Button type="submit" disabled={saving} className="w-full h-11 font-medium">
+                                            {saving ? 'Saving...' : 'Save Personal Information'}
+                                        </Button>
+                                    </div>
                                 </form>
                             </CardContent>
                         </Card>
@@ -419,28 +605,28 @@ export default function ProfessionalProfilePage() {
                                 <CardTitle>Professional Details</CardTitle>
                                 <CardDescription>Your career information and preferences</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <form onSubmit={professionalDetailsForm.handleSubmit((data) => saveSection('Professional Details', data))}>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Current Title *</label>
-                                            <Input {...professionalDetailsForm.register('currentTitle')} />
+                            <CardContent className="space-y-6">
+                                <form onSubmit={professionalDetailsForm.handleSubmit((data) => saveSection('Professional Details', data))} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700">Current Title *</label>
+                                            <Input {...professionalDetailsForm.register('currentTitle')} className="h-11" placeholder="e.g., Senior Software Engineer" />
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Current Company</label>
-                                            <Input {...professionalDetailsForm.register('currentCompany')} />
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700">Current Company</label>
+                                            <Input {...professionalDetailsForm.register('currentCompany')} className="h-11" placeholder="e.g., Microsoft Nigeria" />
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Industry *</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700">Industry *</label>
                                             <Select
                                                 value={professionalDetailsForm.watch('currentIndustry')}
                                                 onValueChange={(value) => professionalDetailsForm.setValue('currentIndustry', value)}
                                             >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select industry" />
+                                                <SelectTrigger className="h-11 w-full">
+                                                    <SelectValue placeholder="Select your industry" />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="Financial Services">Financial Services</SelectItem>
@@ -455,86 +641,112 @@ export default function ProfessionalProfilePage() {
                                                 </SelectContent>
                                             </Select>
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Years of Experience *</label>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700">Years of Experience *</label>
                                             <Input
                                                 type="number"
                                                 {...professionalDetailsForm.register('yearsOfExperience', { valueAsNumber: true })}
+                                                className="h-11"
+                                                placeholder="e.g., 5"
+                                                min="0"
+                                                max="50"
                                             />
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Profile Summary *</label>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Profile Summary *</label>
                                         <Textarea
                                             {...professionalDetailsForm.register('profileSummary')}
                                             rows={4}
-                                            placeholder="Describe your professional background, achievements, and career goals..."
+                                            className="resize-none"
+                                            placeholder="Describe your professional background, key achievements, and career goals. This helps HR partners understand your value proposition."
                                         />
                                         {professionalDetailsForm.formState.errors.profileSummary && (
-                                            <p className="text-red-500 text-sm mt-1">
+                                            <p className="text-red-500 text-sm">
                                                 {professionalDetailsForm.formState.errors.profileSummary.message}
                                             </p>
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Min Salary Expectation</label>
-                                            <Input
-                                                type="number"
-                                                {...professionalDetailsForm.register('salaryExpectationMin', { valueAsNumber: true })}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Max Salary Expectation</label>
-                                            <Input
-                                                type="number"
-                                                {...professionalDetailsForm.register('salaryExpectationMax', { valueAsNumber: true })}
-                                            />
+                                    <div className="space-y-4">
+                                        <h4 className="text-sm font-medium text-gray-900">Salary Expectations (Optional)</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-medium text-gray-700">Minimum (₦)</label>
+                                                <Input
+                                                    type="number"
+                                                    {...professionalDetailsForm.register('salaryExpectationMin', { valueAsNumber: true })}
+                                                    className="h-11"
+                                                    placeholder="e.g., 2000000"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-medium text-gray-700">Maximum (₦)</label>
+                                                <Input
+                                                    type="number"
+                                                    {...professionalDetailsForm.register('salaryExpectationMax', { valueAsNumber: true })}
+                                                    className="h-11"
+                                                    placeholder="e.g., 3000000"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Notice Period (Days)</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700">Notice Period (Days)</label>
                                             <Input
                                                 type="number"
                                                 {...professionalDetailsForm.register('noticePeriodDays', { valueAsNumber: true })}
+                                                className="h-11"
+                                                placeholder="30"
+                                                min="0"
+                                                max="365"
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="flex items-center space-x-2">
-                                                <input
-                                                    type="checkbox"
-                                                    {...professionalDetailsForm.register('willingToRelocate')}
-                                                />
-                                                <span className="text-sm">Willing to relocate</span>
-                                            </label>
-                                            <label className="flex items-center space-x-2">
-                                                <input
-                                                    type="checkbox"
-                                                    {...professionalDetailsForm.register('openToOpportunities')}
-                                                />
-                                                <span className="text-sm">Open to new opportunities</span>
-                                            </label>
+                                        <div className="space-y-4">
+                                            <label className="text-sm font-medium text-gray-700">Preferences</label>
+                                            <div className="space-y-3">
+                                                <label className="flex items-center space-x-3">
+                                                    <input
+                                                        type="checkbox"
+                                                        {...professionalDetailsForm.register('willingToRelocate')}
+                                                        className="rounded border-gray-300 text-primary focus:ring-primary"
+                                                    />
+                                                    <span className="text-sm text-gray-700">Willing to relocate</span>
+                                                </label>
+                                                <label className="flex items-center space-x-3">
+                                                    <input
+                                                        type="checkbox"
+                                                        {...professionalDetailsForm.register('openToOpportunities')}
+                                                        className="rounded border-gray-300 text-primary focus:ring-primary"
+                                                    />
+                                                    <span className="text-sm text-gray-700">Open to new opportunities</span>
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">LinkedIn URL</label>
-                                            <Input {...professionalDetailsForm.register('linkedinUrl')} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Portfolio URL</label>
-                                            <Input {...professionalDetailsForm.register('portfolioUrl')} />
+                                    <div className="space-y-4">
+                                        <h4 className="text-sm font-medium text-gray-900">Professional Links (Optional)</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-medium text-gray-700">LinkedIn URL</label>
+                                                <Input {...professionalDetailsForm.register('linkedinUrl')} className="h-11" placeholder="https://linkedin.com/in/yourprofile" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-medium text-gray-700">Portfolio URL</label>
+                                                <Input {...professionalDetailsForm.register('portfolioUrl')} className="h-11" placeholder="https://yourportfolio.com" />
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <Button type="submit" disabled={saving} className="w-full">
-                                        {saving ? 'Saving...' : 'Save Professional Details'}
-                                    </Button>
+                                    <div className="pt-4 border-t">
+                                        <Button type="submit" disabled={saving} className="w-full h-11 font-medium">
+                                            {saving ? 'Saving...' : 'Save Professional Details'}
+                                        </Button>
+                                    </div>
                                 </form>
                             </CardContent>
                         </Card>
@@ -547,49 +759,63 @@ export default function ProfessionalProfilePage() {
                                 <CardTitle>Skills & Expertise</CardTitle>
                                 <CardDescription>Add your professional skills</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <form onSubmit={skillsForm.handleSubmit((data) => saveSection('Skills', { skills: data.skills }))}>
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-medium">Add Skills</label>
-                                        <div className="flex gap-2">
-                                            <Input
-                                                value={skillInput}
-                                                onChange={(e) => setSkillInput(e.target.value)}
-                                                placeholder="Enter a skill..."
-                                                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
-                                            />
-                                            <Button type="button" onClick={addSkill} variant="outline">
-                                                Add
-                                            </Button>
+                            <CardContent className="space-y-6">
+                                <form onSubmit={(e) => { e.preventDefault(); saveSkills(); }} className="space-y-6">
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700">Add Skills</label>
+                                            <div className="flex gap-3">
+                                                <Input
+                                                    value={skillInput}
+                                                    onChange={(e) => setSkillInput(e.target.value)}
+                                                    placeholder="Enter a skill (e.g., JavaScript, Project Management)"
+                                                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+                                                    className="h-11 flex-1"
+                                                />
+                                                <Button type="button" onClick={addSkill} variant="outline" className="h-11 px-6">
+                                                    Add
+                                                </Button>
+                                            </div>
+                                            <p className="text-xs text-gray-500">Press Enter or click Add to include the skill</p>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-sm font-medium text-gray-700">Your Skills</label>
+                                            {currentSkills?.length > 0 ? (
+                                                <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg border">
+                                                    {currentSkills?.map((skill, index) => (
+                                                        <Badge key={index} variant="light" className="flex items-center gap-2 px-3 py-1 text-sm">
+                                                            {skill}
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeSkill(skill)}
+                                                                className="text-gray-500 hover:text-red-500 ml-1 text-lg leading-none"
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                                                    <Award className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                                    <p className="text-sm text-gray-500">No skills added yet</p>
+                                                    <p className="text-xs text-gray-400">Add your professional skills above</p>
+                                                </div>
+                                            )}
+                                            {skillsForm.formState.errors.skills && (
+                                                <p className="text-red-500 text-sm">
+                                                    {skillsForm.formState.errors.skills.message}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-medium">Your Skills</label>
-                                        <div className="flex flex-wrap gap-2">
-                                            {skillsForm.watch('skills')?.map((skill, index) => (
-                                                <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                                                    {skill}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeSkill(skill)}
-                                                        className="text-gray-500 hover:text-red-500"
-                                                    >
-                                                        ×
-                                                    </button>
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                        {skillsForm.formState.errors.skills && (
-                                            <p className="text-red-500 text-sm">
-                                                {skillsForm.formState.errors.skills.message}
-                                            </p>
-                                        )}
+                                    <div className="pt-4 border-t">
+                                        <Button type="submit" disabled={saving} className="w-full h-11 font-medium">
+                                            {saving ? 'Saving...' : 'Save Skills'}
+                                        </Button>
                                     </div>
-
-                                    <Button type="submit" disabled={saving} className="w-full">
-                                        {saving ? 'Saving...' : 'Save Skills'}
-                                    </Button>
                                 </form>
                             </CardContent>
                         </Card>
@@ -606,58 +832,27 @@ export default function ProfessionalProfilePage() {
                                 {/* Resume Upload */}
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium">Resume</label>
-                                    {profileData?.resumeUrl ? (
-                                        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded">
-                                            <CheckCircle className="w-5 h-5 text-green-500" />
-                                            <span className="text-sm text-green-700">Resume uploaded</span>
-                                            <a
-                                                href={profileData.resumeUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-primary hover:underline text-sm"
-                                            >
-                                                View Resume
-                                            </a>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-2">
-                                            <input
-                                                type="file"
-                                                accept=".pdf,.doc,.docx"
-                                                onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'resume')}
-                                                disabled={uploadingResume}
-                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-[#1F5F3F]"
-                                            />
-                                            {uploadingResume && <p className="text-sm text-gray-500">Uploading...</p>}
-                                        </div>
-                                    )}
+                                    <FileUploader
+                                        key={`resume-${profileData?.resumeUrl || 'empty'}`}
+                                        type="resume"
+                                        currentFileUrl={profileData?.resumeUrl}
+                                        currentFileName={profileData?.resumeUrl ? "Resume.pdf" : undefined}
+                                        onUploadSuccess={(url, publicId) => handleFileUploadSuccess(url, 'resume', publicId)}
+                                        onUploadError={handleFileUploadError}
+                                    />
                                 </div>
 
                                 {/* Profile Photo Upload */}
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium">Profile Photo</label>
-                                    {profileData?.profilePhotoUrl ? (
-                                        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded">
-                                            <CheckCircle className="w-5 h-5 text-green-500" />
-                                            <span className="text-sm text-green-700">Profile photo uploaded</span>
-                                            <img
-                                                src={profileData.profilePhotoUrl}
-                                                alt="Profile"
-                                                className="w-10 h-10 rounded-full object-cover"
-                                            />
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-2">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'profile')}
-                                                disabled={uploadingPhoto}
-                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-[#1F5F3F]"
-                                            />
-                                            {uploadingPhoto && <p className="text-sm text-gray-500">Uploading...</p>}
-                                        </div>
-                                    )}
+                                    <FileUploader
+                                        key={`profile-${profileData?.profilePhotoUrl || 'empty'}`}
+                                        type="profile"
+                                        currentFileUrl={profileData?.profilePhotoUrl}
+                                        currentFileName={profileData?.profilePhotoUrl ? "Profile Photo" : undefined}
+                                        onUploadSuccess={(url, publicId) => handleFileUploadSuccess(url, 'profile', publicId)}
+                                        onUploadError={handleFileUploadError}
+                                    />
                                 </div>
                             </CardContent>
                         </Card>
@@ -671,6 +866,22 @@ export default function ProfessionalProfilePage() {
                                 <CardDescription>Verify your account to increase credibility</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
+                                {/* Profile Summary */}
+                                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                                    <ProfileAvatar src={profileData?.profilePhotoUrl} size="md" />
+                                    <div className="flex-1">
+                                        <p className="font-medium text-gray-900">
+                                            {profileData?.firstName && profileData?.lastName
+                                                ? `${profileData.firstName} ${profileData.lastName}`
+                                                : 'Complete your profile'
+                                            }
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                            {profileData?.profileHeadline || 'Add your professional headline'}
+                                        </p>
+                                    </div>
+                                </div>
+
                                 {/* Phone Verification */}
                                 <div className="flex items-center justify-between p-4 border rounded">
                                     <div className="flex items-center gap-3">

@@ -1,1 +1,3 @@
 export const INTRODUCTION_EXPIRY_DAYS_COUNT = 7
+export const MIN_YEARS_OF_EXPERIENCE = 5;
+

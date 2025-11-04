@@ -14,8 +14,8 @@ export default async function DashboardLayout({
         redirect('/sign-in');
     }
 
-    const onboardingComplete = user.publicMetadata?.onboardingComplete as boolean;
-    if (!onboardingComplete) {
+    const onboardingComplete = user.publicMetadata?.onboardingComplete;
+    if (onboardingComplete !== true) {
         redirect('/onboarding');
     }
 

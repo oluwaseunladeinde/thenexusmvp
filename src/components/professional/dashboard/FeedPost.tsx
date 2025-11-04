@@ -1,4 +1,7 @@
+"use client";
+
 import { X, MapPin, Briefcase } from 'lucide-react';
+import { useState } from 'react';
 
 interface FeedAction {
     icon: React.ComponentType<{ className?: string }>;
@@ -37,6 +40,9 @@ export default function FeedPost({
     actions,
     onDismiss
 }: FeedPostProps) {
+
+    const [isExpanded, setIsExpanded] = useState(false);
+
     return (
         <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
             <div className="flex items-start justify-between mb-4">
@@ -60,6 +66,7 @@ export default function FeedPost({
                     <button
                         onClick={() => onDismiss(id)}
                         className="text-gray-400 hover:text-gray-600"
+                        aria-label="Dismiss post"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -88,8 +95,15 @@ export default function FeedPost({
                     </div>
                 )}
                 <p className="text-gray-700 text-sm">
-                    {description}
-                    <button className="text-primary hover:underline ml-1">...more</button>
+                    {isExpanded ? description : `${description.slice(0, 150)}...`}
+                    {description.length > 150 && (
+                        <button
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className="text-primary hover:underline ml-1"
+                        >
+                            {isExpanded ? 'less' : '...more'}
+                        </button>
+                    )}
                 </p>
             </div>
 

@@ -10,7 +10,7 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
         redirect('/sign-in');
     }
 
-    const userType = user.publicMetadata?.userType as string;
+    const userType = (user.publicMetadata?.userType as string | undefined) ?? '';
     if (userType !== 'PROFESSIONAL' && userType !== 'HR_LEADER' &&
         userType !== 'professional' && userType !== 'hr_partner') {
         redirect('/sign-in');

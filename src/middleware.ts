@@ -44,8 +44,11 @@ export default clerkMiddleware(async (auth, req) => {
 
     const { userId, sessionClaims } = await auth();
 
-    // Not authenticated - allow (handled by publicRoutes)
-    if (!userId) return;
+    // Not authenticated - redirect to sign-in
+    if (!userId) {
+        const signInUrl = new URL('/sign-in', req.url);
+        return NextResponse.redirect(signInUrl);
+    }
 
     // Type-safe access to metadata
     const metadata = sessionClaims?.metadata;
@@ -57,8 +60,14 @@ export default clerkMiddleware(async (auth, req) => {
         const clerk = await clerkClient();
         const user = await clerk.users.getUser(userId);
 
-        onboardingComplete = user.unsafeMetadata?.onboardingComplete as boolean;
-        userType = user.unsafeMetadata?.userType as 'professional' | 'hr_partner' | 'admin' | undefined;
+        // onboardingComplete = user.unsafeMetadata?.onboardingComplete as boolean;
+        // userType = user.unsafeMetadata?.userType as 'professional' | 'hr_partner' | 'admin' | undefined;
+
+        const publicMetadata = user.publicMetadata as Record<string, unknown>;
+        onboardingComplete = typeof publicMetadata?.onboardingComplete === 'boolean' ? publicMetadata.onboardingComplete : false;
+        userType = ['professional', 'hr_partner', 'admin'].includes(publicMetadata?.userType as string) ? publicMetadata?.userType as 'professional' | 'hr_partner' | 'admin' : undefined;
+
+
     }
 
     // Redirect to onboarding if incomplete

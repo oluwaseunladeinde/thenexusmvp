@@ -103,10 +103,23 @@ export async function POST(req: Request) {
     if (eventType === 'user.created') {
         const { id, email_addresses, phone_numbers, unsafe_metadata } = evt.data;
 
+        // Update Clerk with Prisma sync confirmation
+        const clerk = await clerkClient()
+
         try {
             const userType = (unsafe_metadata?.userType as string) || 'professional';
             const email = email_addresses[0]?.email_address;
             const phone = phone_numbers[0]?.phone_number;
+
+            //const clerk = await clerkClient();
+            await clerk.users.updateUserMetadata(evt.data.id, {
+                publicMetadata: {
+                    userType: userType as 'professional' | 'hr_partner' | 'admin',
+                    onboardingComplete: false,
+                    verified: false,
+                    verificationLevel: 'basic'
+                }
+            });
 
             console.log(`👤 Creating user in Prisma: ${email} (${userType})`);
 
@@ -126,8 +139,7 @@ export async function POST(req: Request) {
 
             console.log(`✅ User created in Prisma: ${id}`);
 
-            // Update Clerk with Prisma sync confirmation
-            const clerk = await clerkClient()
+
             await clerk.users.updateUserMetadata(id, {
                 privateMetadata: {
                     prismaUserId: id,

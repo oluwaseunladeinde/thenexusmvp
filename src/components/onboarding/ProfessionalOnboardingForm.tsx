@@ -134,9 +134,6 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                 body: JSON.stringify({
                     userId,
                     ...data,
-                    yearsOfExperience: data.yearsOfExperience,
-                    salaryExpectationMin: data.salaryExpectationMin || undefined,
-                    salaryExpectationMax: data.salaryExpectationMax || undefined,
                 }),
             });
 
@@ -349,7 +346,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                         <Input
                                             type="number"
                                             {...field}
-                                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                            onChange={(e) => field.onChange(parseInt(e.target.value) || 5)}
                                             min="5"
                                             className="rounded-sm p-5"
                                         />
@@ -519,7 +516,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                                 onChange={(e) => setSkillInput(e.target.value)}
                                                 placeholder="Add a skill (e.g., React, Project Management)"
                                                 className="rounded-sm p-5"
-                                                onKeyPress={(e) => {
+                                                onKeyDown={(e) => {
                                                     if (e.key === 'Enter') {
                                                         e.preventDefault();
                                                         if (skillInput.trim() && !skills.includes(skillInput.trim())) {

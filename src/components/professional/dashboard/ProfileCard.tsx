@@ -5,8 +5,6 @@ interface ProfileCardProps {
         firstName?: string;
         lastName?: string;
         profileHeadline?: string;
-        locationCity?: string;
-        locationState?: string;
         currentCompany?: string;
         verificationStatus?: string;
         cityName?: string;
@@ -30,7 +28,7 @@ export default function ProfileCard({ profileData, stats, premiumText }: Profile
                 </div>
                 <div className="flex items-center justify-center gap-2 mb-2">
                     <h3 className="font-semibold text-[#0D1B2A]">
-                        {profileData?.firstName} {profileData?.lastName}
+                        {profileData?.firstName || 'User'} {profileData?.lastName || ''}
                     </h3>
                     {profileData?.verificationStatus === 'full' && (
                         <CheckCircle className="w-4 h-4 text-primary" />
@@ -45,12 +43,14 @@ export default function ProfileCard({ profileData, stats, premiumText }: Profile
                         {profileData.currentCompany}
                     </div>
                 )}
-                <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
-                    <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {profileData?.cityName}, {profileData?.stateName}
+                {(profileData?.cityName || profileData?.stateName) && (
+                    <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {[profileData?.cityName, profileData?.stateName].filter(Boolean).join(', ')}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             <div className="border-t px-6 py-4">

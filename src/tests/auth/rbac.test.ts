@@ -20,9 +20,10 @@ describe('RBAC System', () => {
 
     it('should give admins all permissions', () => {
         const permissions = ROLE_PERMISSIONS.admin;
+        const allPermissions = Object.values(Permission);
 
-        expect(permissions).toContain(Permission.VERIFY_PROFESSIONALS);
-        expect(permissions).toContain(Permission.SEARCH_PROFESSIONALS);
-        expect(permissions).toContain(Permission.ACCESS_ADMIN_DASHBOARD);
+        allPermissions.forEach(permission => {
+            expect(permissions).toContain(permission);
+        });
     });
 });

@@ -63,7 +63,9 @@ export async function hasPermission(permission: Permission): Promise<boolean> {
 
     if (!user) return false;
 
-    const userType = user.unsafeMetadata?.userType as string;
+    const userType = user.publicMetadata?.userType as string;
+    if (!userType || typeof userType !== 'string') return false;
+
     const permissions = ROLE_PERMISSIONS[userType] || [];
 
     return permissions.includes(permission);
@@ -81,20 +83,18 @@ export async function requirePermission(permission: Permission) {
 }
 
 // ============================================
-// Get user role and permissions
-// ============================================
 export async function getUserRole() {
     const user = await currentUser();
 
     if (!user) return null;
 
-    const userType = user.unsafeMetadata?.userType as string;
+    const userType = user.publicMetadata?.userType as string;
     const permissions = ROLE_PERMISSIONS[userType] || [];
 
     return {
         userType,
         permissions,
-        hasDualRole: user.unsafeMetadata?.hasDualRole as boolean,
+        hasDualRole: user.publicMetadata?.hasDualRole as boolean,
     };
 }
 
@@ -106,7 +106,7 @@ export async function requireProfessional() {
 
     if (!user) redirect('/sign-in');
 
-    const userType = user.unsafeMetadata?.userType;
+    const userType = user.publicMetadata?.userType;
     if (userType !== 'professional' && userType !== 'admin') {
         redirect('/unauthorized');
     }
@@ -159,7 +159,14 @@ export async function requireHrRole(
     }
 
     const roleHierarchy = { OWNER: 3, ADMIN: 2, MEMBER: 1 };
-    const userLevel = roleHierarchy[hrPartner.roleInPlatform as keyof typeof roleHierarchy];
+    const userRole = hrPartner.roleInPlatform as string;
+    const userLevel = roleHierarchy[userRole as keyof typeof roleHierarchy];
+
+    if (userLevel === undefined) {
+        // Invalid role in database
+        redirect('/unauthorized');
+    }
+
     const requiredLevel = roleHierarchy[minRole];
 
     if (userLevel < requiredLevel) {

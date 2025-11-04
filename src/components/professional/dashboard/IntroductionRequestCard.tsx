@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from '@/components/ui/button';
 import { IntroductionRequest, JobRole, Company } from '@prisma/client';
 import { Calendar, DollarSign, MapPin, Star, ThumbsDown, ThumbsUp } from 'lucide-react';
 import React, { useState } from 'react';
@@ -21,7 +22,9 @@ const IntroductionRequestCard = ({ request }: IntroductionRequestCardProps) => {
     const getDaysAgo = (date: Date) => {
         const now = new Date();
         const diffTime = Math.abs(now.getTime() - date.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays === 0) return 'Today';
+        if (diffDays === 1) return '1 day ago';
         return `${diffDays} days ago`;
     };
 
@@ -74,16 +77,25 @@ const IntroductionRequestCard = ({ request }: IntroductionRequestCardProps) => {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2 justify-between w-full">
+                    <div className="flex items-center gap-2 justify-between w-full" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-6 mt-4">
-                            <div className="flex items-center justify-center hover:border hover:border-primary rounded-sm px-2 py-1">
+                            <Button
+                                className="flex items-center justify-center hover:border hover:border-primary rounded-sm px-2 py-1"
+                                onClick={() => {
+                                    // Handle accept button click
+                                }}
+                                aria-label="Accept introduction request">
                                 <ThumbsUp className="w-4 h-4 text-primary mr-2" />
                                 Accept
-                            </div>
-                            <div className="flex items-center justify-center hover:border hover:border-red-400 rounded-sm px-2 py-1">
+                            </Button>
+                            <Button
+                                className="flex items-center justify-center hover:border hover:border-red-400 rounded-sm px-2 py-1"
+                                onClick={() => {/* TODO: Implement reject handler */ }}
+                                aria-label="Reject introduction request"
+                            >
                                 <ThumbsDown className="w-4 h-4 text-red-600 mr-2" />
                                 Reject
-                            </div>
+                            </Button>
                         </div>
                     </div>
                 </div>

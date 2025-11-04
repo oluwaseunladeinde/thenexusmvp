@@ -19,12 +19,15 @@ export default async function HrPartnerOnboardingPage() {
             <div className="max-w-4xl mx-auto px-4">
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-secondary mb-2">
-                        Welcome to theNexus, {user.firstName}!
+                        Welcome to theNexus {user.firstName ? `, ${user.firstName}` : ''}!
                     </h1>
                     <p className="text-gray-600">Set up your company profile to start hiring</p>
                 </div>
 
-                <HrPartnerOnboardingForm userId={user.id} userEmail={user.emailAddresses[0].emailAddress} />
+                <HrPartnerOnboardingForm
+                    userId={user.id}
+                    userEmail={user.emailAddresses[0]?.emailAddress ?? ''}
+                />
             </div>
         </div>
     );

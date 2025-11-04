@@ -25,6 +25,17 @@ export const professionalOnboardingSchema = z.object({
     skills: z.array(z.string().min(1, 'Skill name is required')).min(1, 'At least one skill is required').max(10, 'Maximum 10 skills allowed'),
     linkedinUrl: z.string().url('Invalid LinkedIn URL').optional().or(z.literal('')),
     portfolioUrl: z.string().url('Invalid portfolio URL').optional().or(z.literal('')),
-});
+}).refine(
+    (data) => {
+        if (data.salaryExpectationMin != null && data.salaryExpectationMax != null) {
+            return data.salaryExpectationMax >= data.salaryExpectationMin;
+        }
+        return true;
+    },
+    {
+        message: 'Maximum salary must be greater than or equal to minimum salary',
+        path: ['salaryExpectationMax'],
+    }
+);
 
 export type ProfessionalOnboardingData = z.infer<typeof professionalOnboardingSchema>;

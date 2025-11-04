@@ -2,7 +2,8 @@ import React from 'react';
 
 const DashboardSkeleton = () => {
     return (
-        <div className="min-h-screen bg-[#F4F6F8]">
+        <div className="min-h-screen bg-[#F4F6F8]" role="status" aria-busy="true" aria-label="Loading dashboard content">
+            <span className="sr-only">Loading dashboard content...</span>
             <div className="max-w-7xl mx-auto px-4 py-6">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 

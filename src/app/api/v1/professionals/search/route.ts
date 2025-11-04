@@ -109,20 +109,39 @@ export async function POST(req: Request) {
             );
         }
 
-        // Proceed with search...
-        const searchCriteria = await req.json();
+        const body = await req.json();
 
-        const professionals = await prisma.professional.findMany({
-            where: {
-                ...searchCriteria,
-                openToOpportunities: true,
-                // Privacy firewall
-                NOT: {
-                    hideFromCompanyIds: {
-                        has: hrPartner.companyId,
-                    },
+        // Validate and construct search criteria safely
+        const whereClause: any = {
+            openToOpportunities: true,
+            NOT: {
+                hideFromCompanyIds: {
+                    has: hrPartner.companyId,
                 },
             },
+        };
+
+        if (body.skills && Array.isArray(body.skills)) {
+            whereClause.skills = { hasSome: body.skills };
+        }
+        if (body.location && typeof body.location === 'string') {
+            whereClause.location = body.location;
+        }
+        if (body.industry && typeof body.industry === 'string') {
+            whereClause.industry = body.industry;
+        }
+        if (body.experience && typeof body.experience === 'number') {
+            whereClause.experience = { gte: body.experience };
+        }
+        if (body.salaryRange && typeof body.salaryRange === 'object') {
+            whereClause.expectedSalary = {
+                gte: body.salaryRange.min,
+                lte: body.salaryRange.max,
+            };
+        }
+
+        const professionals = await prisma.professional.findMany({
+            where: whereClause,
         });
 
         return NextResponse.json({ professionals });

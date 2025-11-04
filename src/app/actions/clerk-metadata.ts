@@ -59,6 +59,10 @@ export async function completeHrPartnerOnboarding(data: {
     companyId: string;
     professionalId?: string;
 }) {
+    if (data.hasDualRole && !data.professionalId) {
+        throw new Error('professionalId is required when hasDualRole is true');
+    }
+
     return await updateUserMetadata({
         unsafeMetadata: {
             onboardingComplete: true,
@@ -83,6 +87,19 @@ export async function completeHrPartnerOnboarding(data: {
  * Switch active role for dual-role users
  */
 export async function switchActiveRole(activeRole: 'hr' | 'professional') {
+
+    const { userId } = await auth();
+    if (!userId) {
+        throw new Error('Unauthorized');
+    }
+
+    const clerk = await clerkClient();
+    const user = await clerk.users.getUser(userId);
+
+    if (!user.unsafeMetadata?.hasDualRole) {
+        throw new Error('User does not have dual role capability');
+    }
+
     return await updateUserMetadata({
         unsafeMetadata: {
             activeRole,

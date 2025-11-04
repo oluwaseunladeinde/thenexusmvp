@@ -63,10 +63,12 @@ export function Step2CareerExpectations() {
     // Auto-save on form changes
     useEffect(() => {
         const subscription = watch((value) => {
-            updateCareerExpectations(value as any)
+            if (isValid) {
+                updateCareerExpectations(value as CareerExpectationsForm)
+            }
         })
         return () => subscription.unsubscribe()
-    }, [watch, updateCareerExpectations])
+    }, [watch, updateCareerExpectations, isValid])
 
     // Format salary as Naira currency
     const formatCurrency = (value: number) => {
@@ -100,7 +102,7 @@ export function Step2CareerExpectations() {
                             step="50000"
                             className={errors.minSalary ? 'border-red-500' : ''}
                         />
-                        {watchedMinSalary && (
+                        {watchedMinSalary != null && (
                             <p className="text-sm text-gray-500 mt-1">
                                 {formatCurrency(watchedMinSalary)}
                             </p>
@@ -121,7 +123,7 @@ export function Step2CareerExpectations() {
                             step="50000"
                             className={errors.maxSalary ? 'border-red-500' : ''}
                         />
-                        {watchedMaxSalary && (
+                        {watchedMaxSalary != null && (
                             <p className="text-sm text-gray-500 mt-1">
                                 {formatCurrency(watchedMaxSalary)}
                             </p>

@@ -56,6 +56,14 @@ export async function GET(
     try {
         const { stateId } = await params;
 
+        // Validate stateId
+        if (!stateId || typeof stateId !== 'string' || stateId.trim() === '') {
+            return NextResponse.json(
+                { error: 'Invalid state ID' },
+                { status: 400 }
+            );
+        }
+
         // Try to get from cache first
         const cacheKey = CACHE_KEYS.CITIES(stateId);
         const cachedCities = await cacheService.get(cacheKey);
