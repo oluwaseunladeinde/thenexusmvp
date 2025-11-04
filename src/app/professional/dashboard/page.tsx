@@ -9,6 +9,7 @@ import MarketInsights from "@/components/professional/dashboard/MarketInsights";
 import ProfileCard from "@/components/professional/dashboard/ProfileCard";
 import QuickActions from "@/components/professional/dashboard/QuickActions";
 import { Clock, Star, TrendingUp, Users } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 
@@ -201,12 +202,12 @@ const ProfessionalDashboardPage = () => {
                                     <h3 className="text-xl font-bold text-secondary">
                                         Recent Introduction Requests
                                     </h3>
-                                    <button
-                                        onClick={() => {/* TODO: Navigate to full requests page */ }}
+                                    <Link
+                                        href="/professional/introductions"
                                         className="text-primary text-sm font-semibold hover:text-[#1F5F3F]"
                                     >
                                         View All →
-                                    </button>
+                                    </Link>
                                 </div>
                                 {introductionRequests.length > 0 ? (
                                     introductionRequests.slice(0, 3).map((request: any) => (

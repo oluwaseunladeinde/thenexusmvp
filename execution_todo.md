@@ -1,111 +1,65 @@
-# Epic 2.3: Introduction Request Management (Professional Side)
-Epic 2.3 focuses on building a system that enables professionals to receive and respond to introduction requests efficiently. This feature will streamline communication, making it easier for professionals to connect and collaborate. The goal is to enhance user experience by providing a seamless process for managing introductions.
+# Epic 2.4: Professional Dashboard Polish
+This task focuses on refining and polishing the professional dashboard to enhance the user experience. The goal is to implement final touches that improve functionality, aesthetics, and overall usability. This is a high-priority development task aimed at ensuring the dashboard meets professional standards before the sprint deadline.
 
-## Key Objectives:
-Develop functionality for professionals to receive introduction requests.
-Enable professionals to respond to these requests within the platform.
-Ensure the process is intuitive and user-friendly.
-
-## [P0] Design Introduction Request Card (Figma)
-### Design card showing: 
-  - Job role details
-  - Company info (or "Confidential")
-  - Salary range 
-  - Personalized message 
-  - Accept/Decline buttons 
-- Design expanded view
-
-### Acceptance Criteria: 
-- Card design completed
-- CTA buttons prominent
-- Mobile responsive
-
-## [P0] Build Introduction Requests List
+## [P1] Build Activity Feed Component
 **Description:** 
-- Create introductions list page
-- Display pending introductions
-- Group by status (pending, accepted, declined)
-- Add filters (status, date)
+- Create activity feed showing: 
+  - New introduction requests
+  - Profile views
+  - Messages received
+- Display timestamps (relative time)
+- Add "View all" link
 
 ### Acceptance Criteria: 
-- Lists all introductions
-- Grouped by status
-- Filters work correctly
-- Responsive layout
+- Shows recent activity (last 7 days)
+- Timestamps human-readable
+- Links to relevant pages
 
-## [P0] Create Get Introduction Requests API
+## [P1] Create Profile Preview Component
 **Description:** 
-- Create GET /api/v1/introductions/received
-- Filter by professional ID
-- Include job role and company details
-- Sort by date (newest first)
+- Show "How HR sees your profile" preview
+- Display verification badge
+- Show top skills
+- Add "Edit profile" CTA
 
 ### Acceptance Criteria: 
-- Returns all introductions for professional
-- Includes related data (job, company)
-- Properly paginated
-- Authenticated
+- Accurate preview
+- Verification badge displays
+- Edit button functional
 
-## [P0] Build Introduction Request Detail Modal
+
+## [P2] Add Profile View Tracking
 **Description:** 
-- Create modal component
-- Show full job description
-- Show HR contact preview
-- Add accept/decline buttons with optional message
+- Log profile views in profile_views table
+- Aggregate views by time period (7/30 days)
+- Create API to fetch view stats
 
 ### Acceptance Criteria: 
-- Modal opens on card click
-- All details visible
-- Can accept/decline with message
-- Closes on action
+- Views logged when HR views profile
+- API returns view counts
+- No duplicate views (same HR in 24hrs)
 
-## [P0] Create Accept/Decline Introduction API
-**Description:** 
-- Create POST /api/v1/introductions/:id/accept
-- Create POST /api/v1/introductions/:id/decline
-- Update introduction status
-- Create a notification for the HR partner
-- If accepted: unlock contact details
+
+## [P2] Display Profile View Stat
+**Description:**  
+- Show profile views in stats card
+- Show trend (up/down from previous period)
+- Add tooltip with details
 
 ### Acceptance Criteria: 
-- Status updates correctly
-- Notifications sent
-- Contact details revealed on accept
-- Optional message saved
+- View count displays
+- Trend indicator shows
+- Tooltip shows date range
 
-## [P0] Connect Accept/Decline to API
-**Description:** 
-- Connect modal actions to API
-- Show success/error messages
-- Update UI optimistically
-- Redirect or refresh list
 
-### Acceptance Criteria: 
-- Accept button works
-- Decline button works
-- UI updates immediately
-- Shows confirmation message
-
-## [P1] Add Introduction Request Expiration Logic
-**Description:** 
-- Create cron job to expire old requests
-- Set expires_at = sent_at + 7 days
-- Update status to 'expired' automatically
-- Send notification to HR partner
+## [P1] Create Profile Preview Component
+**Description:**  
+- Show "How HR sees your profile" preview
+- Display verification badge
+- Show top skills
+- Add "Edit profile" CTA
 
 ### Acceptance Criteria: 
-- Cron runs daily
-- Expired requests marked correctly
-- Notifications sent
-- Testable locally
-
-## [P1] Display Expired Requests
-**Description:** 
-- Show expired requests in a separate section
-- Gray out expired cards
-- Display expiration date
-
-### Acceptance Criteria: 
-- Expired section visible
-- Cards styled differently
-- Clear messaging
+- Accurate preview
+- Verification badge displays
+- Edit button functional

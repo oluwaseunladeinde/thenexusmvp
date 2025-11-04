@@ -65,7 +65,7 @@ export default function IntroductionRequestsPage() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                
+
                 // Fetch introduction requests
                 const introResponse = await fetch('/api/v1/introductions/received');
                 if (introResponse.ok) {
@@ -96,20 +96,20 @@ export default function IntroductionRequestsPage() {
     const handleFilterChange = (filter: string) => {
         setActiveFilter(filter);
         setCurrentPage(1);
-        
+
         const now = new Date();
         let filteredData = allIntroductions;
-        
+
         if (filter === 'pending') {
-            filteredData = allIntroductions.filter(intro => 
+            filteredData = allIntroductions.filter(intro =>
                 intro.status === 'PENDING' && new Date(intro.expiresAt) > now
             );
         } else if (filter === 'expired') {
-            filteredData = allIntroductions.filter(intro => 
+            filteredData = allIntroductions.filter(intro =>
                 intro.status === 'PENDING' && new Date(intro.expiresAt) <= now
             );
         } else if (filter !== 'all') {
-            filteredData = allIntroductions.filter(intro => 
+            filteredData = allIntroductions.filter(intro =>
                 intro.status.toLowerCase() === filter.toLowerCase()
             );
         }
@@ -124,7 +124,7 @@ export default function IntroductionRequestsPage() {
                 intro.jobRole.locationCity.toLowerCase().includes(query)
             );
         }
-        
+
         setIntroductions(filteredData);
     };
 
@@ -143,8 +143,8 @@ export default function IntroductionRequestsPage() {
 
             if (response.ok) {
                 toast.success('Introduction request accepted!');
-                setAllIntroductions(prev => 
-                    prev.map(intro => 
+                setAllIntroductions(prev =>
+                    prev.map(intro =>
                         intro.id === id ? { ...intro, status: 'ACCEPTED' as const } : intro
                     )
                 );
@@ -167,8 +167,8 @@ export default function IntroductionRequestsPage() {
 
             if (response.ok) {
                 toast.success('Introduction request declined');
-                setAllIntroductions(prev => 
-                    prev.map(intro => 
+                setAllIntroductions(prev =>
+                    prev.map(intro =>
                         intro.id === id ? { ...intro, status: 'DECLINED' as const } : intro
                     )
                 );
@@ -232,11 +232,10 @@ export default function IntroductionRequestsPage() {
                             <button
                                 key={key}
                                 onClick={() => handleFilterChange(key)}
-                                className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                    activeFilter === key
-                                        ? 'bg-[#2E8B57] text-white'
-                                        : 'bg-white text-gray-700 border border-gray-300'
-                                }`}
+                                className={`shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeFilter === key
+                                    ? 'bg-primary text-white'
+                                    : 'bg-white text-gray-700 border border-gray-300'
+                                    }`}
                             >
                                 {label} ({count})
                             </button>
@@ -327,7 +326,7 @@ export default function IntroductionRequestsPage() {
                                                 </div>
                                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                                     <div
-                                                        className="bg-[#2E8B57] h-2 rounded-full transition-all duration-300"
+                                                        className="bg-primary h-2 rounded-full transition-all duration-300"
                                                         style={{ width: `${profileCompleteness}%` }}
                                                     ></div>
                                                 </div>
@@ -353,7 +352,7 @@ export default function IntroductionRequestsPage() {
                                     placeholder="Search by role, company, industry, or location..."
                                     value={searchQuery}
                                     onChange={(e) => handleSearchChange(e.target.value)}
-                                    className="w-full bg-white pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent text-sm"
+                                    className="w-full bg-white pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
                                 />
                             </div>
                         </div>
@@ -369,13 +368,13 @@ export default function IntroductionRequestsPage() {
                                                     Profile {profileCompleteness}% complete
                                                 </p>
                                                 <div className="w-full bg-gray-200 rounded-full h-2">
-                                                    <div 
-                                                        className="bg-[#2E8B57] h-2 rounded-full transition-all duration-300"
+                                                    <div
+                                                        className="bg-primary h-2 rounded-full transition-all duration-300"
                                                         style={{ width: `${profileCompleteness}%` }}
                                                     ></div>
                                                 </div>
                                             </div>
-                                            <TrendingUp className="w-5 h-5 text-[#2E8B57] ml-3" />
+                                            <TrendingUp className="w-5 h-5 text-primary ml-3" />
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -449,7 +448,7 @@ export default function IntroductionRequestsPage() {
                                                 key={page}
                                                 onClick={() => handlePageChange(page)}
                                                 className={`px-3 py-2 text-sm border rounded-lg ${currentPage === page
-                                                    ? 'bg-[#2E8B57] text-white border-[#2E8B57]'
+                                                    ? 'bg-primary text-white border-primary'
                                                     : 'border-gray-300 hover:bg-gray-50'
                                                     }`}
                                             >

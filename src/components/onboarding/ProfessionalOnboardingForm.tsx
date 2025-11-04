@@ -40,7 +40,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
     const [skillInput, setSkillInput] = useState('');
 
     const form = useForm<ProfessionalOnboardingData>({
-        resolver: zodResolver(professionalOnboardingSchema),
+        resolver: zodResolver(professionalOnboardingSchema) as any,
         mode: 'onChange',
         defaultValues: {
             firstName: '',
