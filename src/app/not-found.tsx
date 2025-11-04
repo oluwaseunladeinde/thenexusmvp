@@ -1,10 +1,14 @@
 import { Logo } from '@/components/platform/Logo';
 import Link from 'next/link';
 
+export const metadata = {
+    title: '404 - Page Not Found',
+    description: 'The page you are looking for could not be found.',
+};
 
 export default function NotFound() {
     return (
-        <div className="flex items-center justify-center min-h-[100dvh]">
+        <div className="flex items-center justify-center min-h-dvh">
             <div className="max-w-md space-y-8 p-4 text-center">
                 <Logo />
                 <h1 className="text-4xl font-bold text-gray-900 tracking-tight">

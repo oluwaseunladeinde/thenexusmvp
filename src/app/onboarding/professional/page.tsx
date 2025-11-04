@@ -29,7 +29,10 @@ export default async function ProfessionalOnboardingPage() {
                     <p className="text-gray-600">Complete your profile to start receiving opportunities</p>
                 </div>
 
-                <ProfessionalOnboardingForm userId={user.id} userEmail={user.emailAddresses[0].emailAddress} />
+                <ProfessionalOnboardingForm
+                    userId={user.id}
+                    userEmail={user.emailAddresses[0]?.emailAddress ?? ''}
+                />
             </div>
         </div>
     );

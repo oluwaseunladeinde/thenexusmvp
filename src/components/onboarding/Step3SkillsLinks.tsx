@@ -44,7 +44,15 @@ export function Step3SkillsLinks() {
         mode: 'onChange',
     })
 
-    const watchedSkills = watch('skills') || []
+    const watchedSkills = watch('skills') || [];
+
+    useEffect(() => {
+        return () => {
+            if (resumeUrl && resumeUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(resumeUrl)
+            }
+        }
+    }, [resumeUrl])
 
     const onSubmit = (data: SkillsLinksForm) => {
         updateSkillsAndLinks({
@@ -82,7 +90,7 @@ export function Step3SkillsLinks() {
         trigger('skills')
     }
 
-    const handleKeyPress = (e: React.KeyboardEvent) => {
+    const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault()
             addSkill()
@@ -124,7 +132,7 @@ export function Step3SkillsLinks() {
                     <Input
                         value={skillInput}
                         onChange={(e) => setSkillInput(e.target.value)}
-                        onKeyPress={handleKeyPress}
+                        onKeyPress={handleKeyDown}
                         placeholder="e.g., Product Management, Agile, Data Analysis"
                         disabled={watchedSkills.length >= 10}
                     />
@@ -241,6 +249,10 @@ export function Step3SkillsLinks() {
                     redirected to your dashboard where you can start receiving relevant opportunities.
                 </p>
             </div>
+
+            <Button type="submit" className="w-full">
+                Complete Profile
+                +            </Button>
         </form>
     )
 }

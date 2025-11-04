@@ -57,11 +57,15 @@ export default function IntroductionRequestsFeed({ introductions, professionalNa
     const getTimeLeft = (expiresAt: Date) => {
         const now = new Date();
         const diff = new Date(expiresAt).getTime() - now.getTime();
+
+        if (diff <= 0) return 'Expired';
+
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
         if (days > 1) return `${days} days left`;
         if (days === 1) return '1 day left';
         const hours = Math.floor(diff / (1000 * 60 * 60));
+        if (hours < 1) return 'Less than 1 hour left';
         return `${hours} hours left`;
     };
 
@@ -192,8 +196,8 @@ export default function IntroductionRequestsFeed({ introductions, professionalNa
                                         />
                                     ) : (
                                         <div className="w-full h-full bg-linear-to-br from-secondary to-[#1A3A52] flex items-center justify-center text-white text-sm font-bold">
-                                            {intro.sentBy.firstName[0]}
-                                            {intro.sentBy.lastName[0]}
+                                            {intro.sentBy.firstName?.[0] || ''}
+                                            {intro.sentBy.lastName?.[0] || ''}
                                         </div>
                                     )}
                                 </div>

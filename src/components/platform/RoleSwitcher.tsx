@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter, usePathname } from 'next/navigation';
 import { Briefcase, Users, ChevronDown } from 'lucide-react';
-import { completeProfessionalOnboarding, switchActiveRole } from '@/app/actions/clerk-metadata';
+import { switchActiveRole } from '@/app/actions/clerk-metadata';
 
 type ActiveRole = 'hr' | 'professional';
 
@@ -16,22 +16,25 @@ export default function RoleSwitcher() {
     const [loading, setLoading] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
 
-    const hasDualRole = user?.publicMetadata?.hasDualRole as boolean;
-    let activeRoleLabel = activeRole === 'hr' ? 'HR' : 'Professional';
+    let hasDualRole = user?.publicMetadata?.hasDualRole as boolean;
+    if (!hasDualRole) {
+        hasDualRole = user?.unsafeMetadata?.hasDualRole as boolean;
+    }
+
+    if (!hasDualRole) {
+        return null;
+    }
 
     useEffect(() => {
-        // Detect current role from pathname
+        // Prefer saved role from metadata, fallback to pathname detection
+        const savedRole = user?.publicMetadata?.activeRole as ActiveRole;
+
         if (pathname.startsWith('/professional')) {
-            setActiveRole('professional');
+            setActiveRole(savedRole || 'professional');
         } else if (pathname.startsWith('/hr') || pathname.startsWith('/dashboard')) {
-            setActiveRole('hr');
+            setActiveRole(savedRole || 'hr');
         }
 
-        // Get saved preference from metadata
-        const savedRole = user?.publicMetadata?.activeRole as ActiveRole;
-        if (savedRole && savedRole !== activeRole) {
-            setActiveRole(savedRole);
-        }
     }, [pathname, user]);
 
     const handleRoleSwitch = async (role: ActiveRole) => {
@@ -42,7 +45,7 @@ export default function RoleSwitcher() {
 
         try {
             // Update active role in Clerk metadata
-            const stateOfMetadata = await switchActiveRole(activeRole);
+            const stateOfMetadata = await switchActiveRole(role);
 
             // Store preference in API
             await fetch('/api/users/active-role', {

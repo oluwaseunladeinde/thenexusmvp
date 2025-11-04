@@ -41,8 +41,8 @@ export default function DashboardHero({ professional }: Props) {
                                     />
                                 ) : (
                                     <div className="w-full h-full bg-linear-to-br from-primary to-[#1F5F3F] flex items-center justify-center text-white text-5xl font-bold">
-                                        {professional.firstName[0]}
-                                        {professional.lastName[0]}
+                                        {professional.firstName?.[0] || '?'}
+                                        {professional.lastName?.[0] || '?'}
                                     </div>
                                 )}
                             </div>
@@ -76,12 +76,14 @@ export default function DashboardHero({ professional }: Props) {
                                                 </span>
                                             </div>
                                         )}
-                                        <div className="flex items-center gap-1">
-                                            <MapPin className="w-4 h-4" />
-                                            <span>
-                                                {professional.locationCity}, {professional.locationState}
-                                            </span>
-                                        </div>
+                                        {professional.locationCity && professional.locationState && (
+                                            <div className="flex items-center gap-1">
+                                                <MapPin className="w-4 h-4" />
+                                                <span>
+                                                    {professional.locationCity}, {professional.locationState}
+                                                </span>
+                                            </div>
+                                        )}
                                         <div className="flex items-center gap-1">
                                             <Calendar className="w-4 h-4" />
                                             <span>{professional.yearsOfExperience}+ years experience</span>

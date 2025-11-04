@@ -76,7 +76,7 @@ const CompletenessCard = ({ profileCompleteness, completenessBreakdown }: Comple
                         </div>
                         <span className="text-gray-500">{completenessBreakdown.categories.verification.score}%</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs p-2">
+                    <div className="flex items-center justify-between text-xs border-b border-gray-200 p-2 mb-0">
                         <div className='flex items-center justify-center gap-2'>
                             {getStatusIcon(completenessBreakdown.categories.documents.completed, completenessBreakdown.categories.documents.total)}
                             <span className={getStatusColor(completenessBreakdown.categories.documents.completed, completenessBreakdown.categories.documents.total)}>
@@ -84,6 +84,24 @@ const CompletenessCard = ({ profileCompleteness, completenessBreakdown }: Comple
                             </span>
                         </div>
                         <span className="text-gray-500">{completenessBreakdown.categories.documents.score}%</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs border-b border-gray-200 p-2 mb-0">
+                        <div className='flex items-center justify-center gap-2'>
+                            {getStatusIcon(completenessBreakdown.categories.networkAndSkills.completed, completenessBreakdown.categories.networkAndSkills.total)}
+                            <span className={getStatusColor(completenessBreakdown.categories.networkAndSkills.completed, completenessBreakdown.categories.networkAndSkills.total)}>
+                                Network & Skills ({completenessBreakdown.categories.networkAndSkills.completed}/{completenessBreakdown.categories.networkAndSkills.total})
+                            </span>
+                        </div>
+                        <span className="text-gray-500">{completenessBreakdown.categories.networkAndSkills.score}%</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs p-2">
+                        <div className='flex items-center justify-center gap-2'>
+                            {getStatusIcon(completenessBreakdown.categories.additional.completed, completenessBreakdown.categories.additional.total)}
+                            <span className={getStatusColor(completenessBreakdown.categories.additional.completed, completenessBreakdown.categories.additional.total)}>
+                                Additional ({completenessBreakdown.categories.additional.completed}/{completenessBreakdown.categories.additional.total})
+                            </span>
+                        </div>
+                        <span className="text-gray-500">{completenessBreakdown.categories.additional.score}%</span>
                     </div>
                 </div>
             )}

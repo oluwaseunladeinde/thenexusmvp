@@ -19,8 +19,8 @@ export default function SignUpPage() {
                         Choose Your Account Type
                     </h2>
                     <div className="grid grid-cols-2 gap-4 mb-6">
-                        <Link href="/sign-up?type=PROFESSIONAL"
-                            className={`p-4 border-2 rounded-md transition ${userType === 'PROFESSIONAL'
+                        <Link href="/sign-up?type=professional"
+                            className={`p-4 border-2 rounded-md transition ${userType === 'professional'
                                 ? 'border-primary bg-green-50'
                                 : 'border-gray-300 hover:border-primary'
                                 }`}
@@ -31,7 +31,7 @@ export default function SignUpPage() {
                         </Link>
 
                         <Link href="/sign-up?type=HR_PARTNER"
-                            className={`p-4 border-2 rounded-md transition ${userType === 'HR_PARTNER'
+                            className={`p-4 border-2 rounded-md transition ${userType === 'hr_partner'
                                 ? 'border-secondary bg-blue-50'
                                 : 'border-gray-300 hover:border-secondary'
                                 }`}

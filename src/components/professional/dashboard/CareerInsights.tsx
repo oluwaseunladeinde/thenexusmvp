@@ -60,7 +60,7 @@ export default function CareerInsights({ professional }: Props) {
     const topSkills = professional.skills.slice(0, 3);
 
     // Calculate career progression
-    const workHistory = professional.workHistory.sort((a, b) =>
+    const workHistory = [...professional.workHistory].sort((a, b) =>
         new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
     );
 
@@ -68,7 +68,10 @@ export default function CareerInsights({ professional }: Props) {
         if (salary >= 1000000) {
             return `₦${(salary / 1000000).toFixed(1)}M`;
         }
-        return `₦${(salary / 1000).toFixed(0)}K`;
+        if (salary >= 1000) {
+            return `₦${(salary / 1000).toFixed(0)}K`;
+        }
+        return `₦${salary.toFixed(0)}`;
     };
 
     return (

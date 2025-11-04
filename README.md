@@ -29,12 +29,14 @@ theNexus is Nigeria's premier network connecting verified senior professionals w
 ## For Senior Professionals
 
 - 🎯 Verified Profile Badge - Stand out with professional verification
-- 📬 Quality Introductions - Receive relevant senior-level opportunities
+- 📬 Quality Introductions - Receive relevant senior-level opportunities with smart filtering
 - 🔒 Complete Confidentiality - Your job search remains private
 - 💬 Direct Access - Speak with hiring managers, not recruiters
 - 📊 Market Intelligence - Salary insights and industry trends
 - 📈 Profile Completeness Tracker - Get detailed insights on profile completion with weighted categories and personalized recommendations
 - 👥 Dual-Role Mode - HR professionals can also job search confidentially
+- ⏰ Smart Expiry Tracking - See days remaining on introduction requests with automatic expiry management
+- 🎨 Enhanced Request Cards - User-friendly card design with better visual hierarchy and readability
 
 ## For Companies & HR Leaders
 
@@ -44,6 +46,7 @@ theNexus is Nigeria's premier network connecting verified senior professionals w
 - 🔒 Confidential Search - Hire senior roles discreetly
 - 📈 Better Quality - 40% higher interview-to-offer conversion
 - 🎯 Smart Matching - AI-powered candidate recommendations
+- ⏳ Time-Sensitive Requests - Set expiry dates on introduction requests to create urgency
 
 ## Unique Privacy Firewall
 Our **dual-role system** allows HR professionals to job search while employed, with a **privacy firewall** that ensures:
@@ -560,11 +563,14 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## 📋 Roadmap
 ### Phase 1: MVP (Current)
-Professional profiles with verification
+- ✅ Professional profiles with verification
 - ✅ Company accounts with HR team management
 - ✅ Job role creation and management
-- ✅ Introduction request workflow
+- ✅ Introduction request workflow with expiry tracking
 - ✅ Dual-role system with privacy firewall
+- ✅ Enhanced UI with user-friendly request cards
+- ✅ Smart filtering system (All, Pending, Accepted, Declined, Expired)
+- ✅ Real-time expiry warnings and status management
 - ✅ Basic notifications (email + WhatsApp)
 
 ### Phase 2: Enhanced Features (Q2 2025)

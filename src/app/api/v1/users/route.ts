@@ -1,5 +1,7 @@
-// app/api/users/route.ts
+// src/app/api/v1/users/route.ts
+import { requireAdmin } from '@/lib/auth/rbac';
 import { prisma } from '@/lib/database';
+import logger from '@/lib/services/logger';
 import { NextResponse } from 'next/server';
 
 /**
@@ -50,7 +52,47 @@ import { NextResponse } from 'next/server';
  *                   type: string
  */
 
-export async function GET() {
-    const users = await prisma.user.findMany()
-    return NextResponse.json(users)
+export async function GET(request: Request) {
+
+    // check that this user is an admin user
+    const user = await requireAdmin()
+    logger.info(`${user.firstName} check for all users`);
+
+    // Add authentication/authorization (see previous comment)
+    try {
+        // Add pagination
+        const { searchParams } = new URL(request.url);
+        const page = parseInt(searchParams.get('page') || '1');
+        const limit = parseInt(searchParams.get('limit') || '10');
+        const skip = (page - 1) * limit;
+
+        // Select only non-sensitive fields
+        const users = await prisma.user.findMany({
+            skip,
+            take: limit,
+            select: {
+                id: true,
+                email: true,
+                createdAt: true,
+                // Exclude password, tokens, and other sensitive fields
+            }
+        });
+
+        const total = await prisma.user.count();
+        return NextResponse.json({
+            users,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        );
+    }
 }

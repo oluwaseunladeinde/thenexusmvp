@@ -131,10 +131,21 @@ export async function PUT(request: NextRequest) {
         if (validatedBody.confidentialSearch !== undefined) updateData.confidentialSearch = validatedBody.confidentialSearch;
         if (validatedBody.linkedinUrl !== undefined) updateData.linkedinUrl = validatedBody.linkedinUrl || null;
         if (validatedBody.portfolioUrl !== undefined) updateData.portfolioUrl = validatedBody.portfolioUrl || null;
+        if (validatedBody.profilePhotoUrl !== undefined) updateData.profilePhotoUrl = validatedBody.profilePhotoUrl || null;
+        if (validatedBody.resumeUrl !== undefined) updateData.resumeUrl = validatedBody.resumeUrl || null;
         if (validatedBody.workHistory !== undefined) updateData.workHistory = {
             deleteMany: {},
             create: validatedBody.workHistory
         };
+        if (validatedBody.skills !== undefined) {
+            updateData.skills = {
+                deleteMany: {},
+                create: validatedBody.skills.map((skillName: string) => ({
+                    skillName,
+                    isPrimarySkill: false
+                }))
+            };
+        }
 
         // Update professional profile
         const updatedProfessional = await prisma.professional.update({
@@ -250,15 +261,15 @@ export async function GET() {
             },
         });
 
-        // Fetch location names
-        const locationNames = await getLocationNames(professional?.locationCity || null, professional?.locationState || null);
-
         if (!professional) {
             return NextResponse.json(
                 { error: 'Professional profile not found' },
                 { status: 404 }
             );
         }
+
+        // Fetch location names
+        const locationNames = await getLocationNames(professional?.locationCity || null, professional?.locationState || null);
 
         // Get stats
         const stats = await prisma.introductionRequest.groupBy({
@@ -289,9 +300,9 @@ export async function GET() {
                     ...locationNames,
                 },
                 stats: {
-                    pending: stats.find((s: { status: string; _count: number }) => s.status === 'pending')?._count || 0,
-                    accepted: stats.find((s: { status: string; _count: number }) => s.status === 'accepted')?._count || 0,
-                    declined: stats.find((s: { status: string; _count: number }) => s.status === 'declined')?._count || 0,
+                    pending: stats.find((s: { status: string; _count: number }) => s.status === 'PENDING')?._count || 0,
+                    accepted: stats.find((s: { status: string; _count: number }) => s.status === 'ACCEPTED')?._count || 0,
+                    declined: stats.find((s: { status: string; _count: number }) => s.status === 'DECLINED')?._count || 0,
                     profileViews,
                 },
                 completeness: completenessBreakdown,

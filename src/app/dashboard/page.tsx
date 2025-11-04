@@ -11,7 +11,7 @@ export default async function Dashboard() {
     }
 
     // Type-safe access to metadata
-    const userType = sessionClaims?.metadata?.userType;
+    const userType = sessionClaims?.metadata?.userType ?? 'Unknown';
     const hasDualRole = sessionClaims?.metadata?.hasDualRole ?? false;
 
     // Get full user object for more metadata

@@ -38,8 +38,8 @@ export default function ActivityFeed({ profileViews }: Props) {
                     >
                         <div className="flex items-start gap-3 flex-1">
                             <div className="w-10 h-10 rounded-full bg-linear-to-br from-secondary to-[#1A3A52] flex items-center justify-center text-white text-sm font-bold shrink-0">
-                                {view.viewer.firstName[0]}
-                                {view.viewer.lastName[0]}
+                                {view.viewer.firstName[0] || '?'}
+                                {view.viewer.lastName[0] || '?'}
                             </div>
                             <div className="flex-1">
                                 <p className="text-sm font-semibold text-gray-900">

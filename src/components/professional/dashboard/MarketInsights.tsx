@@ -40,7 +40,12 @@ const MarketInsights = () => {
                                 <TrendingUp className="w-5 h-5 text-green-600" />
                             )}
                         </div>
-                        <p className="text-xs text-green-600 mt-1">{insight.change}</p>
+                        <p className={`text-xs mt-1 ${insight.trend === 'up' ? 'text-green-600' :
+                                insight.trend === 'down' ? 'text-red-600' :
+                                    'text-gray-600'
+                            }`}>
+                            {insight.change}
+                        </p>
                     </div>
                 ))}
             </div>

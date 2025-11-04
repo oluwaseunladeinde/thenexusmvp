@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
-import { prisma } from '@/lib/database/prisma'
+
 
 const basicInfoSchema = z.object({
     firstName: z.string().min(1, 'First name is required'),
@@ -120,7 +120,13 @@ export function Step1BasicInfo() {
     // Auto-save on form changes
     useEffect(() => {
         const subscription = watch((value) => {
-            updateBasicInfo(value as any)
+            // Only update if all required fields are present
+            if (value.firstName && value.lastName && value.state) {
+                const timeoutId = setTimeout(() => {
+                    updateBasicInfo(value as Partial<BasicInfoForm>)
+                }, 500) // 500ms debounce
+                return () => clearTimeout(timeoutId)
+            }
         })
         return () => subscription.unsubscribe()
     }, [watch, updateBasicInfo])

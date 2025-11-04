@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter, usePathname } from 'next/navigation';
 import { Briefcase, Users, Shield, Info } from 'lucide-react';
@@ -25,26 +25,18 @@ export default function RoleSwitcherWithPrivacy() {
     const hasDualRole = user?.publicMetadata?.hasDualRole as boolean;
 
     useEffect(() => {
-        if (pathname.startsWith('/professional')) {
+        // Set role based on user metadata if available, otherwise derive from pathname
+        const savedRole = user?.publicMetadata?.activeRole as ActiveRole;
+        if (savedRole) {
+            setActiveRole(savedRole);
+        } else if (pathname.startsWith('/professional')) {
             setActiveRole('professional');
         } else if (pathname.startsWith('/hr') || pathname.startsWith('/dashboard')) {
             setActiveRole('hr');
         }
-
-        const savedRole = user?.publicMetadata?.activeRole as ActiveRole;
-        if (savedRole && savedRole !== activeRole) {
-            setActiveRole(savedRole);
-        }
     }, [pathname, user]);
 
-    // Fetch privacy status when in professional mode
-    useEffect(() => {
-        if (activeRole === 'professional' && hasDualRole) {
-            fetchPrivacyStatus();
-        }
-    }, [activeRole, hasDualRole]);
-
-    const fetchPrivacyStatus = async () => {
+    const fetchPrivacyStatus = useCallback(async () => {
         try {
             const response = await fetch('/api/dual-role/privacy-status');
             if (response.ok) {
@@ -54,7 +46,16 @@ export default function RoleSwitcherWithPrivacy() {
         } catch (error) {
             console.error('Error fetching privacy status:', error);
         }
-    };
+    }, []);
+
+    // Fetch privacy status when in professional mode
+    useEffect(() => {
+        if (activeRole === 'professional' && hasDualRole) {
+            fetchPrivacyStatus();
+        }
+    }, [activeRole, hasDualRole, fetchPrivacyStatus]);
+
+
 
     const handleRoleSwitch = async (role: ActiveRole) => {
         if (role === activeRole || loading) return;
@@ -62,23 +63,28 @@ export default function RoleSwitcherWithPrivacy() {
         setLoading(true);
 
         try {
-            const stateOfMetadata = await switchActiveRole(activeRole);
+            await switchActiveRole(role);
 
-            await fetch('/api/users/active-role', {
+            const response = await fetch('/api/users/active-role', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ activeRole: role }),
             });
+
+            if (!response.ok) {
+                throw new Error('Failed to update active role on server');
+            }
+
+            setActiveRole(role);
 
             if (role === 'hr') {
                 router.push('/dashboard');
             } else {
                 router.push('/professional/dashboard');
             }
-
-            setActiveRole(role);
         } catch (error) {
             console.error('Error switching roles:', error);
+            // TODO: Replace with a toast notification or error state
             alert('Failed to switch roles. Please try again.');
         } finally {
             setLoading(false);

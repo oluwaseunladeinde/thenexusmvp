@@ -8,16 +8,25 @@ import IntroductionRequestCard from "@/components/professional/dashboard/Introdu
 import MarketInsights from "@/components/professional/dashboard/MarketInsights";
 import ProfileCard from "@/components/professional/dashboard/ProfileCard";
 import QuickActions from "@/components/professional/dashboard/QuickActions";
-import { useUser } from "@clerk/nextjs";
 import { Clock, Star, TrendingUp, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
 
-const ProfessionalDashboardPage = () => {
+interface Stats {
+    profileViews: number;
+    pending: number;
+    accepted: number;
+}
 
-    const { user } = useUser();
+interface CompletenessData {
+    overall: number;
+    // ... breakdown fields
+}
+
+
+const ProfessionalDashboardPage = () => {
     const [profileData, setProfileData] = useState<any>(null);
-    const [stats, setStats] = useState<any>(null);
+    const [stats, setStats] = useState<Stats | null>(null);
     const [completenessData, setCompletenessData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -31,7 +40,15 @@ const ProfessionalDashboardPage = () => {
     const fetchProfileData = async () => {
         try {
             setError(null);
-            const response = await fetch('/api/v1/professionals/me');
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+            const response = await fetch('/api/v1/professionals/me', {
+                signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
+
+
             if (response.ok) {
                 const data = await response.json();
                 setProfileData(data.data.professional);
@@ -44,7 +61,11 @@ const ProfessionalDashboardPage = () => {
             }
         } catch (error) {
             console.error('Error fetching profile:', error);
-            setError('Failed to load profile data');
+            if (error instanceof Error && error.name === 'AbortError') {
+                setError('Request timed out. Please try again.');
+            } else {
+                setError('Failed to load profile data');
+            }
         } finally {
             setLoading(false);
         }
@@ -180,7 +201,10 @@ const ProfessionalDashboardPage = () => {
                                     <h3 className="text-xl font-bold text-secondary">
                                         Recent Introduction Requests
                                     </h3>
-                                    <button className="text-primary text-sm font-semibold hover:text-[#1F5F3F]">
+                                    <button
+                                        onClick={() => {/* TODO: Navigate to full requests page */ }}
+                                        className="text-primary text-sm font-semibold hover:text-[#1F5F3F]"
+                                    >
                                         View All →
                                     </button>
                                 </div>
@@ -204,8 +228,20 @@ const ProfessionalDashboardPage = () => {
                         <QuickActions
                             title="Quick Actions"
                             actions={[
-                                { icon: Users, label: "View Profile" },
-                                { icon: Star, label: "Manage Skills" }
+                                {
+                                    id: Date.now().toString(36) + Math.random().toString(36).substring(2, 8),
+                                    icon: Users,
+                                    label: "View Profile",
+                                    type: 'link',
+                                    href: '/professional/profile'
+                                },
+                                {
+                                    id: Date.now().toString(36) + Math.random().toString(36).substring(2, 8),
+                                    icon: Star,
+                                    label: "Manage Skills",
+                                    type: "link",
+                                    href: "/professional/skills"
+                                }
                             ]}
                         />
                         <MarketInsights />

@@ -27,6 +27,9 @@ const createProfessionalSchema = z.object({
     linkedinUrl: z.string().url().optional().or(z.literal('')),
     portfolioUrl: z.string().url().optional().or(z.literal('')),
     resumeUrl: z.string().url().optional().or(z.literal('')),
+}).refine(data => data.salaryExpectationMin <= data.salaryExpectationMax, {
+    message: 'Minimum salary cannot exceed maximum salary',
+    path: ['salaryExpectationMin'],
 })
 
 /**
@@ -233,7 +236,6 @@ export async function POST(request: NextRequest) {
 
         // Parse and validate request body
         const body = await request.json()
-        console.log({ body })
         const validatedData = createProfessionalSchema.parse(body)
 
         // Check if user already exists
@@ -259,45 +261,47 @@ export async function POST(request: NextRequest) {
         // Convert notice period to days
         const noticePeriodDays = getNoticePeriodDays(validatedData.noticePeriod)
 
-        // Create professional profile
-        const professional = await prisma.professional.create({
-            data: {
-                userId: existingUser.id,
-                firstName: validatedData.firstName,
-                lastName: validatedData.lastName,
-                profileHeadline: validatedData.profileHeadline,
-                locationState: validatedData.locationState,
-                locationCity: validatedData.locationCity,
-                yearsOfExperience: validatedData.yearsOfExperience,
-                currentTitle: validatedData.currentTitle,
-                currentCompany: validatedData.currentCompany,
-                currentIndustry: validatedData.currentIndustry,
-                salaryExpectationMin: validatedData.salaryExpectationMax,
-                salaryExpectationMax: validatedData.salaryExpectationMin,
-                noticePeriodDays,
-                willingToRelocate: validatedData.willingToRelocate,
-                openToOpportunities: validatedData.openToOpportunities,
-                linkedinUrl: validatedData.linkedinUrl || null,
-                portfolioUrl: validatedData.portfolioUrl || null,
-                resumeUrl: validatedData.resumeUrl || null,
-                onboardingCompleted: true,
-                profileCompleteness: 100, // Full profile
-            },
+        // Create professional profile and skills in a transaction
+        const professional = await prisma.$transaction(async (tx) => {
+            const newProfessional = await tx.professional.create({
+                data: {
+                    userId: existingUser.id,
+                    firstName: validatedData.firstName,
+                    lastName: validatedData.lastName,
+                    profileHeadline: validatedData.profileHeadline,
+                    locationState: validatedData.locationState,
+                    locationCity: validatedData.locationCity,
+                    yearsOfExperience: validatedData.yearsOfExperience,
+                    currentTitle: validatedData.currentTitle,
+                    currentCompany: validatedData.currentCompany,
+                    currentIndustry: validatedData.currentIndustry,
+                    salaryExpectationMin: validatedData.salaryExpectationMin,
+                    salaryExpectationMax: validatedData.salaryExpectationMax,
+                    noticePeriodDays,
+                    willingToRelocate: validatedData.willingToRelocate,
+                    openToOpportunities: validatedData.openToOpportunities,
+                    linkedinUrl: validatedData.linkedinUrl || null,
+                    portfolioUrl: validatedData.portfolioUrl || null,
+                    resumeUrl: validatedData.resumeUrl || null,
+                    onboardingCompleted: true,
+                    profileCompleteness: 100, // Full profile
+                },
+            });
+
+            if (validatedData.skills.length > 0) {
+                await tx.professionalSkill.createMany({
+                    data: validatedData.skills.map((skillName, index) => ({
+                        professionalId: newProfessional.id,
+                        skillName,
+                        proficiencyLevel: 'INTERMEDIATE' as const,
+                        isPrimarySkill: index < 3,
+                    })),
+                });
+            }
+
+            return newProfessional;
         });
 
-        console.log({ professional })
-
-        // Create professional skills
-        if (validatedData.skills.length > 0) {
-            await prisma.professionalSkill.createMany({
-                data: validatedData.skills.map((skillName, index) => ({
-                    professionalId: professional.id,
-                    skillName,
-                    proficiencyLevel: 'INTERMEDIATE' as const, // Default level
-                    isPrimarySkill: index < 3, // First 3 skills are primary
-                })),
-            })
-        }
 
         // Update Clerk user metadata
         // Note: This would typically be done via Clerk's API

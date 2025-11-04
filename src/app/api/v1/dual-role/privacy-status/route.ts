@@ -109,7 +109,7 @@ export async function GET(req: Request) {
     } catch (error: any) {
         console.error('Error fetching privacy status:', error);
         return NextResponse.json(
-            { error: error.message || 'Failed to fetch privacy status' },
+            { error: 'Failed to fetch privacy status' },
             { status: 500 }
         );
     }

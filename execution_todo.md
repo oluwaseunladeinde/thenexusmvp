@@ -1,131 +1,111 @@
-# Execution Plan
+# Epic 2.3: Introduction Request Management (Professional Side)
+Epic 2.3 focuses on building a system that enables professionals to receive and respond to introduction requests efficiently. This feature will streamline communication, making it easier for professionals to connect and collaborate. The goal is to enhance user experience by providing a seamless process for managing introductions.
 
-## Epic 2.1: Professional Onboarding
-**Sprint Goal:** CSprint Goal: Build complete professional onboarding flow
-This feature focuses on building a complete professional onboarding flow to enhance user experience. The goal is to design and develop a seamless process that ensures new users can efficiently integrate and navigate the platform. Key areas include interface design, functionality development, and user guidance.
+## Key Objectives:
+Develop functionality for professionals to receive introduction requests.
+Enable professionals to respond to these requests within the platform.
+Ensure the process is intuitive and user-friendly.
 
-### 1. Design Professional Onboarding Flow (Figma)
-#### Description:
-- Design a 3-step onboarding wizard
-- Step 1: Basic info
-- Step 2: Career expectations
-- Step 3: Skills & profile links
-- Design progress indicator
-- Mobile responsive designs
-#### Acceptance Criteria:
-- All 3 steps designed
-- Progress bar included
-- Form validation states designed
-- Success confirmation designed
-#### Files to Create/Update:
-- Design assets (external Figma file)
+## [P0] Design Introduction Request Card (Figma)
+### Design card showing: 
+  - Job role details
+  - Company info (or "Confidential")
+  - Salary range 
+  - Personalized message 
+  - Accept/Decline buttons 
+- Design expanded view
 
-### 2. Create Onboarding Layout Component
-#### Description:
-- Create multi-step form layout
-- Implement progress bar
-- Add step navigation (back/next)
-- Handle form state management (zustand | useState | useReducer)
-#### Acceptance Criteria:
-- Can navigate between steps
-- Form data persists across steps
-- Progress indicator updates correctly
+### Acceptance Criteria: 
+- Card design completed
+- CTA buttons prominent
+- Mobile responsive
 
-### 3. Build Onboarding Step 1: Basic Info
-#### Description:
-- Build form fields: 
-    - First name, last name
-    - Profile headline
-    - Location (city, state dropdowns) Note: Selected state determines sity selection, reference the state and city tables.
-    - Years of experience
-    - Current title, company, industry
-- Add form validation (Zod)
-- Handle form submission
-#### Acceptance Criteria:
-- All fields validate correctly
-- Nigerian states in the dropdown
-- Can proceed to step 2
+## [P0] Build Introduction Requests List
+**Description:** 
+- Create introductions list page
+- Display pending introductions
+- Group by status (pending, accepted, declined)
+- Add filters (status, date)
 
-### 4. Build Onboarding Step 2: Career Expectations
-#### Description:
-- Build form fields: 
-    - Salary expectations (min/max)
-    - Notice period dropdown
-    - Willing to relocate checkbox
-    - Open to opportunities checkbox
-- Add validation
-- Add privacy notice banner
-#### Acceptance Criteria:
-- Salary inputs formatted as currency (Naira)
-- Privacy guarantee visible
-- Can proceed to step 3
+### Acceptance Criteria: 
+- Lists all introductions
+- Grouped by status
+- Filters work correctly
+- Responsive layout
 
-### 5. Build Onboarding Step 3: Skills & Links
-#### Description:
-- Build skill input with add/remove
-- LinkedIn URL input
-- Portfolio URL input
-- Resume upload component
-- Add validation
-- Implement final submission
-#### Acceptance Criteria:
-- Can add up to 10 skills.
-- URLs validate correctly
-- Resume uploads to storage
-- Shows completion confirmation
+## [P0] Create Get Introduction Requests API
+**Description:** 
+- Create GET /api/v1/introductions/received
+- Filter by professional ID
+- Include job role and company details
+- Sort by date (newest first)
 
-### 6. Create Professional Profile API Endpoint
-#### Description:
-- Create POST /api/professionals/create
-- Validate input with Zod
-- Create professional record in database
-- Link to Clerk user
-- Update Clerk metadata (onboardingComplete: true)
-- Handle errors gracefully
-#### Acceptance Criteria:
-- Returns 201 on success
-- Validates all required fields
-- Creates professional and related records
-- Returns helpful error messages
+### Acceptance Criteria: 
+- Returns all introductions for professional
+- Includes related data (job, company)
+- Properly paginated
+- Authenticated
 
-### 7. Implement Resume Upload to Cloud Storage
-#### Description:
-- Set up AWS S3 or Cloudflare R2
-- Create upload API endpoint
-- Implement file validation (PDF only, <5MB)
-- Generate secure URLs
-- Handle upload errors
-#### Acceptance Criteria:
-- PDF files upload successfully
-- File size validated
-- Returns secure URL
-- Handles errors gracefully
+## [P0] Build Introduction Request Detail Modal
+**Description:** 
+- Create modal component
+- Show full job description
+- Show HR contact preview
+- Add accept/decline buttons with optional message
 
-### 8. Connect Onboarding to API
-#### Description:
-- Integrate form submission with API
-- Handle loading states
-- Handle success/error states
-- Redirect to professional dashboard on success
-#### Acceptance Criteria:
-- Shows loading spinner during submission
-- Displays success message
-- Shows error messages
-- Redirects to /professional/dashboard
+### Acceptance Criteria: 
+- Modal opens on card click
+- All details visible
+- Can accept/decline with message
+- Closes on action
 
-### 9. Add Onboarding Progress Persistence
-#### Description:
-- Save form data to localStorage
-- Restore data on page refresh
-- Clear data on successful completion 
-#### Acceptance Criteria
-- Form data persists across refreshes
-- Can resume from any step
-- Data cleared on success
+## [P0] Create Accept/Decline Introduction API
+**Description:** 
+- Create POST /api/v1/introductions/:id/accept
+- Create POST /api/v1/introductions/:id/decline
+- Update introduction status
+- Create a notification for the HR partner
+- If accepted: unlock contact details
 
-### Additional Notes
-- Use Tailwind CSS for styling, ShadcnUI for any UI components.
-- Ensure all components are TypeScript (.tsx).
-- Test locally with npm run dev, check responsiveness in browser dev tools.
-- After implementation, run performance tests as per README and update README with features additions as necessary.
+### Acceptance Criteria: 
+- Status updates correctly
+- Notifications sent
+- Contact details revealed on accept
+- Optional message saved
 
+## [P0] Connect Accept/Decline to API
+**Description:** 
+- Connect modal actions to API
+- Show success/error messages
+- Update UI optimistically
+- Redirect or refresh list
+
+### Acceptance Criteria: 
+- Accept button works
+- Decline button works
+- UI updates immediately
+- Shows confirmation message
+
+## [P1] Add Introduction Request Expiration Logic
+**Description:** 
+- Create cron job to expire old requests
+- Set expires_at = sent_at + 7 days
+- Update status to 'expired' automatically
+- Send notification to HR partner
+
+### Acceptance Criteria: 
+- Cron runs daily
+- Expired requests marked correctly
+- Notifications sent
+- Testable locally
+
+## [P1] Display Expired Requests
+**Description:** 
+- Show expired requests in a separate section
+- Gray out expired cards
+- Display expiration date
+
+### Acceptance Criteria: 
+- Expired section visible
+- Cards styled differently
+- Clear messaging

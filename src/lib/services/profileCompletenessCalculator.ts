@@ -1,3 +1,4 @@
+import { MIN_YEARS_OF_EXPERIENCE } from '@/constants';
 import { Professional, VerificationStatus } from '@prisma/client';
 
 export interface CompletenessBreakdown {
@@ -102,7 +103,8 @@ export function calculateProfileCompleteness(
     const professionalDetailsItems = {
         currentTitle: !!professional.currentTitle?.trim(),
         currentCompany: !!professional.currentCompany?.trim(),
-        yearsOfExperience: professional.yearsOfExperience >= 5, // Minimum 5 years
+        yearsOfExperience: professional.yearsOfExperience != null && professional.yearsOfExperience >= MIN_YEARS_OF_EXPERIENCE,
+        // Minimum 5 years
         profileSummary: !!professional.profileSummary?.trim() && professional.profileSummary.length >= 50,
     };
     const professionalDetailsCompleted = Object.values(professionalDetailsItems).filter(Boolean).length;

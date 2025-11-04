@@ -11,16 +11,13 @@ export default async function OnboardingPage() {
     }
 
     // Check if already onboarded
-    //const onboardingComplete = user.publicMetadata?.onboardingComplete as boolean;
-    const onboardingComplete = user.unsafeMetadata?.onboardingComplete as boolean;
-    console.log({ onboardingComplete });
+    const onboardingComplete = user.publicMetadata?.onboardingComplete as boolean;
     if (onboardingComplete) {
         redirect('/dashboard');
     }
 
     // Get user type
-    //const userType = user.publicMetadata?.userType as string;
-    const userType = user.unsafeMetadata?.userType as string;
+    const userType = user.publicMetadata?.userType as string;
 
     // Check if user exists in Prisma
     let prismaUser = await prisma.user.findUnique({
@@ -48,7 +45,6 @@ export default async function OnboardingPage() {
 
     // Route to appropriate onboarding flow
     if (userType === 'professional') {
-        console.log("Redirecting to professinal onboarding...")
         redirect('/onboarding/professional');
     } else if (userType === 'hr_partner') {
         redirect('/onboarding/hr-partner');
