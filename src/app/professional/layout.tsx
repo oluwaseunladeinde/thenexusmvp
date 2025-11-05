@@ -20,6 +20,7 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
         <div className='min-h-screen bg-[#F4F6F8]'>
             {/* Header */}
             <DashboardNavBar userType={userType} />
+
             {/* Main Content */}
             <main>
                 {children}

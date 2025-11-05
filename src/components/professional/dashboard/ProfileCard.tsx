@@ -1,4 +1,4 @@
-import { MapPin, Building, Eye, TrendingUp, CheckCircle, User } from 'lucide-react';
+import { MapPin, Building, Eye, TrendingUp, CheckCircle, User, ArrowUp, ArrowDown } from 'lucide-react';
 
 // Profile Avatar Component
 const ProfileAvatar = ({ src, size = 'md', className = '' }: { src?: string; size?: 'sm' | 'md' | 'lg'; className?: string }) => {
@@ -45,6 +45,7 @@ interface ProfileCardProps {
     stats: {
         profileViews: number;
         impressions: number;
+        trend?: 'up' | 'down' | 'neutral';
     };
     premiumText?: string;
 }
@@ -91,7 +92,13 @@ export default function ProfileCard({ profileData, stats, premiumText }: Profile
                 <div className="flex justify-between text-sm">
                     <div>
                         <div className="flex items-center gap-1 text-gray-600">
+                            <Eye className="w-3 h-3" />
                             Profile views
+                            {stats.trend && stats.trend !== 'neutral' && (
+                                <div className={`flex items-center ${stats.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                                    {stats.trend === 'up' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
+                                </div>
+                            )}
                         </div>
                         <div className="font-semibold text-primary">{stats.profileViews}</div>
                     </div>
