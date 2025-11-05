@@ -8,6 +8,8 @@ import IntroductionRequestCard from "@/components/professional/dashboard/Introdu
 import MarketInsights from "@/components/professional/dashboard/MarketInsights";
 import ProfileCard from "@/components/professional/dashboard/ProfileCard";
 import QuickActions from "@/components/professional/dashboard/QuickActions";
+import ActivityFeed from "@/components/professional/dashboard/ActivityFeed";
+import ProfilePreview from "@/components/professional/dashboard/ProfilePreview";
 import { Clock, Star, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -171,18 +173,10 @@ const ProfessionalDashboardPage = () => {
                             profileData={profileData}
                             stats={{
                                 profileViews: stats?.profileViews || 0,
-                                impressions: stats?.profileViews || 0 // Using profileViews as impressions for now
+                                impressions: stats?.profileViews || 0
                             }}
                         />
-                        <ActivitySidebar
-                            title="Your Activity"
-                            items={[
-                                { icon: Clock, label: "Pending Requests", value: stats?.pending || 0 },
-                                { icon: Users, label: "Profile Views", value: stats?.profileViews || 0 },
-                                { icon: TrendingUp, label: "Accepted Requests", value: stats?.accepted || 0 }
-                            ]}
-                        />
-
+                        <ActivityFeed loading={loading} />
                     </div>
 
                     {/* Middle Feed */}
@@ -226,23 +220,13 @@ const ProfessionalDashboardPage = () => {
 
                     {/* Right Sidebar */}
                     <div className="lg:col-span-1 space-y-4">
-                        <QuickActions
-                            title="Quick Actions"
-                            actions={[
-                                {
-                                    id: Date.now().toString(36) + Math.random().toString(36).substring(2, 8),
-                                    icon: Users,
-                                    label: "View Profile",
-                                    type: 'link',
-                                    href: '/professional/profile'
-                                },
-                                {
-                                    id: Date.now().toString(36) + Math.random().toString(36).substring(2, 8),
-                                    icon: Star,
-                                    label: "Manage Skills",
-                                    type: "link",
-                                    href: "/professional/skills"
-                                }
+                        <ProfilePreview profileData={profileData} />
+                        <ActivitySidebar
+                            title="Your Stats"
+                            items={[
+                                { icon: Clock, label: "Pending Requests", value: stats?.pending || 0 },
+                                { icon: Users, label: "Profile Views", value: stats?.profileViews || 0 },
+                                { icon: TrendingUp, label: "Accepted Requests", value: stats?.accepted || 0 }
                             ]}
                         />
                         <MarketInsights />
