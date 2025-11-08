@@ -12,12 +12,12 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
 
     const userType = (user.publicMetadata?.userType as string | undefined) ?? '';
     if (userType !== 'PROFESSIONAL' && userType !== 'HR_LEADER' &&
-        userType !== 'professional' && userType !== 'hr_partner') {
+        userType !== 'professional' && userType !== 'hr-partner') {
         redirect('/sign-in');
     }
 
     return (
-        <div className='min-h-screen bg-[#F4F6F8]'>
+        <div className='min-h-screen bg-[#F4F6F8] dark:bg-gray-900'>
             {/* Header */}
             <DashboardNavBar userType={userType} />
 

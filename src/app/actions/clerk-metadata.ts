@@ -70,7 +70,7 @@ export async function completeHrPartnerOnboarding(data: {
             activeRole: 'hr',
         },
         publicMetadata: {
-            userType: 'hr_partner',
+            userType: 'hr-partner',
             onboardingComplete: true,
             hasDualRole: data.hasDualRole,
             activeRole: 'hr',

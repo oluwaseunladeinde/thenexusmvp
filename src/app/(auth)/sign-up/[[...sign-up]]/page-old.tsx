@@ -31,7 +31,7 @@ export default function SignUpPage() {
                         </Link>
 
                         <Link href="/sign-up?type=HR_PARTNER"
-                            className={`p-4 border-2 rounded-md transition ${userType === 'hr_partner'
+                            className={`p-4 border-2 rounded-md transition ${userType === 'hr-partner'
                                 ? 'border-secondary bg-blue-50'
                                 : 'border-gray-300 hover:border-secondary'
                                 }`}

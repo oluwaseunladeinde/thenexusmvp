@@ -78,13 +78,13 @@ export default function RoleSwitcher() {
     return (
         <div className="relative">
             {/* Desktop Version - Toggle Switch */}
-            <div className="hidden md:flex items-center gap-2 bg-gray-100 rounded-full p-1">
+            <div className="hidden md:flex items-center gap-2 bg-gray-100 rounded-full p-1 dark:bg-gray-800">
                 <button
                     onClick={() => handleRoleSwitch('hr')}
                     disabled={loading}
                     className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 ${activeRole === 'hr'
                         ? 'bg-secondary text-white shadow-md'
-                        : 'bg-transparent text-gray-600 hover:text-gray-900'
+                        : 'bg-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
                         } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
                     <Users className="w-4 h-4" />
@@ -99,7 +99,7 @@ export default function RoleSwitcher() {
                     disabled={loading}
                     className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 ${activeRole === 'professional'
                         ? 'bg-primary text-white shadow-md'
-                        : 'bg-transparent text-gray-600 hover:text-gray-900'
+                        : 'bg-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
                         } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
                     <Briefcase className="w-4 h-4" />
@@ -142,35 +142,35 @@ export default function RoleSwitcher() {
                         ></div>
 
                         {/* Dropdown Menu */}
-                        <div className="absolute top-full mt-2 right-0 bg-white rounded-lg shadow-xl border border-gray-200 z-50 min-w-[200px]">
+                        <div className="absolute top-full mt-2 right-0 bg-white rounded-lg shadow-xl border border-gray-200 z-50 min-w-[200px] dark:bg-gray-800 dark:border-gray-700">
                             <button
                                 onClick={() => handleRoleSwitch('hr')}
                                 disabled={loading || activeRole === 'hr'}
-                                className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition ${activeRole === 'hr' ? 'bg-gray-100' : ''
+                                className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition dark:hover:bg-gray-700 ${activeRole === 'hr' ? 'bg-gray-100 dark:bg-gray-700' : ''
                                     } ${loading ? 'opacity-50' : ''}`}
                             >
                                 <Users className="w-5 h-5 text-secondary" />
                                 <div className="text-left flex-1">
-                                    <div className="font-semibold text-secondary">HR Mode</div>
-                                    <div className="text-xs text-gray-500">Search & hire talent</div>
+                                    <div className="font-semibold text-secondary dark:text-secondary">HR Mode</div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400">Search & hire talent</div>
                                 </div>
                                 {activeRole === 'hr' && (
                                     <div className="w-2 h-2 bg-secondary rounded-full"></div>
                                 )}
                             </button>
 
-                            <div className="border-t border-gray-200"></div>
+                            <div className="border-t border-gray-200 dark:border-gray-600"></div>
 
                             <button
                                 onClick={() => handleRoleSwitch('professional')}
                                 disabled={loading || activeRole === 'professional'}
-                                className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition ${activeRole === 'professional' ? 'bg-gray-100' : ''
+                                className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition dark:hover:bg-gray-700 ${activeRole === 'professional' ? 'bg-gray-100 dark:bg-gray-700' : ''
                                     } ${loading ? 'opacity-50' : ''}`}
                             >
                                 <Briefcase className="w-5 h-5 text-primary" />
                                 <div className="text-left flex-1">
-                                    <div className="font-semibold text-primary">Job Seeking</div>
-                                    <div className="text-xs text-gray-500">Explore opportunities</div>
+                                    <div className="font-semibold text-primary dark:text-primary">Job Seeking</div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400">Explore opportunities</div>
                                 </div>
                                 {activeRole === 'professional' && (
                                     <div className="w-2 h-2 bg-primary rounded-full"></div>

@@ -1,26 +1,24 @@
-import { createClient, RedisClientType } from 'redis';
-
-const redis: RedisClientType = createClient({
-    url: process.env.REDIS_URL || 'redis://localhost:6379'
-});
-
-// Connect to Redis
-redis.connect().catch(console.error);
+import "server-only";
+import { cache } from 'react';
+import { Redis } from '@upstash/redis';
 
 export interface CacheOptions {
     ttl?: number; // Time to live in seconds
 }
 
 export class CacheService {
-    private redis: RedisClientType;
+    private redis: Redis;
 
     constructor() {
-        this.redis = redis;
+        this.redis = new Redis({
+            url: process.env.UPSTASH_REDIS_REST_URL!,
+            token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+        });
     }
 
     async get<T>(key: string): Promise<T | null> {
         try {
-            const data = await this.redis.get(key);
+            const data = await this.redis.get<string>(key);
             return data ? JSON.parse(data) : null;
         } catch (error) {
             console.error('Cache get error:', error);
@@ -34,7 +32,7 @@ export class CacheService {
             const serializedValue = JSON.stringify(value);
 
             if (ttl) {
-                await this.redis.setEx(key, ttl, serializedValue);
+                await this.redis.setex(key, ttl, serializedValue);
             } else {
                 await this.redis.set(key, serializedValue);
             }
@@ -63,7 +61,7 @@ export class CacheService {
 
     async clear(): Promise<void> {
         try {
-            await this.redis.flushAll();
+            await this.redis.flushall();
         } catch (error) {
             console.error('Cache clear error:', error);
         }
@@ -72,14 +70,38 @@ export class CacheService {
 
 export const cacheService = new CacheService();
 
-// Cache keys
-export const CACHE_KEYS = {
-    STATES: 'states',
-    CITIES: (stateId: string) => `cities:${stateId}`,
-} as const;
+// Re-export cache keys and TTL from services
+export { CACHE_KEYS, CACHE_TTL } from '@/lib/services';
 
-// Cache TTL in seconds (24 hours)
-export const CACHE_TTL = {
-    STATES: 24 * 60 * 60,
-    CITIES: 24 * 60 * 60,
-} as const;
+export const getIndustries = cache(async () => {
+    try {
+        const response = await fetch('/api/industries');
+        if (!response.ok) throw new Error('Failed to fetch industries');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching industries:', error);
+        return [];
+    }
+});
+
+export const getStates = cache(async () => {
+    try {
+        const response = await fetch('/api/v1/states');
+        if (!response.ok) throw new Error('Failed to fetch states');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching states:', error);
+        return [];
+    }
+});
+
+export const getCitiesByState = cache(async (stateId: string) => {
+    try {
+        const response = await fetch(`/api/v1/states/${stateId}/cities`);
+        if (!response.ok) throw new Error('Failed to fetch cities');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching cities:', error);
+        return [];
+    }
+});

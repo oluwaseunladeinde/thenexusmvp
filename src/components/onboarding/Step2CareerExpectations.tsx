@@ -83,16 +83,16 @@ export function Step2CareerExpectations() {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Career Expectations</h2>
-                <p className="text-gray-600">Share your salary expectations and availability</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2 dark:text-gray-100">Career Expectations</h2>
+                <p className="text-gray-600 dark:text-gray-400">Share your salary expectations and availability</p>
             </div>
 
             {/* Salary Expectations */}
             <div className="space-y-4">
-                <Label className="text-base font-medium">Salary Expectations (₦ Naira)</Label>
+                <Label className="text-base font-medium dark:text-gray-200">Salary Expectations (₦ Naira)</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <Label htmlFor="minSalary">Minimum Salary</Label>
+                        <Label htmlFor="minSalary" className="dark:text-gray-200">Minimum Salary</Label>
                         <Input
                             id="minSalary"
                             type="number"
@@ -100,10 +100,10 @@ export function Step2CareerExpectations() {
                             placeholder="e.g., 5000000"
                             min="0"
                             step="50000"
-                            className={errors.minSalary ? 'border-red-500' : ''}
+                            className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${errors.minSalary ? 'border-red-500' : ''}`}
                         />
                         {watchedMinSalary != null && (
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
                                 {formatCurrency(watchedMinSalary)}
                             </p>
                         )}
@@ -113,7 +113,7 @@ export function Step2CareerExpectations() {
                     </div>
 
                     <div>
-                        <Label htmlFor="maxSalary">Maximum Salary</Label>
+                        <Label htmlFor="maxSalary" className="dark:text-gray-200">Maximum Salary</Label>
                         <Input
                             id="maxSalary"
                             type="number"
@@ -121,10 +121,10 @@ export function Step2CareerExpectations() {
                             placeholder="e.g., 8000000"
                             min="0"
                             step="50000"
-                            className={errors.maxSalary ? 'border-red-500' : ''}
+                            className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${errors.maxSalary ? 'border-red-500' : ''}`}
                         />
                         {watchedMaxSalary != null && (
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
                                 {formatCurrency(watchedMaxSalary)}
                             </p>
                         )}
@@ -137,7 +137,7 @@ export function Step2CareerExpectations() {
 
             {/* Notice Period */}
             <div>
-                <Label htmlFor="noticePeriod">Notice Period *</Label>
+                <Label htmlFor="noticePeriod" className="dark:text-gray-200">Notice Period *</Label>
                 <Select
                     value={watch('noticePeriod')}
                     onValueChange={(value) => {
@@ -145,17 +145,17 @@ export function Step2CareerExpectations() {
                         trigger('noticePeriod')
                     }}
                 >
-                    <SelectTrigger className={errors.noticePeriod ? 'border-red-500' : ''}>
+                    <SelectTrigger className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${errors.noticePeriod ? 'border-red-500' : ''}`}>
                         <SelectValue placeholder="Select your notice period" />
                     </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="immediate">Immediate</SelectItem>
-                        <SelectItem value="1_week">1 Week</SelectItem>
-                        <SelectItem value="2_weeks">2 Weeks</SelectItem>
-                        <SelectItem value="1_month">1 Month</SelectItem>
-                        <SelectItem value="2_months">2 Months</SelectItem>
-                        <SelectItem value="3_months">3 Months</SelectItem>
-                        <SelectItem value="6_months">6 Months</SelectItem>
+                    <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                        <SelectItem value="immediate" className="dark:text-gray-100 dark:focus:bg-gray-600">Immediate</SelectItem>
+                        <SelectItem value="1_week" className="dark:text-gray-100 dark:focus:bg-gray-600">1 Week</SelectItem>
+                        <SelectItem value="2_weeks" className="dark:text-gray-100 dark:focus:bg-gray-600">2 Weeks</SelectItem>
+                        <SelectItem value="1_month" className="dark:text-gray-100 dark:focus:bg-gray-600">1 Month</SelectItem>
+                        <SelectItem value="2_months" className="dark:text-gray-100 dark:focus:bg-gray-600">2 Months</SelectItem>
+                        <SelectItem value="3_months" className="dark:text-gray-100 dark:focus:bg-gray-600">3 Months</SelectItem>
+                        <SelectItem value="6_months" className="dark:text-gray-100 dark:focus:bg-gray-600">6 Months</SelectItem>
                     </SelectContent>
                 </Select>
                 {errors.noticePeriod && (
@@ -173,8 +173,9 @@ export function Step2CareerExpectations() {
                             setValue('willingToRelocate', checked as boolean)
                             trigger('willingToRelocate')
                         }}
+                        className="dark:border-gray-600"
                     />
-                    <Label htmlFor="willingToRelocate" className="text-sm">
+                    <Label htmlFor="willingToRelocate" className="text-sm dark:text-gray-200">
                         I am willing to relocate for the right opportunity
                     </Label>
                 </div>
@@ -187,22 +188,23 @@ export function Step2CareerExpectations() {
                             setValue('openToOpportunities', checked as boolean)
                             trigger('openToOpportunities')
                         }}
+                        className="dark:border-gray-600"
                     />
-                    <Label htmlFor="openToOpportunities" className="text-sm">
+                    <Label htmlFor="openToOpportunities" className="text-sm dark:text-gray-200">
                         I am open to new opportunities
                     </Label>
                 </div>
             </div>
 
             {/* Privacy Notice */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 dark:bg-blue-900/20 dark:border-blue-800">
                 <div className="flex items-start space-x-3">
-                    <Shield className="w-5 h-5 text-blue-600 mt-0.5" />
+                    <Shield className="w-5 h-5 text-blue-600 mt-0.5 dark:text-blue-400" />
                     <div>
-                        <h3 className="text-sm font-medium text-blue-900 mb-1">
+                        <h3 className="text-sm font-medium text-blue-900 mb-1 dark:text-blue-200">
                             Privacy Guarantee
                         </h3>
-                        <p className="text-sm text-blue-700">
+                        <p className="text-sm text-blue-700 dark:text-blue-300">
                             Your salary expectations and career preferences are kept completely confidential.
                             We use this information only to match you with relevant opportunities and never
                             share it with potential employers without your explicit consent.

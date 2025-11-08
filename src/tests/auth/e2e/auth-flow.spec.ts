@@ -10,7 +10,7 @@ test('Professional sign-up flow', async ({ page }) => {
 });
 
 test('HR partner with dual role', async ({ page }) => {
-    await page.goto('/sign-up?type=hr_partner');
+    await page.goto('/sign-up?type=hr-partner');
     // Complete onboarding
     // Enable dual role
     // Verify role switcher appears

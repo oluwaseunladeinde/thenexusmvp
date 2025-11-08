@@ -41,7 +41,7 @@ export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
         Permission.VIEW_INTRODUCTION_REQUESTS,
     ],
 
-    hr_partner: [
+    'hr-partner': [
         Permission.SEARCH_PROFESSIONALS,
         Permission.VIEW_PROFESSIONAL_PROFILES,
         Permission.SEND_INTRODUCTION_REQUESTS,
@@ -120,7 +120,7 @@ export async function requireHrPartner() {
     if (!user) redirect('/sign-in');
 
     const userType = user.publicMetadata?.userType;
-    if (userType !== 'hr_partner' && userType !== 'admin') {
+    if (userType !== 'hr-partner' && userType !== 'admin') {
         redirect('/unauthorized');
     }
 

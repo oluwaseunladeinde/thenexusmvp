@@ -53,7 +53,7 @@ export default clerkMiddleware(async (auth, req) => {
     // Type-safe access to metadata
     const metadata = sessionClaims?.metadata;
     let onboardingComplete = metadata?.onboardingComplete ?? false;
-    let userType: 'professional' | 'hr_partner' | 'admin' | undefined = metadata?.userType;
+    let userType: 'professional' | 'hr-partner' | 'admin' | undefined = metadata?.userType;
 
     if (userType === undefined || onboardingComplete === undefined) {
         // Fetch user from Clerk to access publicMetadata
@@ -61,17 +61,16 @@ export default clerkMiddleware(async (auth, req) => {
         const user = await clerk.users.getUser(userId);
 
         // onboardingComplete = user.unsafeMetadata?.onboardingComplete as boolean;
-        // userType = user.unsafeMetadata?.userType as 'professional' | 'hr_partner' | 'admin' | undefined;
+        // userType = user.unsafeMetadata?.userType as 'professional' | 'hr-partner' | 'admin' | undefined;
 
         const publicMetadata = user.publicMetadata as Record<string, unknown>;
         onboardingComplete = typeof publicMetadata?.onboardingComplete === 'boolean' ? publicMetadata.onboardingComplete : false;
-        userType = ['professional', 'hr_partner', 'admin'].includes(publicMetadata?.userType as string) ? publicMetadata?.userType as 'professional' | 'hr_partner' | 'admin' : undefined;
-
-
+        userType = ['professional', 'hr-partner', 'admin'].includes(publicMetadata?.userType as string) ? publicMetadata?.userType as 'professional' | 'hr-partner' | 'admin' : undefined;
     }
 
     // Redirect to onboarding if incomplete
     // if (!onboardingComplete && req.nextUrl.pathname !== '/onboarding') {
+    //     console.log("Inside the middlware, routing to onboarding...", { onboardingComplete, userType });
     //     const onboardingUrl = new URL('/onboarding', req.url);
     //     return NextResponse.redirect(onboardingUrl);
     // }
@@ -81,7 +80,7 @@ export default clerkMiddleware(async (auth, req) => {
 
     // HR/Dashboard routes - require HR partner or admin
     if (pathname.startsWith('/hr') || pathname.startsWith('/dashboard')) {
-        if (userType !== 'hr_partner' && userType !== 'admin') {
+        if (userType !== 'hr-partner' && userType !== 'admin') {
             const unauthorizedUrl = new URL('/unauthorized', req.url);
             return NextResponse.redirect(unauthorizedUrl);
         }

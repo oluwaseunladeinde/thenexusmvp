@@ -17,7 +17,8 @@ export default async function OnboardingPage() {
     }
 
     // Get user type
-    const userType = user.publicMetadata?.userType as string;
+    const userType = user.publicMetadata?.userType as string ?? user.unsafeMetadata?.userType as string ?? '';
+    console.log("Onboarding Page", { userType });
 
     // Check if user exists in Prisma
     let prismaUser = await prisma.user.findUnique({
@@ -46,7 +47,7 @@ export default async function OnboardingPage() {
     // Route to appropriate onboarding flow
     if (userType === 'professional') {
         redirect('/onboarding/professional');
-    } else if (userType === 'hr_partner') {
+    } else if (userType === 'hr-partner') {
         redirect('/onboarding/hr-partner');
     } else {
         // Unknown user type - show error

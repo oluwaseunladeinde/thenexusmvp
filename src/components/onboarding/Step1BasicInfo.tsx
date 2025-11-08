@@ -138,19 +138,19 @@ export function Step1BasicInfo() {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Basic Information</h2>
-                <p className="text-gray-600">Tell us about yourself and your current role</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2 dark:text-gray-100">Basic Information</h2>
+                <p className="text-gray-600 dark:text-gray-400">Tell us about yourself and your current role</p>
             </div>
 
             {/* Name Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <Label htmlFor="firstName">First Name *</Label>
+                    <Label htmlFor="firstName" className="dark:text-gray-200">First Name *</Label>
                     <Input
                         id="firstName"
                         {...register('firstName')}
                         placeholder="Enter your first name"
-                        className={errors.firstName ? 'border-red-500' : ''}
+                        className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${errors.firstName ? 'border-red-500' : ''}`}
                     />
                     {errors.firstName && (
                         <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>
@@ -158,12 +158,12 @@ export function Step1BasicInfo() {
                 </div>
 
                 <div>
-                    <Label htmlFor="lastName">Last Name *</Label>
+                    <Label htmlFor="lastName" className="dark:text-gray-200">Last Name *</Label>
                     <Input
                         id="lastName"
                         {...register('lastName')}
                         placeholder="Enter your last name"
-                        className={errors.lastName ? 'border-red-500' : ''}
+                        className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${errors.lastName ? 'border-red-500' : ''}`}
                     />
                     {errors.lastName && (
                         <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
@@ -173,12 +173,12 @@ export function Step1BasicInfo() {
 
             {/* Profile Headline */}
             <div>
-                <Label htmlFor="profileHeadline">Profile Headline *</Label>
+                <Label htmlFor="profileHeadline" className="dark:text-gray-200">Profile Headline *</Label>
                 <Textarea
                     id="profileHeadline"
                     {...register('profileHeadline')}
                     placeholder="e.g., Senior Product Manager with 8+ years in fintech"
-                    className={errors.profileHeadline ? 'border-red-500' : ''}
+                    className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${errors.profileHeadline ? 'border-red-500' : ''}`}
                     rows={3}
                 />
                 {errors.profileHeadline && (
@@ -189,7 +189,7 @@ export function Step1BasicInfo() {
             {/* Location */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <Label htmlFor="state">State *</Label>
+                    <Label htmlFor="state" className="dark:text-gray-200">State *</Label>
                     <Select
                         value={watch('state')}
                         onValueChange={(value) => {
@@ -197,12 +197,12 @@ export function Step1BasicInfo() {
                             trigger('state')
                         }}
                     >
-                        <SelectTrigger className={errors.state ? 'border-red-500' : ''}>
+                        <SelectTrigger className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${errors.state ? 'border-red-500' : ''}`}>
                             <SelectValue placeholder="Select your state" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                             {states.map((state) => (
-                                <SelectItem key={state.id} value={state.name}>
+                                <SelectItem key={state.id} value={state.name} className="dark:text-gray-100 dark:focus:bg-gray-600">
                                     {state.name}
                                 </SelectItem>
                             ))}
@@ -214,7 +214,7 @@ export function Step1BasicInfo() {
                 </div>
 
                 <div>
-                    <Label htmlFor="city">City *</Label>
+                    <Label htmlFor="city" className="dark:text-gray-200">City *</Label>
                     <Select
                         value={watch('city')}
                         onValueChange={(value) => {
@@ -223,12 +223,12 @@ export function Step1BasicInfo() {
                         }}
                         disabled={!selectedState}
                     >
-                        <SelectTrigger className={errors.city ? 'border-red-500' : ''}>
+                        <SelectTrigger className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${errors.city ? 'border-red-500' : ''}`}>
                             <SelectValue placeholder="Select your city" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                             {cities.map((city) => (
-                                <SelectItem key={city.id} value={city.name}>
+                                <SelectItem key={city.id} value={city.name} className="dark:text-gray-100 dark:focus:bg-gray-600">
                                     {city.name}
                                 </SelectItem>
                             ))}
@@ -242,7 +242,7 @@ export function Step1BasicInfo() {
 
             {/* Experience */}
             <div>
-                <Label htmlFor="yearsOfExperience">Years of Experience *</Label>
+                <Label htmlFor="yearsOfExperience" className="dark:text-gray-200">Years of Experience *</Label>
                 <Input
                     id="yearsOfExperience"
                     type="number"
@@ -250,7 +250,7 @@ export function Step1BasicInfo() {
                     placeholder="e.g., 5"
                     min="0"
                     max="50"
-                    className={errors.yearsOfExperience ? 'border-red-500' : ''}
+                    className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${errors.yearsOfExperience ? 'border-red-500' : ''}`}
                 />
                 {errors.yearsOfExperience && (
                     <p className="text-red-500 text-sm mt-1">{errors.yearsOfExperience.message}</p>
@@ -260,12 +260,12 @@ export function Step1BasicInfo() {
             {/* Current Role */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <Label htmlFor="currentTitle">Current Title *</Label>
+                    <Label htmlFor="currentTitle" className="dark:text-gray-200">Current Title *</Label>
                     <Input
                         id="currentTitle"
                         {...register('currentTitle')}
                         placeholder="e.g., Senior Product Manager"
-                        className={errors.currentTitle ? 'border-red-500' : ''}
+                        className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${errors.currentTitle ? 'border-red-500' : ''}`}
                     />
                     {errors.currentTitle && (
                         <p className="text-red-500 text-sm mt-1">{errors.currentTitle.message}</p>
@@ -273,12 +273,12 @@ export function Step1BasicInfo() {
                 </div>
 
                 <div>
-                    <Label htmlFor="currentCompany">Current Company *</Label>
+                    <Label htmlFor="currentCompany" className="dark:text-gray-200">Current Company *</Label>
                     <Input
                         id="currentCompany"
                         {...register('currentCompany')}
                         placeholder="e.g., Flutterwave"
-                        className={errors.currentCompany ? 'border-red-500' : ''}
+                        className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${errors.currentCompany ? 'border-red-500' : ''}`}
                     />
                     {errors.currentCompany && (
                         <p className="text-red-500 text-sm mt-1">{errors.currentCompany.message}</p>
@@ -288,7 +288,7 @@ export function Step1BasicInfo() {
 
             {/* Industry */}
             <div>
-                <Label htmlFor="industry">Industry *</Label>
+                <Label htmlFor="industry" className="dark:text-gray-200">Industry *</Label>
                 <Select
                     value={watch('industry')}
                     onValueChange={(value) => {
@@ -296,20 +296,20 @@ export function Step1BasicInfo() {
                         trigger('industry')
                     }}
                 >
-                    <SelectTrigger className={errors.industry ? 'border-red-500' : ''}>
+                    <SelectTrigger className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${errors.industry ? 'border-red-500' : ''}`}>
                         <SelectValue placeholder="Select your industry" />
                     </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="Technology">Technology</SelectItem>
-                        <SelectItem value="Fintech">Fintech</SelectItem>
-                        <SelectItem value="Healthcare">Healthcare</SelectItem>
-                        <SelectItem value="E-commerce">E-commerce</SelectItem>
-                        <SelectItem value="Education">Education</SelectItem>
-                        <SelectItem value="Consulting">Consulting</SelectItem>
-                        <SelectItem value="Manufacturing">Manufacturing</SelectItem>
-                        <SelectItem value="Real Estate">Real Estate</SelectItem>
-                        <SelectItem value="Retail">Retail</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
+                    <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                        <SelectItem value="Technology" className="dark:text-gray-100 dark:focus:bg-gray-600">Technology</SelectItem>
+                        <SelectItem value="Fintech" className="dark:text-gray-100 dark:focus:bg-gray-600">Fintech</SelectItem>
+                        <SelectItem value="Healthcare" className="dark:text-gray-100 dark:focus:bg-gray-600">Healthcare</SelectItem>
+                        <SelectItem value="E-commerce" className="dark:text-gray-100 dark:focus:bg-gray-600">E-commerce</SelectItem>
+                        <SelectItem value="Education" className="dark:text-gray-100 dark:focus:bg-gray-600">Education</SelectItem>
+                        <SelectItem value="Consulting" className="dark:text-gray-100 dark:focus:bg-gray-600">Consulting</SelectItem>
+                        <SelectItem value="Manufacturing" className="dark:text-gray-100 dark:focus:bg-gray-600">Manufacturing</SelectItem>
+                        <SelectItem value="Real Estate" className="dark:text-gray-100 dark:focus:bg-gray-600">Real Estate</SelectItem>
+                        <SelectItem value="Retail" className="dark:text-gray-100 dark:focus:bg-gray-600">Retail</SelectItem>
+                        <SelectItem value="Other" className="dark:text-gray-100 dark:focus:bg-gray-600">Other</SelectItem>
                     </SelectContent>
                 </Select>
                 {errors.industry && (

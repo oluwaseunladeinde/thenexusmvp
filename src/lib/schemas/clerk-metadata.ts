@@ -1,9 +1,9 @@
 // Public Metadata (visible to client)
 export interface ClerkPublicMetadata {
-    userType: 'professional' | 'hr_partner' | 'admin';
+    userType: 'professional' | 'hr-partner' | 'admin';
     onboardingComplete: boolean;
     hasDualRole?: boolean;
-    activeRole?: 'hr_partner' | 'professional'; // For dual-role users
+    activeRole?: 'hr-partner' | 'professional'; // For dual-role users
 }
 
 // Private Metadata (server-only)

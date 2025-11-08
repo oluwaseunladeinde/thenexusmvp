@@ -19,6 +19,7 @@ interface Stats {
     profileViews: number;
     pending: number;
     accepted: number;
+    trend?: 'up' | 'down' | 'stable';
 }
 
 interface CompletenessData {
@@ -44,24 +45,33 @@ const ProfessionalDashboardPage = () => {
         try {
             setError(null);
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            const response = await fetch('/api/v1/professionals/me', {
-                signal: controller.signal,
-            });
+            const [profileResponse, viewStatsResponse] = await Promise.all([
+                fetch('/api/v1/professionals/me', { signal: controller.signal }),
+                fetch('/api/v1/professionals/me/views', { signal: controller.signal })
+            ]);
+            
             clearTimeout(timeoutId);
 
-
-            if (response.ok) {
-                const data = await response.json();
-                setProfileData(data.data.professional);
-                setStats(data.data.stats);
-                setCompletenessData(data.data.completeness);
-
-                console.log({ profile: data.data.professional });
-            } else {
-                setError('Failed to load profile data');
+            if (profileResponse.ok) {
+                const data = await profileResponse.json();
+                setProfileData(data.data?.professional || data);
+                setCompletenessData(data.data?.completeness || data.completenessBreakdown);
             }
+
+            let viewStats = { views7Days: 0, trend: 'neutral' };
+            if (viewStatsResponse.ok) {
+                viewStats = await viewStatsResponse.json();
+            }
+
+            setStats({
+                profileViews: viewStats.views7Days || 0,
+                pending: 0,
+                accepted: 0,
+                trend: viewStats.trend as 'up' | 'down' | 'stable'
+            });
+
         } catch (error) {
             console.error('Error fetching profile:', error);
             if (error instanceof Error && error.name === 'AbortError') {

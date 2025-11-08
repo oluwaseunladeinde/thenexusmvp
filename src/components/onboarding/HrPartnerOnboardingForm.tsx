@@ -123,14 +123,14 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-8">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-8 dark:bg-gray-800 dark:border-gray-700">
             {/* Progress Bar */}
             <div className="mb-8">
                 <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-secondary">Step {step} of 3</span>
-                    <span className="text-sm text-gray-500">{Math.round((step / 3) * 100)}% Complete</span>
+                    <span className="text-sm font-medium text-secondary dark:text-gray-300">Step {step} of 3</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{Math.round((step / 3) * 100)}% Complete</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
                     <div
                         className="bg-secondary h-2 rounded-full transition-all duration-300"
                         style={{ width: `${(step / 3) * 100}%` }}
@@ -141,11 +141,11 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
             {/* Step 1: Personal Info */}
             {step === 1 && (
                 <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-secondary mb-4">Your Information</h2>
+                    <h2 className="text-2xl font-bold text-secondary mb-4 dark:text-gray-100">Your Information</h2>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-secondary mb-2">
+                            <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                                 First Name *
                             </label>
                             <input
@@ -154,11 +154,11 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                                 value={formData.firstName}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-secondary mb-2">
+                            <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                                 Last Name *
                             </label>
                             <input
@@ -167,13 +167,13 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                                 value={formData.lastName}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-secondary mb-2">Job Title *</label>
+                        <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">Job Title *</label>
                         <input
                             type="text"
                             name="jobTitle"
@@ -181,24 +181,24 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                             onChange={handleChange}
                             placeholder="e.g., HR Manager, Talent Acquisition Lead"
                             required
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-secondary mb-2">Department</label>
+                        <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">Department</label>
                         <input
                             type="text"
                             name="department"
                             value={formData.department}
                             onChange={handleChange}
                             placeholder="e.g., Human Resources"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-secondary mb-2">
+                        <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                             LinkedIn Profile URL
                         </label>
                         <input
@@ -207,7 +207,7 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                             value={formData.linkedinUrl}
                             onChange={handleChange}
                             placeholder="https://linkedin.com/in/yourprofile"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                         />
                     </div>
 
@@ -224,10 +224,10 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
             {/* Step 2: Company Info */}
             {step === 2 && (
                 <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-secondary mb-4">Company Information</h2>
+                    <h2 className="text-2xl font-bold text-secondary mb-4 dark:text-gray-100">Company Information</h2>
 
                     <div>
-                        <label className="block text-sm font-medium text-secondary mb-2">
+                        <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                             Company Name *
                         </label>
                         <input
@@ -237,19 +237,19 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                             onChange={handleChange}
                             placeholder="Your company's legal name"
                             required
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-secondary mb-2">Industry *</label>
+                            <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">Industry *</label>
                             <select
                                 name="industry"
                                 value={formData.industry}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                             >
                                 <option value="">Select industry</option>
                                 <option value="Financial Services">Financial Services</option>
@@ -259,7 +259,7 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-secondary mb-2">
+                            <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                                 Company Size *
                             </label>
                             <select
@@ -267,7 +267,7 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                                 value={formData.companySize}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                             >
                                 <option value="">Select size</option>
                                 <option value="1-10">1-10 employees</option>
@@ -280,7 +280,7 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-secondary mb-2">
+                        <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                             Headquarters Location *
                         </label>
                         <input
@@ -290,12 +290,12 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                             onChange={handleChange}
                             placeholder="e.g., Lagos, Nigeria"
                             required
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-secondary mb-2">
+                        <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                             Company Website *
                         </label>
                         <input
@@ -305,12 +305,12 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                             onChange={handleChange}
                             placeholder="https://yourcompany.com"
                             required
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-secondary mb-2">
+                        <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                             Company Description *
                         </label>
                         <textarea
@@ -320,7 +320,7 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                             rows={4}
                             placeholder="Tell us what your company does..."
                             required
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                         />
                     </div>
 
@@ -328,7 +328,7 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                         <button
                             type="button"
                             onClick={() => setStep(1)}
-                            className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+                            className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                         >
                             ← Back
                         </button>
@@ -346,10 +346,10 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
             {/* Step 3: Dual Role (Optional) */}
             {step === 3 && (
                 <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-secondary mb-4">One More Thing...</h2>
+                    <h2 className="text-2xl font-bold text-secondary mb-4 dark:text-gray-100">One More Thing...</h2>
 
                     {/* Dual Role Opt-In */}
-                    <div className="bg-linear-to-r from-green-50 to-blue-50 border-2 border-primary rounded-lg p-6">
+                    <div className="bg-linear-to-r from-green-50 to-blue-50 border-2 border-primary rounded-lg p-6 dark:from-green-900/20 dark:to-blue-900/20 dark:border-primary">
                         <div className="flex items-start gap-4">
                             <input
                                 type="checkbox"
@@ -357,16 +357,16 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                                 name="wantsDualRole"
                                 checked={formData.wantsDualRole}
                                 onChange={handleChange}
-                                className="mt-1 w-5 h-5 text-primary rounded focus:ring-primary"
+                                className="mt-1 w-5 h-5 text-primary rounded focus:ring-primary dark:border-gray-600"
                             />
                             <div className="flex-1">
                                 <label
                                     htmlFor="wantsDualRole"
-                                    className="font-semibold text-secondary cursor-pointer text-lg"
+                                    className="font-semibold text-secondary cursor-pointer text-lg dark:text-gray-100"
                                 >
                                     I'm also open to exploring new opportunities
                                 </label>
-                                <p className="text-gray-700 mt-2">
+                                <p className="text-gray-700 mt-2 dark:text-gray-300">
                                     Activate a separate, confidential professional profile to receive introduction
                                     requests from other companies.{' '}
                                     <strong className="text-primary">
@@ -379,13 +379,13 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
 
                     {/* Conditional Professional Profile Form */}
                     {formData.wantsDualRole && (
-                        <div className="space-y-4 p-6 bg-green-50 border-2 border-primary rounded-lg">
-                            <h3 className="text-lg font-bold text-secondary mb-4">
+                        <div className="space-y-4 p-6 bg-green-50 border-2 border-primary rounded-lg dark:bg-green-900/20 dark:border-primary">
+                            <h3 className="text-lg font-bold text-secondary mb-4 dark:text-gray-100">
                                 🔒 Your Confidential Job Search Profile
                             </h3>
 
-                            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
-                                <p className="text-sm text-blue-800">
+                            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 dark:bg-blue-900/20 dark:border-blue-600">
+                                <p className="text-sm text-blue-800 dark:text-blue-300">
                                     <strong>Privacy Guarantee:</strong> Your professional profile is completely
                                     separate from your HR role. Your company cannot see it, search for it, or receive
                                     any alerts about it.
@@ -393,7 +393,7 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-secondary mb-2">
+                                <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                                     Professional Headline *
                                 </label>
                                 <input
@@ -403,19 +403,19 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                                     onChange={handleChange}
                                     placeholder="e.g., Senior HR Manager | 8+ Years Experience"
                                     required={formData.wantsDualRole}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-secondary mb-2">City *</label>
+                                    <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">City *</label>
                                     <select
                                         name="professional.locationCity"
                                         value={formData.professionalData.locationCity}
                                         onChange={handleChange}
                                         required={formData.wantsDualRole}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                                     >
                                         <option value="">Select city</option>
                                         <option value="Lagos">Lagos</option>
@@ -424,13 +424,13 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-secondary mb-2">State *</label>
+                                    <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">State *</label>
                                     <select
                                         name="professional.locationState"
                                         value={formData.professionalData.locationState}
                                         onChange={handleChange}
                                         required={formData.wantsDualRole}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                                     >
                                         <option value="">Select state</option>
                                         <option value="Lagos">Lagos</option>
@@ -441,7 +441,7 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-secondary mb-2">
+                                <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                                     Years of Experience *
                                 </label>
                                 <input
@@ -451,12 +451,12 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                                     onChange={handleChange}
                                     min="5"
                                     required={formData.wantsDualRole}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-secondary mb-2">
+                                <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                                     Current Title *
                                 </label>
                                 <input
@@ -465,12 +465,12 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                                     value={formData.professionalData.currentTitle}
                                     onChange={handleChange}
                                     required={formData.wantsDualRole}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-secondary mb-2">
+                                <label className="block text-sm font-medium text-secondary mb-2 dark:text-gray-200">
                                     Industry *
                                 </label>
                                 <select
@@ -478,7 +478,7 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                                     value={formData.professionalData.currentIndustry}
                                     onChange={handleChange}
                                     required={formData.wantsDualRole}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                                 >
                                     <option value="">Select industry</option>
                                     <option value="Financial Services">Financial Services</option>
@@ -494,7 +494,7 @@ export default function HrPartnerOnboardingForm({ userId, userEmail }: Props) {
                         <button
                             type="button"
                             onClick={() => setStep(2)}
-                            className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+                            className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                         >
                             ← Back
                         </button>

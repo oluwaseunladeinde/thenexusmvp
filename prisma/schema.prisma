@@ -460,6 +460,7 @@ model JobRole {
 }
 
 enum SeniorityLevel {
+  SENIOR
   DIRECTOR
   VP
   C_SUITE

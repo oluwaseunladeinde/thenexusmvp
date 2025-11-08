@@ -216,7 +216,8 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        console.log({ userId });
+        console.log('GET /professionals/me - userId:', userId);
+        console.log('GET /professionals/me - sessionClaims:', sessionClaims);
 
         const professional = await prisma.professional.findUnique({
             where: { userId },
