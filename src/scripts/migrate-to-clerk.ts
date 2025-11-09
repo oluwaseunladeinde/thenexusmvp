@@ -47,7 +47,7 @@ async function migrateUsersToClerk(isDryRun?: boolean) {
                 skipPasswordRequirement: true, // User will set password on first login
                 skipPasswordChecks: true,
                 publicMetadata: {
-                    userType: user.userType.toLowerCase() as 'professional' | 'hr_partner' | 'admin',
+                    userType: user.userType.toLowerCase() as 'professional' | 'hr-partner' | 'admin',
                     onboardingComplete: true,
                 },
             });

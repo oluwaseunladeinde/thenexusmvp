@@ -1,3 +1,4 @@
+import { generateId } from '@/lib/utils';
 import { CheckCircle, Edit, Star, MapPin, Building, User } from 'lucide-react';
 import Link from 'next/link';
 
@@ -50,6 +51,7 @@ export default function ProfilePreview({ profileData }: ProfilePreviewProps) {
                     <Link
                         href="/professional/profile"
                         className="text-sm text-primary hover:text-[#1F5F3F] font-medium flex items-center gap-1"
+                        aria-label="Edit profile"
                     >
                         <Edit className="w-4 h-4" />
                     </Link>
@@ -99,9 +101,9 @@ export default function ProfilePreview({ profileData }: ProfilePreviewProps) {
                 <div className="mb-4">
                     <h5 className="text-sm font-medium text-gray-700 mb-2">Top Skills</h5>
                     <div className="flex flex-wrap gap-2">
-                        {topSkills.slice(0, 4).map((skill, index) => (
+                        {topSkills.slice(0, 4).map((skill) => (
                             <span
-                                key={index}
+                                key={generateId()}
                                 className="px-2 py-1 bg-green-500/10 text-primary text-xs rounded-xl border border-green-700/20"
                             >
                                 {skill}
@@ -125,7 +127,7 @@ export default function ProfilePreview({ profileData }: ProfilePreviewProps) {
                     <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                         <div className="flex-1">
                             <span className="text-sm font-medium text-yellow-800">Complete verification to stand out</span>
-                            <p className="text-xs text-yellow-700 mt-1">Verified profiles get 5x more views</p>
+                            <p className="text-xs text-yellow-700 mt-1">Verified profiles get 65% more views</p>
                         </div>
                     </div>
                 )}

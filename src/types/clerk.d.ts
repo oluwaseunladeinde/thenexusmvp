@@ -11,7 +11,7 @@ declare global {
     interface CustomJwtSessionClaims {
         metadata: {
             // User type (required)
-            userType: 'professional' | 'hr_partner' | 'admin';
+            userType: 'professional' | 'hr-partner' | 'admin';
 
             // Onboarding status
             onboardingComplete?: boolean;
@@ -39,7 +39,7 @@ declare global {
      * Visible to the frontend and included in User object
      */
     interface UserPublicMetadata {
-        userType?: 'professional' | 'hr_partner' | 'admin';
+        userType?: 'professional' | 'hr-partner' | 'admin';
         onboardingComplete?: boolean;
         hasDualRole?: boolean;
         activeRole?: 'hr' | 'professional';

@@ -11,7 +11,7 @@ describe('RBAC System', () => {
     });
 
     it('should assign correct permissions to HR partners', () => {
-        const permissions = ROLE_PERMISSIONS.hr_partner;
+        const permissions = ROLE_PERMISSIONS.hr-partner;
 
         expect(permissions).toContain(Permission.SEARCH_PROFESSIONALS);
         expect(permissions).toContain(Permission.SEND_INTRODUCTION_REQUESTS);

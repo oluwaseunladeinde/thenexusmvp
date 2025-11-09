@@ -5,36 +5,36 @@ import Link from 'next/link'
 
 const HeroSection = () => {
     return (
-        <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#2E8B57] via-[#3ABF7A] to-[#1F5F3F] overflow-hidden">
+        <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#2E8B57] via-[#3ABF7A] to-[#1F5F3F] overflow-hidden dark:from-[#1F5F3F] dark:via-[#2E8B57] dark:to-[#0A2540]">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10" aria-hidden="true">
-                <div className="absolute top-20 left-10 w-32 h-32 bg-white rounded-full"></div>
-                <div className="absolute top-40 right-20 w-24 h-24 bg-white rounded-full"></div>
-                <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-white rounded-full"></div>
-                <div className="absolute bottom-20 right-10 w-16 h-16 bg-white rounded-full"></div>
+                <div className="absolute top-20 left-10 w-32 h-32 bg-white rounded-full dark:bg-gray-100"></div>
+                <div className="absolute top-40 right-20 w-24 h-24 bg-white rounded-full dark:bg-gray-100"></div>
+                <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-white rounded-full dark:bg-gray-100"></div>
+                <div className="absolute bottom-20 right-10 w-16 h-16 bg-white rounded-full dark:bg-gray-100"></div>
             </div>
 
             {/* Floating Cards Animation */}
             <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
                 <div className="absolute top-1/4 left-1/4 animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }}>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-                        <div className="w-12 h-12 bg-white/30 rounded-full mb-2"></div>
-                        <div className="w-16 h-2 bg-white/30 rounded mb-1"></div>
-                        <div className="w-12 h-2 bg-white/30 rounded"></div>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 shadow-lg dark:bg-gray-800/20">
+                        <div className="w-12 h-12 bg-white/30 rounded-full mb-2 dark:bg-gray-100/30"></div>
+                        <div className="w-16 h-2 bg-white/30 rounded mb-1 dark:bg-gray-100/30"></div>
+                        <div className="w-12 h-2 bg-white/30 rounded dark:bg-gray-100/30"></div>
                     </div>
                 </div>
                 <div className="absolute top-1/3 right-1/4 animate-bounce" style={{ animationDelay: '1s', animationDuration: '3.5s' }}>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-                        <div className="w-12 h-12 bg-white/30 rounded-full mb-2"></div>
-                        <div className="w-16 h-2 bg-white/30 rounded mb-1"></div>
-                        <div className="w-12 h-2 bg-white/30 rounded"></div>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 shadow-lg dark:bg-gray-800/20">
+                        <div className="w-12 h-12 bg-white/30 rounded-full mb-2 dark:bg-gray-100/30"></div>
+                        <div className="w-16 h-2 bg-white/30 rounded mb-1 dark:bg-gray-100/30"></div>
+                        <div className="w-12 h-2 bg-white/30 rounded dark:bg-gray-100/30"></div>
                     </div>
                 </div>
                 <div className="absolute bottom-1/4 left-1/3 animate-bounce" style={{ animationDelay: '2s', animationDuration: '4s' }}>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-                        <div className="w-12 h-12 bg-white/30 rounded-full mb-2"></div>
-                        <div className="w-16 h-2 bg-white/30 rounded mb-1"></div>
-                        <div className="w-12 h-2 bg-white/30 rounded"></div>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 shadow-lg dark:bg-gray-800/20">
+                        <div className="w-12 h-12 bg-white/30 rounded-full mb-2 dark:bg-gray-100/30"></div>
+                        <div className="w-16 h-2 bg-white/30 rounded mb-1 dark:bg-gray-100/30"></div>
+                        <div className="w-12 h-2 bg-white/30 rounded dark:bg-gray-100/30"></div>
                     </div>
                 </div>
             </div>
@@ -53,13 +53,13 @@ const HeroSection = () => {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <Link
                         href="/sign-up?type=professional"
-                        className="bg-white text-[#2E8B57] hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        className="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl dark:bg-gray-900 dark:text-primary dark:hover:bg-gray-800"
                     >
                         I'm a Professional
                     </Link>
                     <Link
-                        href="/sign-up?type=hiring"
-                        className="bg-[#CFAF50] text-[#0A2540] hover:bg-[#D4AF37] px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        href="/sign-up?type=hr-partner"
+                        className="bg-transparent border border-white text-white hover:bg-[#D4AF37] px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                     >
                         I'm Hiring
                     </Link>

@@ -18,7 +18,7 @@ const ProfessionalLandingPage = () => {
 
         const userType = (user.publicMetadata?.userType as string | undefined) ?? '';
         if (userType !== 'PROFESSIONAL' && userType !== 'HR_LEADER' &&
-            userType !== 'professional' && userType !== 'hr_partner' && userType !== 'admin') {
+            userType !== 'professional' && userType !== 'hr-partner' && userType !== 'admin') {
             router.push('/sign-in');
             return;
         }

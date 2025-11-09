@@ -14,6 +14,15 @@ export async function POST(
 
         const { id: professionalId } = await params;
 
+        const professional = await prisma.professional.findUnique({
+            where: { id: professionalId }
+        });
+
+        if (!professional) {
+            return NextResponse.json({ error: 'Professional not found' }, { status: 404 });
+        }
+
+
         // Get the HR partner viewing the profile
         const hrPartner = await prisma.hrPartner.findFirst({
             where: {
@@ -27,29 +36,29 @@ export async function POST(
             return NextResponse.json({ error: 'HR Partner not found' }, { status: 404 });
         }
 
-        // Check if view already exists in last 24 hours (prevent duplicates)
-        const existingView = await prisma.profileView.findFirst({
-            where: {
-                viewedProfessionalId: professionalId,
-                viewerHrId: hrPartner.id,
-                viewedAt: {
-                    gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+        await prisma.$transaction(async (tx: any) => {
+            const existingView = await tx.profileView.findFirst({
+                where: {
+                    viewedProfessionalId: professionalId,
+                    viewerHrId: hrPartner.id,
+                    viewedAt: {
+                        gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
+                    }
                 }
-            }
-        });
+            });
 
-        if (existingView) {
-            return NextResponse.json({ message: 'View already recorded' }, { status: 200 });
-        }
-
-        // Create new profile view
-        await prisma.profileView.create({
-            data: {
-                viewedProfessionalId: professionalId,
-                viewerHrId: hrPartner.id,
-                viewSource: 'DIRECT',
-                viewedAt: new Date()
+            if (existingView) {
+                return; // Handle duplicate
             }
+
+            await tx.profileView.create({
+                data: {
+                    viewedProfessionalId: professionalId,
+                    viewerHrId: hrPartner.id,
+                    viewSource: 'DIRECT',
+                    viewedAt: new Date()
+                }
+            });
         });
 
         return NextResponse.json({ message: 'Profile view recorded' }, { status: 201 });
@@ -77,7 +86,10 @@ export async function GET(
         const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-        const [views7Days, views30Days, totalViews] = await Promise.all([
+        // Query previous 7 days for comparison
+        const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+        const [views7Days, views30Days, totalViews, viewsPrevious7Days] = await Promise.all([
             prisma.profileView.count({
                 where: {
                     viewedProfessionalId: professionalId,
@@ -92,14 +104,29 @@ export async function GET(
             }),
             prisma.profileView.count({
                 where: { viewedProfessionalId: professionalId }
+            }),
+            prisma.profileView.count({
+                where: {
+                    viewedProfessionalId: professionalId,
+                    viewedAt: {
+                        gte: fourteenDaysAgo,
+                        lt: sevenDaysAgo
+                    }
+                }
             })
         ]);
+
+        const trend = views7Days > viewsPrevious7Days
+            ? 'up'
+            : views7Days < viewsPrevious7Days
+                ? 'down'
+                : 'neutral';
 
         return NextResponse.json({
             views7Days,
             views30Days,
             totalViews,
-            trend: views7Days > 0 ? 'up' : 'neutral'
+            trend,
         });
 
     } catch (error) {

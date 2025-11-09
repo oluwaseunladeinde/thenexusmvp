@@ -114,7 +114,7 @@ export async function POST(req: Request) {
             //const clerk = await clerkClient();
             await clerk.users.updateUserMetadata(evt.data.id, {
                 publicMetadata: {
-                    userType: userType as 'professional' | 'hr_partner' | 'admin',
+                    userType: userType as 'professional' | 'hr-partner' | 'admin',
                     onboardingComplete: false,
                     verified: false,
                     verificationLevel: 'basic'

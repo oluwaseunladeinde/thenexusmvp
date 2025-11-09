@@ -195,14 +195,14 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
 
     return (
         <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow-lg p-8">
+            <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow-lg p-8 dark:bg-gray-800 dark:border-gray-700">
                 {/* Progress Bar */}
                 <div className="mb-8">
                     <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-secondary">Step {step} of 3</span>
-                        <span className="text-sm text-gray-500">{Math.round((step / 3) * 100)}% Complete</span>
+                        <span className="text-sm font-medium text-secondary dark:text-gray-300">Step {step} of 3</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{Math.round((step / 3) * 100)}% Complete</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
                         <div
                             className="bg-primary h-2 rounded-full transition-all duration-300"
                             style={{ width: `${(step / 3) * 100}%` }}
@@ -213,7 +213,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                 {/* Step 1: Basic Info */}
                 {step === 1 && (
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-bold text-secondary mb-4">Basic Information</h2>
+                        <h2 className="text-2xl font-bold text-secondary mb-4 dark:text-gray-100">Basic Information</h2>
 
                         <div className="grid grid-cols-2 gap-4">
                             <FormField
@@ -221,9 +221,9 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                 name="firstName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>First Name *</FormLabel>
+                                        <FormLabel className="dark:text-gray-200">First Name *</FormLabel>
                                         <FormControl>
-                                            <Input {...field} className="rounded-sm p-5" />
+                                            <Input {...field} className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -234,9 +234,9 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                 name="lastName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Last Name *</FormLabel>
+                                        <FormLabel className="dark:text-gray-200">Last Name *</FormLabel>
                                         <FormControl>
-                                            <Input {...field} className="rounded-sm p-5" />
+                                            <Input {...field} className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -249,12 +249,12 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                             name="profileHeadline"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Professional Headline *</FormLabel>
+                                    <FormLabel className="dark:text-gray-200">Professional Headline *</FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
                                             placeholder="e.g., Senior Product Manager | Fintech | 10+ Years Experience"
-                                            className="rounded-sm p-5"
+                                            className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -268,16 +268,16 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                 name="locationState"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>State *</FormLabel>
+                                        <FormLabel className="dark:text-gray-200">State *</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value} disabled={loadingStates}>
                                             <FormControl>
-                                                <SelectTrigger className="w-full rounded-sm p-5">
+                                                <SelectTrigger className="w-full rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                                                     <SelectValue placeholder={loadingStates ? 'Loading states...' : 'Select state'} />
                                                 </SelectTrigger>
                                             </FormControl>
-                                            <SelectContent>
+                                            <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                                                 {states.map((state) => (
-                                                    <SelectItem key={state.id} value={state.id}>
+                                                    <SelectItem key={state.id} value={state.id} className="dark:text-gray-100 dark:focus:bg-gray-600">
                                                         {state.name}
                                                     </SelectItem>
                                                 ))}
@@ -292,10 +292,10 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                 name="locationCity"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>City *</FormLabel>
+                                        <FormLabel className="dark:text-gray-200">City *</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value} disabled={!selectedState || loadingCities}>
                                             <FormControl>
-                                                <SelectTrigger className="w-full rounded-sm p-5">
+                                                <SelectTrigger className="w-full rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                                                     <SelectValue
                                                         placeholder={
                                                             !selectedState
@@ -307,9 +307,9 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                                     />
                                                 </SelectTrigger>
                                             </FormControl>
-                                            <SelectContent>
+                                            <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                                                 {cities.map((city) => (
-                                                    <SelectItem key={city.id} value={city.id}>
+                                                    <SelectItem key={city.id} value={city.id} className="dark:text-gray-100 dark:focus:bg-gray-600">
                                                         {city.name}
                                                     </SelectItem>
                                                 ))}
@@ -334,21 +334,21 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                 {/* Step 2: Experience */}
                 {step === 2 && (
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-bold text-secondary mb-4">Professional Experience</h2>
+                        <h2 className="text-2xl font-bold text-secondary mb-4 dark:text-gray-100">Professional Experience</h2>
 
                         <FormField
                             control={control}
                             name="yearsOfExperience"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Years of Experience *</FormLabel>
+                                    <FormLabel className="dark:text-gray-200">Years of Experience *</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="number"
                                             {...field}
                                             onChange={(e) => field.onChange(parseInt(e.target.value) || 5)}
                                             min="5"
-                                            className="rounded-sm p-5"
+                                            className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -362,9 +362,9 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                 name="currentTitle"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Current Title *</FormLabel>
+                                        <FormLabel className="dark:text-gray-200">Current Title *</FormLabel>
                                         <FormControl>
-                                            <Input {...field} placeholder="e.g., Director of Operations" className="rounded-sm p-5" />
+                                            <Input {...field} placeholder="e.g., Director of Operations" className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -375,9 +375,9 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                 name="currentCompany"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Current Company</FormLabel>
+                                        <FormLabel className="dark:text-gray-200">Current Company</FormLabel>
                                         <FormControl>
-                                            <Input {...field} placeholder="Optional" className="rounded-sm p-5" />
+                                            <Input {...field} placeholder="Optional" className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -390,23 +390,23 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                             name="currentIndustry"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Industry *</FormLabel>
+                                    <FormLabel className="dark:text-gray-200">Industry *</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger className="w-full rounded-sm p-5">
+                                            <SelectTrigger className="w-full rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                                                 <SelectValue placeholder="Select industry" />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="Financial Services">Financial Services</SelectItem>
-                                            <SelectItem value="Technology">Technology</SelectItem>
-                                            <SelectItem value="Oil & Gas">Oil & Gas</SelectItem>
-                                            <SelectItem value="Healthcare">Healthcare</SelectItem>
-                                            <SelectItem value="Manufacturing">Manufacturing</SelectItem>
-                                            <SelectItem value="Retail">Retail</SelectItem>
-                                            <SelectItem value="Education">Education</SelectItem>
-                                            <SelectItem value="Government">Government</SelectItem>
-                                            <SelectItem value="Other">Other</SelectItem>
+                                        <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                                            <SelectItem value="Financial Services" className="dark:text-gray-100 dark:focus:bg-gray-600">Financial Services</SelectItem>
+                                            <SelectItem value="Technology" className="dark:text-gray-100 dark:focus:bg-gray-600">Technology</SelectItem>
+                                            <SelectItem value="Oil & Gas" className="dark:text-gray-100 dark:focus:bg-gray-600">Oil & Gas</SelectItem>
+                                            <SelectItem value="Healthcare" className="dark:text-gray-100 dark:focus:bg-gray-600">Healthcare</SelectItem>
+                                            <SelectItem value="Manufacturing" className="dark:text-gray-100 dark:focus:bg-gray-600">Manufacturing</SelectItem>
+                                            <SelectItem value="Retail" className="dark:text-gray-100 dark:focus:bg-gray-600">Retail</SelectItem>
+                                            <SelectItem value="Education" className="dark:text-gray-100 dark:focus:bg-gray-600">Education</SelectItem>
+                                            <SelectItem value="Government" className="dark:text-gray-100 dark:focus:bg-gray-600">Government</SelectItem>
+                                            <SelectItem value="Other" className="dark:text-gray-100 dark:focus:bg-gray-600">Other</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -419,21 +419,21 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                             name="noticePeriod"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Notice Period *</FormLabel>
+                                    <FormLabel className="dark:text-gray-200">Notice Period *</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger className="w-full rounded-sm p-5">
+                                            <SelectTrigger className="w-full rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                                                 <SelectValue placeholder="Select notice period" />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="immediate">Immediate</SelectItem>
-                                            <SelectItem value="1_week">1 Week</SelectItem>
-                                            <SelectItem value="2_weeks">2 Weeks</SelectItem>
-                                            <SelectItem value="1_month">1 Month</SelectItem>
-                                            <SelectItem value="2_months">2 Months</SelectItem>
-                                            <SelectItem value="3_months">3 Months</SelectItem>
-                                            <SelectItem value="6_months">6 Months</SelectItem>
+                                        <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                                            <SelectItem value="immediate" className="dark:text-gray-100 dark:focus:bg-gray-600">Immediate</SelectItem>
+                                            <SelectItem value="1_week" className="dark:text-gray-100 dark:focus:bg-gray-600">1 Week</SelectItem>
+                                            <SelectItem value="2_weeks" className="dark:text-gray-100 dark:focus:bg-gray-600">2 Weeks</SelectItem>
+                                            <SelectItem value="1_month" className="dark:text-gray-100 dark:focus:bg-gray-600">1 Month</SelectItem>
+                                            <SelectItem value="2_months" className="dark:text-gray-100 dark:focus:bg-gray-600">2 Months</SelectItem>
+                                            <SelectItem value="3_months" className="dark:text-gray-100 dark:focus:bg-gray-600">3 Months</SelectItem>
+                                            <SelectItem value="6_months" className="dark:text-gray-100 dark:focus:bg-gray-600">6 Months</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -451,10 +451,11 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                             <Checkbox
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
+                                                className="dark:border-gray-600"
                                             />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel>Willing to relocate</FormLabel>
+                                            <FormLabel className="dark:text-gray-200">Willing to relocate</FormLabel>
                                         </div>
                                     </FormItem>
                                 )}
@@ -469,10 +470,11 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                             <Checkbox
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
+                                                className="dark:border-gray-600"
                                             />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel>Open to new opportunities</FormLabel>
+                                            <FormLabel className="dark:text-gray-200">Open to new opportunities</FormLabel>
                                         </div>
                                     </FormItem>
                                 )}
@@ -483,7 +485,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                             <button
                                 type="button"
                                 onClick={handleBack}
-                                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-sm font-semibold hover:bg-gray-300 transition"
+                                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-sm font-semibold hover:bg-gray-300 transition dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                             >
                                 ← Back
                             </button>
@@ -501,21 +503,21 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                 {/* Step 3: Skills & Links */}
                 {step === 3 && (
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-bold text-secondary mb-4">Skills & Portfolio</h2>
+                        <h2 className="text-2xl font-bold text-secondary mb-4 dark:text-gray-100">Skills & Portfolio</h2>
 
                         <FormField
                             control={control}
                             name="skills"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Skills *</FormLabel>
+                                    <FormLabel className="dark:text-gray-200">Skills *</FormLabel>
                                     <div className="space-y-3">
                                         <div className="flex gap-2">
                                             <Input
                                                 value={skillInput}
                                                 onChange={(e) => setSkillInput(e.target.value)}
                                                 placeholder="Add a skill (e.g., React, Project Management)"
-                                                className="rounded-sm p-5"
+                                                className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter') {
                                                         e.preventDefault();
@@ -544,7 +546,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                                 {skills.map((skill, index) => (
                                                     <span
                                                         key={index}
-                                                        className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                                                        className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm dark:bg-gray-600 dark:text-gray-300"
                                                     >
                                                         {skill}
                                                         <button
@@ -552,7 +554,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                                             onClick={() => {
                                                                 setValue('skills', skills.filter((_, i) => i !== index));
                                                             }}
-                                                            className="text-gray-500 hover:text-red-500"
+                                                            className="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
                                                         >
                                                             ×
                                                         </button>
@@ -572,13 +574,13 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                 name="linkedinUrl"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>LinkedIn Profile URL</FormLabel>
+                                        <FormLabel className="dark:text-gray-200">LinkedIn Profile URL</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="url"
                                                 {...field}
                                                 placeholder="https://linkedin.com/in/yourprofile"
-                                                className="rounded-sm p-5"
+                                                className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -591,13 +593,13 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                 name="portfolioUrl"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Portfolio URL</FormLabel>
+                                        <FormLabel className="dark:text-gray-200">Portfolio URL</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="url"
                                                 {...field}
                                                 placeholder="https://yourportfolio.com"
-                                                className="rounded-sm p-5"
+                                                className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -607,7 +609,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                         </div>
 
                         <div>
-                            <FormLabel>Expected Salary Range (Annual, Naira)</FormLabel>
+                            <FormLabel className="dark:text-gray-200">Expected Salary Range (Annual, Naira)</FormLabel>
                             <div className="grid grid-cols-2 gap-4 mt-3">
                                 <FormField
                                     control={control}
@@ -620,7 +622,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                                     {...field}
                                                     onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                                                     placeholder="Minimum"
-                                                    className="rounded-sm p-5"
+                                                    className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -638,7 +640,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                                                     {...field}
                                                     onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                                                     placeholder="Maximum"
-                                                    className="rounded-sm p-5"
+                                                    className="rounded-sm p-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -648,9 +650,9 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                             </div>
                         </div>
 
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <h3 className="font-semibold text-green-900 mb-2">🎉 Almost Done!</h3>
-                            <p className="text-sm text-green-800">
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4 dark:bg-green-900/20 dark:border-green-800">
+                            <h3 className="font-semibold text-green-900 mb-2 dark:text-green-200">🎉 Almost Done!</h3>
+                            <p className="text-sm text-green-800 dark:text-green-300">
                                 After completing onboarding, you can add work history, education, and upload your CV
                                 to increase your profile visibility.
                             </p>
@@ -660,7 +662,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
                             <button
                                 type="button"
                                 onClick={handleBack}
-                                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-sm font-semibold hover:bg-gray-300 transition"
+                                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-sm font-semibold hover:bg-gray-300 transition dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                             >
                                 ← Back
                             </button>

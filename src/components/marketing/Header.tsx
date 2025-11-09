@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { ThemeToggle } from '@/components/platform/ThemeToggle'
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -19,7 +20,7 @@ const Header = () => {
     }
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 dark:bg-gray-900/95 dark:border-gray-800">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center py-4">
                     {/* Logo */}
@@ -27,32 +28,32 @@ const Header = () => {
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold text-lg">N</span>
                         </div>
-                        <span className="text-secondary font-bold text-xl">theNexus</span>
+                        <span className="text-secondary font-bold text-xl dark:text-gray-100">theNexus</span>
                     </Link>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex space-x-8">
                         <button
                             onClick={() => scrollToSection('how-it-works')}
-                            className="text-secondary hover:text-primary transition-colors font-medium"
+                            className="text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
                         >
                             How It Works
                         </button>
                         <button
                             onClick={() => scrollToSection('benefits')}
-                            className="text-secondary hover:text-primary transition-colors font-medium"
+                            className="text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
                         >
                             Benefits
                         </button>
                         <button
                             onClick={() => scrollToSection('testimonials')}
-                            className="text-secondary hover:text-primary transition-colors font-medium"
+                            className="text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
                         >
                             Testimonials
                         </button>
                         <Link
                             href="/about"
-                            className="text-secondary hover:text-primary transition-colors font-medium"
+                            className="text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
                         >
                             About
                         </Link>
@@ -60,9 +61,10 @@ const Header = () => {
 
                     {/* Desktop CTA */}
                     <div className="hidden md:flex items-center space-x-4">
+                        <ThemeToggle />
                         <Link
                             href="/sign-in"
-                            className="text-secondary hover:text-primary transition-colors font-medium"
+                            className="text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
                         >
                             Sign In
                         </Link>
@@ -77,11 +79,11 @@ const Header = () => {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={toggleMenu}
-                        className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors dark:hover:bg-gray-800"
                         aria-label="Toggle menu"
                     >
                         <svg
-                            className="w-6 h-6 text-secondary"
+                            className="w-6 h-6 text-secondary dark:text-gray-300"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -97,37 +99,40 @@ const Header = () => {
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (
-                    <div className="md:hidden border-t border-gray-200 py-4">
+                    <div className="md:hidden border-t border-gray-200 py-4 dark:border-gray-700">
                         <nav className="flex flex-col space-y-4">
                             <button
                                 onClick={() => scrollToSection('how-it-works')}
-                                className="text-left text-secondary hover:text-primary transition-colors font-medium"
+                                className="text-left text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
                             >
                                 How It Works
                             </button>
                             <button
                                 onClick={() => scrollToSection('benefits')}
-                                className="text-left text-secondary hover:text-primary transition-colors font-medium"
+                                className="text-left text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
                             >
                                 Benefits
                             </button>
                             <button
                                 onClick={() => scrollToSection('testimonials')}
-                                className="text-left text-secondary hover:text-primary transition-colors font-medium"
+                                className="text-left text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
                             >
                                 Testimonials
                             </button>
                             <Link
                                 href="/about"
-                                className="text-left text-secondary hover:text-primary transition-colors font-medium"
+                                className="text-left text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 About
                             </Link>
-                            <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+                            <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <div className="flex justify-center mb-2">
+                                    <ThemeToggle />
+                                </div>
                                 <Link
                                     href="/sign-in"
-                                    className="text-secondary hover:text-primary transition-colors font-medium"
+                                    className="text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Sign In

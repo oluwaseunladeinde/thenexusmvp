@@ -7,9 +7,13 @@ import { useState } from 'react';
 export default function SignUpPage() {
     const searchParams = useSearchParams();
     const typeParam = searchParams.get('type');
-    const initialUserType = (typeParam === 'professional' || typeParam === 'hr_partner') ? typeParam : null;
+    const initialUserType = (typeParam === 'professional' || typeParam === 'hr-partner') ? typeParam : null;
+    const isProfessional = initialUserType === 'professional';
+    const isHRPartner = initialUserType === 'hr-partner';
 
-    const [selectedUserType, setSelectedUserType] = useState<'professional' | 'hr_partner'>(
+    console.log({ initialUserType, isProfessional, isHRPartner });
+
+    const [selectedUserType, setSelectedUserType] = useState<'professional' | 'hr-partner'>(
         initialUserType || 'professional'
     );
 
@@ -50,8 +54,8 @@ export default function SignUpPage() {
 
                         {/* HR Partner Card */}
                         <button
-                            onClick={() => setSelectedUserType('hr_partner')}
-                            className={`p-6 border-2 rounded-xl transition-all duration-200 ${selectedUserType === 'hr_partner'
+                            onClick={() => setSelectedUserType('hr-partner')}
+                            className={`p-6 border-2 rounded-xl transition-all duration-200 ${selectedUserType === 'hr-partner'
                                 ? 'border-secondary bg-blue-50 shadow-lg scale-105'
                                 : 'border-gray-300 hover:border-secondary hover:shadow-md'
                                 }`}
@@ -59,7 +63,7 @@ export default function SignUpPage() {
                             <div className="text-4xl mb-3">🏢</div>
                             <div className="font-semibold text-secondary mb-1">Company/HR</div>
                             <div className="text-xs text-gray-600">Hire talent</div>
-                            {selectedUserType === 'hr_partner' && (
+                            {selectedUserType === 'hr-partner' && (
                                 <div className="mt-3">
                                     <span className="inline-block bg-secondary text-white text-xs px-3 py-1 rounded-full">
                                         Selected ✓

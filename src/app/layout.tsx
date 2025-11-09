@@ -3,7 +3,8 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { UserProfileProvider } from '@/contexts/UserProfileContext';
-// import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { Toaster } from "sonner";
 
 const manRope = Manrope({
   variable: "--font-manrope-sans",
@@ -55,14 +56,19 @@ export default function RootLayout({
         },
       }}
     >
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body
           className={`${manRope.variable} antialiased`}
         >
-          <UserProfileProvider>
-            {children}
-          </UserProfileProvider>
-          {/* <Toaster position="top-right" richColors /> */}
+          <ThemeProvider
+            defaultTheme="system"
+            storageKey="theNexus-ui-theme"
+          >
+            <UserProfileProvider>
+              {children}
+            </UserProfileProvider>
+          </ThemeProvider>
+          <Toaster position="top-right" richColors />
         </body>
       </html>
     </ClerkProvider>

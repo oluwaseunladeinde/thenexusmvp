@@ -511,7 +511,7 @@ export const referenceSchema = z.object({
 // Admin User Query Schema
 export const adminUserQuerySchema = paginationQuerySchema.extend({
     search: z.string().optional(),
-    role: z.enum(['professional', 'hr_partner', 'admin']).optional(),
+    role: z.enum(['professional', 'hr-partner', 'admin']).optional(),
     status: z.enum(['pending', 'active', 'suspended']).optional(),
 });
 

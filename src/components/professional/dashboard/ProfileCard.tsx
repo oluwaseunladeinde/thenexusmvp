@@ -95,7 +95,7 @@ export default function ProfileCard({ profileData, stats, premiumText }: Profile
                             <Eye className="w-3 h-3" />
                             Profile views
                             {stats.trend && stats.trend !== 'neutral' && (
-                                <div className={`flex items-center ${stats.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                                <div className={`flex items-center ${stats.trend === 'up' ? 'text-green-600' : 'text-red-600'}`} aria-label={`Trending ${stats.trend}`}>
                                     {stats.trend === 'up' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
                                 </div>
                             )}

@@ -16,7 +16,7 @@ import { prisma } from '@/lib/database';
  *         schema:
  *           type: string
  *           enum: [PENDING, ACCEPTED, DECLINED, all]
- *         description: Filter by introduction status (default: all)
+ *         description: "Filter by introduction status (default: all)"
  *         example: "PENDING"
  *       - in: query
  *         name: page

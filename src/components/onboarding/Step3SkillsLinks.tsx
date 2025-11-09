@@ -116,14 +116,14 @@ export function Step3SkillsLinks() {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Skills & Links</h2>
-                <p className="text-gray-600">Showcase your expertise and professional presence</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2 dark:text-gray-100">Skills & Links</h2>
+                <p className="text-gray-600 dark:text-gray-400">Showcase your expertise and professional presence</p>
             </div>
 
             {/* Skills */}
             <div>
-                <Label className="text-base font-medium">Skills *</Label>
-                <p className="text-sm text-gray-500 mb-3">
+                <Label className="text-base font-medium dark:text-gray-200">Skills *</Label>
+                <p className="text-sm text-gray-500 mb-3 dark:text-gray-400">
                     Add up to 10 skills that best describe your expertise
                 </p>
 
@@ -135,12 +135,14 @@ export function Step3SkillsLinks() {
                         onKeyPress={handleKeyDown}
                         placeholder="e.g., Product Management, Agile, Data Analysis"
                         disabled={watchedSkills.length >= 10}
+                        className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                     />
                     <Button
                         type="button"
                         onClick={addSkill}
                         disabled={!skillInput.trim() || watchedSkills.length >= 10}
                         variant="outline"
+                        className="dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                     >
                         <Plus className="w-4 h-4" />
                     </Button>
@@ -151,13 +153,13 @@ export function Step3SkillsLinks() {
                     {watchedSkills.map((skill, index) => (
                         <div
                             key={index}
-                            className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                            className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2 dark:bg-blue-900/30 dark:text-blue-300"
                         >
                             {skill}
                             <button
                                 type="button"
                                 onClick={() => removeSkill(index)}
-                                className="text-blue-600 hover:text-blue-800"
+                                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
                             >
                                 <X className="w-3 h-3" />
                             </button>
@@ -165,7 +167,7 @@ export function Step3SkillsLinks() {
                     ))}
                 </div>
 
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                     {watchedSkills.length}/10 skills added
                 </p>
 
@@ -176,12 +178,12 @@ export function Step3SkillsLinks() {
 
             {/* LinkedIn URL */}
             <div>
-                <Label htmlFor="linkedinUrl">LinkedIn Profile</Label>
+                <Label htmlFor="linkedinUrl" className="dark:text-gray-200">LinkedIn Profile</Label>
                 <Input
                     id="linkedinUrl"
                     {...register('linkedinUrl')}
                     placeholder="https://linkedin.com/in/yourprofile"
-                    className={errors.linkedinUrl ? 'border-red-500' : ''}
+                    className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${errors.linkedinUrl ? 'border-red-500' : ''}`}
                 />
                 {errors.linkedinUrl && (
                     <p className="text-red-500 text-sm mt-1">{errors.linkedinUrl.message}</p>
@@ -190,12 +192,12 @@ export function Step3SkillsLinks() {
 
             {/* Portfolio URL */}
             <div>
-                <Label htmlFor="portfolioUrl">Portfolio/Website</Label>
+                <Label htmlFor="portfolioUrl" className="dark:text-gray-200">Portfolio/Website</Label>
                 <Input
                     id="portfolioUrl"
                     {...register('portfolioUrl')}
                     placeholder="https://yourportfolio.com"
-                    className={errors.portfolioUrl ? 'border-red-500' : ''}
+                    className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${errors.portfolioUrl ? 'border-red-500' : ''}`}
                 />
                 {errors.portfolioUrl && (
                     <p className="text-red-500 text-sm mt-1">{errors.portfolioUrl.message}</p>
@@ -204,12 +206,12 @@ export function Step3SkillsLinks() {
 
             {/* Resume Upload */}
             <div>
-                <Label className="text-base font-medium">Resume/CV</Label>
-                <p className="text-sm text-gray-500 mb-3">
+                <Label className="text-base font-medium dark:text-gray-200">Resume/CV</Label>
+                <p className="text-sm text-gray-500 mb-3 dark:text-gray-400">
                     Upload your resume in PDF format (max 5MB)
                 </p>
 
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center dark:border-gray-600">
                     <input
                         type="file"
                         accept=".pdf"
@@ -219,11 +221,11 @@ export function Step3SkillsLinks() {
                     />
                     <label htmlFor="resume-upload" className="cursor-pointer">
                         <div className="flex flex-col items-center">
-                            <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                            <p className="text-sm text-gray-600 mb-1">
+                            <Upload className="w-8 h-8 text-gray-400 mb-2 dark:text-gray-500" />
+                            <p className="text-sm text-gray-600 mb-1 dark:text-gray-400">
                                 {resumeFile ? resumeFile.name : 'Click to upload your resume'}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 dark:text-gray-500">
                                 PDF files only, up to 5MB
                             </p>
                         </div>
@@ -231,8 +233,8 @@ export function Step3SkillsLinks() {
                 </div>
 
                 {resumeFile && (
-                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
-                        <p className="text-sm text-green-800">
+                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded dark:bg-green-900/20 dark:border-green-800">
+                        <p className="text-sm text-green-800 dark:text-green-300">
                             ✓ {resumeFile.name} ({(resumeFile.size / 1024 / 1024).toFixed(2)} MB)
                         </p>
                     </div>
@@ -240,11 +242,11 @@ export function Step3SkillsLinks() {
             </div>
 
             {/* Completion Message */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h3 className="text-sm font-medium text-green-900 mb-1">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 dark:bg-green-900/20 dark:border-green-800">
+                <h3 className="text-sm font-medium text-green-900 mb-1 dark:text-green-200">
                     Almost Done!
                 </h3>
-                <p className="text-sm text-green-700">
+                <p className="text-sm text-green-700 dark:text-green-300">
                     Once you submit this form, your professional profile will be created and you'll be
                     redirected to your dashboard where you can start receiving relevant opportunities.
                 </p>
@@ -252,7 +254,7 @@ export function Step3SkillsLinks() {
 
             <Button type="submit" className="w-full">
                 Complete Profile
-                +            </Button>
+            </Button>
         </form>
     )
 }

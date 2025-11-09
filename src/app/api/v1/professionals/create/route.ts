@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/database/prisma'
 
 const createProfessionalSchema = z.object({
@@ -302,10 +302,15 @@ export async function POST(request: NextRequest) {
             return newProfessional;
         });
 
-
         // Update Clerk user metadata
-        // Note: This would typically be done via Clerk's API
-        // For now, we'll just mark as completed in our database
+        const clerk = await clerkClient();
+        await clerk.users.updateUserMetadata(clerkUserId, {
+            publicMetadata: {
+                userType: 'professional',
+                onboardingComplete: true,
+                professionalId: professional.id,
+            }
+        });
 
         return NextResponse.json(
             {

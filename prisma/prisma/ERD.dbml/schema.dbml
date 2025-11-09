@@ -505,6 +505,7 @@ Enum HrStatus {
 }
 
 Enum SeniorityLevel {
+  SENIOR
   DIRECTOR
   VP
   C_SUITE
