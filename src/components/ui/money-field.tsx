@@ -25,11 +25,12 @@ const MoneyField = forwardRef<HTMLInputElement, MoneyFieldProps>(
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const inputValue = e.target.value;
       // Remove commas and non-numeric characters except for the first character if it's currency
-      const numericValue = inputValue.replace(/,/g, '').replace(/[^\d]/g, '');
+      const numericValue = inputValue.replace(/,/g, '').replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1');
       onChange?.(numericValue);
     };
 
-    const displayValue = value ? formatNumber(value) : '';
+    const hasValue = value !== undefined && value !== null && value !== '';
+    const displayValue = hasValue ? formatNumber(value) : '';
 
     return (
       <div className="relative">

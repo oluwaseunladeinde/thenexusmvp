@@ -4,7 +4,7 @@ import { cacheService, CACHE_KEYS, CACHE_TTL } from '@/lib/cache';
 
 /**
  * @swagger
- * /api/industries:
+ * /api/v1/industries:
  *   get:
  *     summary: Get all active industries
  *     tags: [Industries]

@@ -47,23 +47,23 @@ export default function JobRoleDetailPage({ params }: { params: { id: string } }
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   useEffect(() => {
+    const fetchJobRole = async () => {
+      try {
+        const response = await fetch(`/api/v1/job-roles/${params.id}`);
+        if (!response.ok) throw new Error('Failed to fetch job role');
+
+        const result = await response.json();
+        setJobRole(result.data);
+      } catch (error) {
+        console.error('Error fetching job role:', error);
+        toast.error('Failed to load job role');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchJobRole();
   }, [params.id]);
-
-  const fetchJobRole = async () => {
-    try {
-      const response = await fetch(`/api/v1/job-roles/${params.id}`);
-      if (!response.ok) throw new Error('Failed to fetch job role');
-
-      const result = await response.json();
-      setJobRole(result.data);
-    } catch (error) {
-      console.error('Error fetching job role:', error);
-      toast.error('Failed to load job role');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const updateStatus = async (newStatus: string) => {
     setIsUpdatingStatus(true);
@@ -217,11 +217,11 @@ export default function JobRoleDetailPage({ params }: { params: { id: string } }
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="font-medium">Seniority Level:</span>
-                <span className="ml-2">{jobRole.seniorityLevel.replace('_', ' ')}</span>
+                <span className="ml-2">{jobRole.seniorityLevel.replaceAll('_', ' ')}</span>
               </div>
               <div>
                 <span className="font-medium">Employment Type:</span>
-                <span className="ml-2">{jobRole.employmentType.replace('_', ' ')}</span>
+                <span className="ml-2">{jobRole.employmentType.replaceAll('_', ' ')}</span>
               </div>
               <div>
                 <span className="font-medium">Industry:</span>
@@ -229,7 +229,7 @@ export default function JobRoleDetailPage({ params }: { params: { id: string } }
               </div>
               <div>
                 <span className="font-medium">Remote Option:</span>
-                <span className="ml-2">{jobRole.remoteOption.replace('_', ' ')}</span>
+                <span className="ml-2">{jobRole.remoteOption.replaceAll('_', ' ')}</span>
               </div>
               <div>
                 <span className="font-medium">Experience:</span>

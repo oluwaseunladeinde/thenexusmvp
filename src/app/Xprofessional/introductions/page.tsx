@@ -93,45 +93,61 @@ export default function IntroductionRequestsPage() {
         fetchData();
     }, []);
 
-    const handleFilterChange = (filter: string) => {
+    const applyFilters = (
+        source: IntroductionRequest[],
+        filter: string,
+        queryText: string
+    ) => {
+        const now = new Date();
+        let filteredData = source;
+
+        if (filter === 'pending') {
+            filteredData = filteredData.filter(
+                intro => intro.status === 'PENDING' && new Date(intro.expiresAt) > now
+            );
+        } else if (filter === 'expired') {
+            filteredData = filteredData.filter(
+                intro => intro.status === 'PENDING' && new Date(intro.expiresAt) <= now
+            );
+        } else if (filter !== 'all') {
+            filteredData = filteredData.filter(
+                intro => intro.status.toLowerCase() === filter.toLowerCase()
+            );
+        }
+
+        const normalizedQuery = queryText.trim().toLowerCase();
+
+        if (normalizedQuery) {
+            filteredData = filteredData.filter(intro =>
+                intro.jobRole.roleTitle.toLowerCase().includes(normalizedQuery) ||
+                intro.company.companyName.toLowerCase().includes(normalizedQuery) ||
+                intro.company.industry.toLowerCase().includes(normalizedQuery) ||
+                intro.jobRole.locationCity.toLowerCase().includes(normalizedQuery)
+            );
+        }
+
+        return filteredData;
+    };
+
+    const handleFilterChange = (
+        filter: string,
+        overrideQuery?: string,
+        dataOverride?: IntroductionRequest[]
+    ) => {
         setActiveFilter(filter);
         setCurrentPage(1);
 
-        const now = new Date();
-        let filteredData = allIntroductions;
+        const queryText = (overrideQuery ?? searchQuery) ?? '';
+        const dataset = dataOverride ?? allIntroductions;
 
-        if (filter === 'pending') {
-            filteredData = allIntroductions.filter(intro =>
-                intro.status === 'PENDING' && new Date(intro.expiresAt) > now
-            );
-        } else if (filter === 'expired') {
-            filteredData = allIntroductions.filter(intro =>
-                intro.status === 'PENDING' && new Date(intro.expiresAt) <= now
-            );
-        } else if (filter !== 'all') {
-            filteredData = allIntroductions.filter(intro =>
-                intro.status.toLowerCase() === filter.toLowerCase()
-            );
-        }
-
-        // Apply search filter
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase();
-            filteredData = filteredData.filter(intro =>
-                intro.jobRole.roleTitle.toLowerCase().includes(query) ||
-                intro.company.companyName.toLowerCase().includes(query) ||
-                intro.company.industry.toLowerCase().includes(query) ||
-                intro.jobRole.locationCity.toLowerCase().includes(query)
-            );
-        }
-
-        setIntroductions(filteredData);
+        setIntroductions(applyFilters(dataset, filter, queryText));
     };
+
 
     const handleSearchChange = (query: string) => {
         setSearchQuery(query);
         setCurrentPage(1); // Reset to first page when search changes
-        handleFilterChange(activeFilter); // Re-apply current filter with search
+        handleFilterChange(activeFilter, query); // Re-apply current filter with search
     };
 
     const handleAccept = async (id: string) => {
@@ -167,12 +183,11 @@ export default function IntroductionRequestsPage() {
 
             if (response.ok) {
                 toast.success('Introduction request declined');
-                setAllIntroductions(prev =>
-                    prev.map(intro =>
-                        intro.id === id ? { ...intro, status: 'DECLINED' as const } : intro
-                    )
+                const updated = allIntroductions.map(intro =>
+                    intro.id === id ? { ...intro, status: 'DECLINED' as const } : intro
                 );
-                handleFilterChange(activeFilter);
+                setAllIntroductions(updated);
+                handleFilterChange(activeFilter, undefined, updated);
             } else {
                 toast.error('Failed to decline introduction request');
             }

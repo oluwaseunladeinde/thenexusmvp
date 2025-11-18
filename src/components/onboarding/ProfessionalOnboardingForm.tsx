@@ -195,7 +195,7 @@ export default function ProfessionalOnboardingForm({ userId, userEmail }: Props)
 
     return (
         <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow-lg p-8 dark:bg-gray-800 dark:border-gray-700">
+            <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow-lg p-8 border border-transparent dark:bg-gray-800 dark:border-gray-700">
                 {/* Progress Bar */}
                 <div className="mb-8">
                     <div className="flex justify-between items-center mb-2">

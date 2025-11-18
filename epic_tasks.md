@@ -1,287 +1,199 @@
-# Epic 3.2: Job Role Posting - Task Breakdown
+# Epic 3.3: Talent Search
+**Sprint Goal:** Allow HR to search and discover professionals
 
-**Sprint Goal:** Allow HR to create and manage job postings
-**Due Date:** November 27, 2025
-**Tags:** development, API, design
+This epic focuses on enabling HR teams to efficiently search for and discover professionals. The goal is to develop a robust system that integrates a database and API functionality, ensuring seamless access to talent information. This feature will streamline the recruitment process and improve talent acquisition strategies.
 
-## Priority 0 (P0) - Critical Path
+Tags: database, API, development
 
-### ✅ Task 2: Build Job Role API Endpoints - COMPLETED
-- **Type:** Backend Development
-- **Estimate:** 3 days
-- **Dependencies:** None
-- **Status:** ✅ COMPLETED
-- **Deliverables:**
-  - ✅ `POST /api/v1/job-roles` - Create role
-  - ✅ `GET /api/v1/job-roles` - List company roles
-  - ✅ `GET /api/v1/job-roles/:id` - Get role details
-  - ✅ `PUT /api/v1/job-roles/:id` - Update role
-  - ✅ `DELETE /api/v1/job-roles/:id` - Soft delete role
-  - ✅ Permission validation (HR can only manage own company's roles)
-  - ✅ Skills stored as JSONB array
+## P0 Tasks
 
-### ✅ Task 3: Build Job Role Creation Page - COMPLETED
-- **Type:** Frontend Development
-- **Estimate:** 4 days
-- **Dependencies:** Task 1 (Design), Task 2 (API)
-- **Status:** ✅ COMPLETED
-- **Deliverables:**
-  - ✅ `/dashboard/hr-partner/roles/new` page
-  - ✅ Form with all required fields
-  - ✅ Rich text editor for description (textarea)
-  - ✅ Skills multi-select component (basic implementation)
-  - ✅ Form validation
-  - ✅ Draft/publish functionality
+### 1. Build Search Page UI
+- Create /dashboard/search page
+- Build search bar with keyword input
+- Build filter sidebar:
+  - Location (city/state)
+  - Years of experience (range slider)
+  - Industry dropdown
+  - Skills multi-select
+  - Salary range
+  - Verification status
+- Build results grid
+- Add pagination
 
-### ✅ Task 4: Connect Job Role Form to API - COMPLETED
-- **Type:** Frontend Integration
-- **Estimate:** 1 day
-- **Dependencies:** Task 2 (API), Task 3 (Form)
-- **Status:** ✅ COMPLETED
-- **Deliverables:**
-  - ✅ API integration for form submission
-  - ✅ Draft vs publish handling
-  - ✅ Success notifications
-  - ✅ Redirect to roles list
+**Acceptance Criteria:**
+- Search input functional
+- All filters present
+- Results display in grid
+- Pagination works
 
-### ✅ Task 6: Build Job Roles List Page - COMPLETED
-- **Type:** Frontend Development
-- **Estimate:** 3 days
-- **Dependencies:** Task 2 (API), Task 5 (Design)
-- **Status:** ✅ COMPLETED
-- **Deliverables:**
-  - ✅ `/dashboard/hr-partner/roles` page
-  - ✅ Role listing with status badges
-  - ✅ Filter functionality
-  - ✅ "Create new role" button
-  - ✅ Introduction request stats per role
-  - ✅ Links to role detail pages
+### 2. Create Professional Search API
+- Create POST /api/professionals/search
+- Implement filters:
+  - Full-text search on title, headline, summary
+  - Location filters
+  - Experience range
+  - Industry match
+  - Skills array contains
+  - Salary range overlap
+  - Verification status
+- Only return professionals with openToOpportunities = true
+- Implement pagination (20 per page)
+- Order by relevance score
 
-### ✅ Task 8: Implement Role Status Management - COMPLETED
-- **Type:** Backend + Frontend
-- **Estimate:** 2 days
-- **Dependencies:** Task 2 (API), Task 7 (Detail page)
-- **Status:** ✅ COMPLETED
-- **Deliverables:**
-  - ✅ `PATCH /api/v1/job-roles/:id/status` endpoint
-  - ✅ Status transition validation (draft → active → paused/filled/closed)
-  - ✅ Status change notifications (basic implementation)
-  - ✅ Frontend status management UI
+**Acceptance Criteria:**
+- Search performs well (<2s)
+- All filters work correctly
+- Returns paginated results
+- Only returns available professionals
 
-### Task 1: Design Job Role Form (Figma) - PENDING
-- **Type:** Design
-- **Estimate:** 2 days
-- **Dependencies:** None
-- **Status:** ⏳ PENDING (Using basic form design for now)
-- **Deliverables:**
-  - ⏳ Job role creation form design
-  - ⏳ Skills selector component
-  - ⏳ Salary range inputs
-  - ⏳ Confidential role toggle
-  - ⏳ Save as draft/publish buttons
-  - ⏳ Mobile responsive layouts
+### 3. Build Professional Result Card
+- Create result card component showing:
+  - Name initials (or photo if public)
+  - Profile headline
+  - Location, experience
+  - Top 3 skills
+  - Verification badge
+  - Salary range
+  - "View Profile" button
+- Handle confidential profiles (limited info)
 
-### Task 5: Design Job Roles List Page (Figma) - PENDING
-- **Type:** Design
-- **Estimate:** 1.5 days
-- **Dependencies:** None
-- **Status:** ⏳ PENDING (Using basic list design for now)
-- **Deliverables:**
-  - ⏳ Roles list/grid view design
-  - ⏳ Role card design with status and stats
-  - ⏳ Empty state design
-  - ⏳ Filter components (status, date)
+**Acceptance Criteria:**
+- Card displays key info
+- Verification badge shows
+- Click opens profile
+- Responsive design
 
-## Priority 1 (P1) - Secondary Features
+### 4. Connect Search to API
+- Fetch search results on form submit
+- Handle filter changes (debounced)
+- Show loading skeleton
+- Handle empty results
+- Implement pagination controls
 
-### ✅ Task 7: Build Job Role Detail Page - COMPLETED
-- **Type:** Frontend Development
-- **Estimate:** 3 days
-- **Dependencies:** Task 2 (API), Task 6 (List page)
-- **Status:** ✅ COMPLETED
-- **Deliverables:**
-  - ✅ `/dashboard/hr-partner/roles/:id` page
-  - ✅ Full role details display
-  - ✅ Introduction requests for role (basic display)
-  - ✅ Edit/close role buttons
-  - ✅ Applicant pipeline view (basic implementation)
+**Acceptance Criteria:**
+- Search returns results
+- Filters update results
+- Loading states smooth
+- Pagination works
+- Empty state displays
 
-### ❌ Task 9: Implement Rich Text Editor for Job Descriptions - MISSING
-- **Type:** Frontend Enhancement
-- **Estimate:** 2 days
-- **Dependencies:** Task 3 (Form)
-- **Status:** ❌ MISSING
-- **Deliverables:**
-  - ❌ Rich text editor component for job descriptions
-  - ❌ Formatting options (bold, italic, lists, links)
-  - ❌ Image embedding capability
-  - ❌ Mobile-friendly editor interface
+### 5. Build Professional Profile View (HR Side)
+- Create /dashboard/professionals/:id page
+- Display full professional profile:
+  - Header (name, title, location)
+  - Verification badge
+  - Profile summary
+  - Work history
+  - Education
+  - Skills
+  - Certifications
+- Add "Request Introduction" button
+- Add "Save for later" button
 
-### ❌ Task 10: Build Skills Selector Component - MISSING
-- **Type:** Frontend Enhancement
-- **Estimate:** 2 days
-- **Dependencies:** Task 3 (Form)
-- **Status:** ❌ MISSING
-- **Deliverables:**
-  - ❌ Multi-select skills component with autocomplete
-  - ❌ Predefined skills database
-  - ❌ Custom skill addition
-  - ❌ Required vs preferred skills distinction
+**Acceptance Criteria:**
+- All profile sections visible
+- CTA buttons prominent
+- Responsive layout
+- Professional's contact info hidden until intro accepted
 
-### ❌ Task 11: Implement Applicant Pipeline View - MISSING
-- **Type:** Frontend Enhancement
-- **Estimate:** 3 days
-- **Dependencies:** Task 7 (Detail Page)
-- **Status:** ❌ MISSING
-- **Deliverables:**
-  - ❌ Detailed introduction requests view
-  - ❌ Pipeline stages (applied, reviewed, interviewed, etc.)
-  - ❌ Candidate status tracking
-  - ❌ Introduction request management
+### 6. Create Professional Profile View API
+- Check HR permissions (can they view this profile?)
+- Log profile view in profile_views table
+- Increment view counter
 
-### ❌ Task 12: Add Notifications on Status Change - MISSING
-- **Type:** Backend Enhancement
-- **Estimate:** 2 days
-- **Dependencies:** Task 8 (Status Management)
-- **Status:** ❌ MISSING
-- **Deliverables:**
-  - ❌ Email notifications for status changes
-  - ❌ In-app notifications for relevant users
-  - ❌ Notification preferences
-  - ❌ Notification history
+**Acceptance Criteria:**
+- Returns complete profile
+- View is logged
+- Contact info only if intro accepted
+- 403 if unauthorized
 
-### ✅ Task 13: Implement PUT Endpoint for Role Updates - COMPLETED
-- **Type:** Backend Development
-- **Estimate:** 1 day
-- **Dependencies:** Task 2 (API)
-- **Status:** ✅ COMPLETED
-- **Deliverables:**
-  - ✅ PUT /api/v1/job-roles/:id endpoint
-  - ✅ Full role update validation
-  - ✅ Audit logging for changes
-  - ✅ Version control for role edits
+### 7. Implement Privacy Firewall Integration
+- Integrate hideFromCompanyIds filtering in search API
+- Ensure dual-role HR professionals are hidden from their own company searches
+- Add privacy firewall logging for search queries
 
-### ✅ Task 14: Add Soft Delete Functionality - COMPLETED
-- **Type:** Backend Development
-- **Estimate:** 1 day
-- **Dependencies:** Task 2 (API)
-- **Status:** ✅ COMPLETED
-- **Deliverables:**
-  - ✅ DELETE /api/v1/job-roles/:id (soft delete)
-  - ✅ Restore deleted roles
-  - ✅ Archive vs delete distinction
-  - ✅ Data retention policies
+**Acceptance Criteria:**
+- Dual-role professionals hidden from own company
+- Privacy firewall logs search attempts
+- No data leakage in search results
 
-### ✅ Task 15: Implement Edit Role Functionality - COMPLETED
-- **Type:** Frontend Development
-- **Estimate:** 2 days
-- **Dependencies:** Task 13 (PUT Endpoint), Task 7 (Detail Page)
-- **Status:** ✅ COMPLETED
-- **Deliverables:**
-  - ✅ Edit role page/form
-  - ✅ Pre-populate form with existing data
-  - ✅ Update vs create mode handling
-  - ✅ Change history display
+### 8. Add Search Error Handling & Loading States
+- Implement comprehensive error handling for API failures
+- Add retry mechanisms for failed searches
+- Create proper loading skeletons for all components
+- Handle network timeouts gracefully
 
-### ✅ Task 16: Add Advanced Filtering - COMPLETED
-- **Type:** Frontend Enhancement
-- **Estimate:** 1 day
-- **Dependencies:** Task 6 (List Page)
-- **Status:** ✅ COMPLETED
-- **Deliverables:**
-  - ✅ Date-based filtering (created, published)
-  - ✅ Multiple status filters
-  - ✅ Salary range filtering
-  - ✅ Industry/department filters
+**Acceptance Criteria:**
+- Graceful error handling for all failure scenarios
+- User-friendly error messages
+- Retry functionality works
+- Loading states enhance UX
 
-## Priority 2 (P2) - Future Enhancements
+## P1 Tasks
 
-### Task 17: Job Role Templates System - NEW
-- **Type:** Frontend Enhancement
-- **Estimate:** 3 days
-- **Dependencies:** Task 3 (Form)
-- **Status:** ⏳ PENDING
-- **Deliverables:**
-  - ⏳ Predefined job role templates for common positions
-  - ⏳ Template categories (Software Engineer, Product Manager, etc.)
-  - ⏳ "Use Template" button in creation form
-  - ⏳ Modal to select and customize templates
-  - ⏳ Pre-filled descriptions, responsibilities, requirements, and skills
+### 1. Implement Saved Professionals Feature
+- Create POST /api/professionals/:id/save
+- Create DELETE /api/professionals/:id/unsave
+- Create GET /api/professionals/saved
+- Add "Saved" page in dashboard
+- Add save/unsave button to profile view
 
-### Task 18: AI-Assisted Job Description Generation - NEW
-- **Type:** AI Integration
-- **Estimate:** 4 days
-- **Dependencies:** Task 3 (Form), OpenAI API setup
-- **Status:** ⏳ PENDING
-- **Deliverables:**
-  - ⏳ OpenAI API integration for job description generation
-  - ⏳ "Generate with AI" button in form
-  - ⏳ Context-aware generation (role title, industry, seniority)
-  - ⏳ User refinement of AI-generated content
-  - ⏳ Rate limiting and cost management
-  - ⏳ Error handling for API failures
+**Acceptance Criteria:**
+- Can save professionals
+- Can view saved list
+- Can remove from saved
+- Saved count displays
 
-## Task Dependencies Flow
+### 2. Add Search Analytics & Tracking
+- Track search queries and filter usage
+- Log search result clicks and profile views
+- Create search analytics dashboard for HR insights
+- Track search-to-introduction conversion rates
 
-```
-✅ Task 2 (API) → ✅ Task 3 (Build Form) → ✅ Task 4 (Connect API)
-⏳ Task 5 (Design List) → ✅ Task 6 (Build List) → ✅ Task 7 (Detail Page) → ✅ Task 8 (Status Management)
-⏳ Task 1 (Design Form) → ✅ Task 3 (Build Form)
-```
+**Acceptance Criteria:**
+- Search behavior is tracked
+- Analytics dashboard shows search insights
+- Conversion metrics are captured
+- Data helps optimize search experience
 
-## Implementation Summary
+### 3. Mobile Search Optimization
+- Optimize search interface for mobile devices
+- Implement touch-friendly filter controls
+- Add swipe gestures for result cards
+- Ensure responsive grid layout
 
-### ✅ COMPLETED (12/16 tasks)
-- **Backend API**: Full CRUD operations with authentication and validation
-- **Frontend Pages**: Creation, listing, and detail pages with navigation
-- **Status Management**: Complete workflow with transition validation
-- **Navigation**: Updated HR partner navigation to include Roles section
-- **Edit Functionality**: Full edit role functionality with pre-populated forms
-- **Advanced Filtering**: Multi-criteria filtering on roles list
+**Acceptance Criteria:**
+- Search works seamlessly on mobile
+- Filters are touch-friendly
+- Results display properly on small screens
+- Performance optimized for mobile networks
 
-### ❌ MISSING (4/16 tasks)
-- **Soft Delete**: No soft delete functionality
-- **Advanced Filtering**: Only basic status filtering implemented
-- **Bulk Operations**: No bulk operations for role management
-- **Figma Designs**: No Figma designs completed
+## P2 Tasks
 
-### ⏳ PENDING (2/16 tasks)
-- **Design Tasks**: Figma designs for enhanced UI/UX (can be done in parallel)
+### 1. Add Search Filters Persistence
+- Save active filters to URL query params
+- Restore filters on page load
+- Enable shareable search links
 
-## Next Steps
+**Acceptance Criteria:**
+- Filters in URL
+- Filters restore on refresh
+- Can share search links
 
-1. **High Priority Missing Features**:
-   - Implement PUT endpoint for role updates (Task 13)
-   - Add edit role functionality (Task 15)
-   - Implement rich text editor (Task 9)
-   - Build skills selector component (Task 10)
+# Epic 3.2: Job Role Posting
 
-2. **Medium Priority Missing Features**:
-   - Add soft delete functionality (Task 14)
-   - Implement applicant pipeline view (Task 11)
-   - Add notifications on status change (Task 12)
-   - Implement advanced filtering (Task 16)
+## P2 Tasks
 
-3. **Optional Design Enhancement**: Create Figma designs for better UI/UX
-4. **Testing**: Add comprehensive unit and integration tests
-5. **Enhancement**: Bulk operations for role management
+### 1. AI-Assisted Job Description Generation
+- Integrate OpenAI API for generating custom job descriptions
+- Generate descriptions based on role title, industry, and seniority level
+- "Generate with AI" button in form
+- Allow users to refine AI-generated content
+- Rate limiting and cost management
 
-## Definition of Done
-
-- [x] All P0 tasks completed and tested
-- [x] API endpoints return proper status codes
-- [x] Forms validate correctly and prevent invalid submissions
-- [x] Mobile responsive design implemented (basic)
-- [x] Success/error notifications working
-- [x] Permission validation enforced
-- [x] Navigation updated to include Roles section
-- [x] PUT endpoint for role updates (Task 13)
-- [x] Edit role functionality (Task 15)
-- [x] Rich text editor for descriptions (Task 9)
-- [x] Skills selector component (Task 10)
-- [x] Soft delete functionality (Task 14)
-- [x] Applicant pipeline view (Task 11)
-- [x] Notifications on status change (Task 12)
-- [x] Advanced filtering (Task 16)
-- [ ] Figma designs completed (optional enhancement)
-- [ ] Code reviewed and merged to main branch
+**Acceptance Criteria:**
+- AI generates relevant, professional descriptions
+- Generation considers role context (seniority, industry)
+- Users can edit AI-generated content
+- Proper error handling for API failures
+- Cost-effective implementation

@@ -1,7 +1,23 @@
+"use client";
+
 import React from 'react'
 import Link from 'next/link'
+import { useUser } from '@clerk/nextjs'
 
 const CTASection = () => {
+    const { user, isLoaded } = useUser()
+
+    // Determine user type from metadata
+    const userType = user?.publicMetadata?.userType as string
+    const isLoggedIn = isLoaded && !!user
+
+    // Get dashboard URL based on user type
+    const getDashboardUrl = () => {
+        if (userType === 'professional') return '/professional/dashboard'
+        if (userType === 'hr-partner') return '/dashboard/hr-partner'
+        return '/dashboard' // fallback
+    }
+
     return (
         <section className="py-20 bg-gradient-to-r from-[#2E8B57] to-[#3ABF7A] text-white">
             <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
@@ -15,18 +31,29 @@ const CTASection = () => {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-                    <Link
-                        href="/sign-up?type=professional"
-                        className="bg-white text-[#2E8B57] hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                    >
-                        I'm Looking for Opportunities
-                    </Link>
-                    <Link
-                        href="/sign-up?type=hiring"
-                        className="bg-[#CFAF50] text-[#0A2540] hover:bg-[#D4AF37] px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                    >
-                        I'm Hiring Talent
-                    </Link>
+                    {isLoggedIn ? (
+                        <Link
+                            href={getDashboardUrl()}
+                            className="bg-white text-[#2E8B57] hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        >
+                            Go to Your Dashboard
+                        </Link>
+                    ) : (
+                        <>
+                            <Link
+                                href="/sign-up?type=professional"
+                                className="bg-white text-[#2E8B57] hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                            >
+                                I'm Looking for Opportunities
+                            </Link>
+                            <Link
+                                href="/sign-up?type=hiring"
+                                className="bg-[#CFAF50] text-[#0A2540] hover:bg-[#D4AF37] px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                            >
+                                I'm Hiring Talent
+                            </Link>
+                        </>
+                    )}
                 </div>
 
                 <div className="text-sm opacity-75">

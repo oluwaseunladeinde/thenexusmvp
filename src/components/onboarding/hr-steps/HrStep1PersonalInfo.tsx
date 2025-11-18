@@ -14,7 +14,7 @@ const step1Schema = z.object({
     lastName: z.string().min(2, 'Last name must be at least 2 characters'),
     jobTitle: z.string().min(2, 'Job title is required'),
     department: z.string().min(2, 'Department is required'),
-    linkedinUrl: z.string().url('Please enter a valid LinkedIn URL').optional().or(z.literal('')),
+    linkedinUrl: z.string().url('Please enter a valid LinkedIn URL').or(z.literal('')).optional(),
 });
 
 type Step1Data = z.infer<typeof step1Schema>;
@@ -27,7 +27,7 @@ interface Props {
 
 export function HrStep1PersonalInfo({ data, onChange, onValidation }: Props) {
     const [mounted, setMounted] = useState(false);
-    
+
     const form = useForm<Step1Data>({
         resolver: zodResolver(step1Schema),
         defaultValues: {
@@ -56,14 +56,14 @@ export function HrStep1PersonalInfo({ data, onChange, onValidation }: Props) {
                 ...watchedValues,
             });
         }
-    }, [watchedValues, mounted]);
+    }, [watchedValues, mounted, onChange, data]);
 
     // Update validation status
     useEffect(() => {
         if (mounted) {
             onValidation(isValid);
         }
-    }, [isValid, mounted]);
+    }, [isValid, mounted, onValidation]);
 
     // Prevent hydration mismatch
     if (!mounted) {

@@ -53,6 +53,7 @@ export default function IntroductionRequestsPage() {
     const [introductions, setIntroductions] = useState<IntroductionRequest[]>([]);
     const [allIntroductions, setAllIntroductions] = useState<IntroductionRequest[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [activeFilter, setActiveFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
     const [profileCompleteness, setProfileCompleteness] = useState(0); // Start with 0 to show card by default
@@ -65,6 +66,7 @@ export default function IntroductionRequestsPage() {
         const fetchData = async () => {
             try {
                 setLoading(true);
+                setError(null);
 
                 // Fetch introduction requests
                 const introResponse = await fetch('/api/v1/introductions/received');
@@ -72,6 +74,9 @@ export default function IntroductionRequestsPage() {
                     const introData = await introResponse.json();
                     setAllIntroductions(introData.introductions || []);
                     setIntroductions(introData.introductions || []); // Set initial filtered data
+                } else {
+                    setError('Failed to load introduction requests');
+                    toast.error('Failed to load introduction requests');
                 }
 
                 // Fetch profile completeness
@@ -130,8 +135,38 @@ export default function IntroductionRequestsPage() {
 
     const handleSearchChange = (query: string) => {
         setSearchQuery(query);
-        setCurrentPage(1); // Reset to first page when search changes
-        handleFilterChange(activeFilter); // Re-apply current filter with search
+        setCurrentPage(1);
+
+        // Apply filter with the new query directly
+        const now = new Date();
+        let filteredData = allIntroductions;
+
+        if (activeFilter === 'pending') {
+            filteredData = allIntroductions.filter(intro =>
+                intro.status === 'PENDING' && new Date(intro.expiresAt) > now
+            );
+        } else if (activeFilter === 'expired') {
+            filteredData = allIntroductions.filter(intro =>
+                intro.status === 'PENDING' && new Date(intro.expiresAt) <= now
+            );
+        } else if (activeFilter !== 'all') {
+            filteredData = allIntroductions.filter(intro =>
+                intro.status.toLowerCase() === activeFilter.toLowerCase()
+            );
+        }
+
+        // Apply search filter with the new query
+        if (query.trim()) {
+            const searchTerm = query.toLowerCase();
+            filteredData = filteredData.filter(intro =>
+                intro.jobRole.roleTitle.toLowerCase().includes(searchTerm) ||
+                intro.company.companyName.toLowerCase().includes(searchTerm) ||
+                intro.company.industry.toLowerCase().includes(searchTerm) ||
+                intro.jobRole.locationCity.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        setIntroductions(filteredData);
     };
 
     const handleAccept = async (id: string) => {

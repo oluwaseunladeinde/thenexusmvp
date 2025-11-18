@@ -33,12 +33,12 @@ const CompletenessCard = ({ profileCompleteness, completenessBreakdown }: Comple
     };
 
     return (
-        <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold text-[#0D1B2A]">Complete your profile</h3>
+                <h3 className="font-semibold text-[#0D1B2A] dark:text-gray-100">Complete your profile</h3>
                 <span className="text-sm text-primary font-medium">{profileCompleteness}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4">
                 <div
                     className="bg-primary h-2 rounded-full transition-all duration-300"
                     style={{ width: `${profileCompleteness}%` }}
@@ -47,7 +47,7 @@ const CompletenessCard = ({ profileCompleteness, completenessBreakdown }: Comple
 
             {completenessBreakdown && (
                 <div className="space-y-2 mb-4">
-                    <div className="flex items-center justify-between text-xs border-b border-gray-200 p-2 mb-0">
+                    <div className="flex items-center justify-between text-xs border-b border-gray-200 dark:border-gray-600 p-2 mb-0">
                         <div className='flex items-center justify-center gap-2'>
                             {getStatusIcon(completenessBreakdown.categories.basicInfo.completed, completenessBreakdown.categories.basicInfo.total)}
                             <span className={getStatusColor(completenessBreakdown.categories.basicInfo.completed, completenessBreakdown.categories.basicInfo.total)}>
@@ -55,44 +55,44 @@ const CompletenessCard = ({ profileCompleteness, completenessBreakdown }: Comple
                             </span>
                         </div>
                         <div>
-                            <span className="text-gray-500">{completenessBreakdown.categories.basicInfo.score}%</span>
+                            <span className="text-gray-500 dark:text-gray-400">{completenessBreakdown.categories.basicInfo.score}%</span>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between text-xs border-b border-gray-200 p-2 mb-0">
+                    <div className="flex items-center justify-between text-xs border-b border-gray-200 dark:border-gray-600 p-2 mb-0">
                         <div className='flex items-center justify-center gap-2'>
                             {getStatusIcon(completenessBreakdown.categories.professionalDetails.completed, completenessBreakdown.categories.professionalDetails.total)}
                             <span className={getStatusColor(completenessBreakdown.categories.professionalDetails.completed, completenessBreakdown.categories.professionalDetails.total)}>
                                 Professional Details ({completenessBreakdown.categories.professionalDetails.completed}/{completenessBreakdown.categories.professionalDetails.total})
                             </span>
                         </div>
-                        <span className="text-gray-500">{completenessBreakdown.categories.professionalDetails.score}%</span>
+                        <span className="text-gray-500 dark:text-gray-400">{completenessBreakdown.categories.professionalDetails.score}%</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs border-b border-gray-200 p-2 mb-0">
+                    <div className="flex items-center justify-between text-xs border-b border-gray-200 dark:border-gray-600 p-2 mb-0">
                         <div className='flex items-center justify-center gap-2'>
                             {getStatusIcon(completenessBreakdown.categories.verification.completed, completenessBreakdown.categories.verification.total)}
                             <span className={getStatusColor(completenessBreakdown.categories.verification.completed, completenessBreakdown.categories.verification.total)}>
                                 Verification ({completenessBreakdown.categories.verification.completed}/{completenessBreakdown.categories.verification.total})
                             </span>
                         </div>
-                        <span className="text-gray-500">{completenessBreakdown.categories.verification.score}%</span>
+                        <span className="text-gray-500 dark:text-gray-400">{completenessBreakdown.categories.verification.score}%</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs border-b border-gray-200 p-2 mb-0">
+                    <div className="flex items-center justify-between text-xs border-b border-gray-200 dark:border-gray-600 p-2 mb-0">
                         <div className='flex items-center justify-center gap-2'>
                             {getStatusIcon(completenessBreakdown.categories.documents.completed, completenessBreakdown.categories.documents.total)}
                             <span className={getStatusColor(completenessBreakdown.categories.documents.completed, completenessBreakdown.categories.documents.total)}>
                                 Documents ({completenessBreakdown.categories.documents.completed}/{completenessBreakdown.categories.documents.total})
                             </span>
                         </div>
-                        <span className="text-gray-500">{completenessBreakdown.categories.documents.score}%</span>
+                        <span className="text-gray-500 dark:text-gray-400">{completenessBreakdown.categories.documents.score}%</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs border-b border-gray-200 p-2 mb-0">
+                    <div className="flex items-center justify-between text-xs border-b border-gray-200 dark:border-gray-600 p-2 mb-0">
                         <div className='flex items-center justify-center gap-2'>
                             {getStatusIcon(completenessBreakdown.categories.networkAndSkills.completed, completenessBreakdown.categories.networkAndSkills.total)}
                             <span className={getStatusColor(completenessBreakdown.categories.networkAndSkills.completed, completenessBreakdown.categories.networkAndSkills.total)}>
                                 Network & Skills ({completenessBreakdown.categories.networkAndSkills.completed}/{completenessBreakdown.categories.networkAndSkills.total})
                             </span>
                         </div>
-                        <span className="text-gray-500">{completenessBreakdown.categories.networkAndSkills.score}%</span>
+                        <span className="text-gray-500 dark:text-gray-400">{completenessBreakdown.categories.networkAndSkills.score}%</span>
                     </div>
                     <div className="flex items-center justify-between text-xs p-2">
                         <div className='flex items-center justify-center gap-2'>
@@ -101,12 +101,12 @@ const CompletenessCard = ({ profileCompleteness, completenessBreakdown }: Comple
                                 Additional ({completenessBreakdown.categories.additional.completed}/{completenessBreakdown.categories.additional.total})
                             </span>
                         </div>
-                        <span className="text-gray-500">{completenessBreakdown.categories.additional.score}%</span>
+                        <span className="text-gray-500 dark:text-gray-400">{completenessBreakdown.categories.additional.score}%</span>
                     </div>
                 </div>
             )}
 
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 A complete profile gets 5x more introduction requests
             </p>
             <Link href="/professional/profile" className="px-4 py-2 bg-primary text-white rounded-sm hover:bg-[#1F5F3F] transition text-sm inline-block">

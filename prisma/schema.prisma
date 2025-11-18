@@ -129,6 +129,9 @@ model Professional {
   profileViews         ProfileView[]               @relation("ViewedProfessional")
   firewallLogs         PrivacyFirewallLog[]
   hrPartnerLink        HrPartner?
+  savedBy              SavedProfessional[]
+
+  conversations        Conversation[]
 
   @@index([userId])
   @@index([locationCity, locationState])
@@ -266,6 +269,23 @@ model ProfessionalCertification {
   @@map("professional_certifications")
 }
 
+model SavedProfessional {
+  id             String @id @default(cuid())
+  hrPartnerId    String
+  professionalId String
+
+  notes  String?
+  savedAt DateTime @default(now())
+
+  hrPartner    HrPartner    @relation(fields: [hrPartnerId], references: [id], onDelete: Cascade)
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@unique([hrPartnerId, professionalId])
+  @@index([hrPartnerId])
+  @@index([professionalId])
+  @@map("saved_professionals")
+}
+
 // ============================================
 // COMPANY & HR MODELS
 // ============================================
@@ -273,7 +293,7 @@ model ProfessionalCertification {
 model Company {
   id String @id @default(cuid())
 
-  companyName          String      @unique
+  companyName          String @unique
   companyLogoUrl       String?
   industry             String
   companySize          CompanySize
@@ -363,22 +383,24 @@ model HrPartner {
   canSendIntroductions Boolean @default(true)
   canManageBilling     Boolean @default(false)
 
-  alsoProfessional Boolean @default(false)
-  professionalId   String? @unique
+  alsoProfessional    Boolean @default(false)
+  professionalId      String? @unique
 
-  status       HrStatus @default(ACTIVE)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  lastActiveAt DateTime @default(now())
+  status              HrStatus @default(ACTIVE)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  lastActiveAt        DateTime @default(now())
 
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company      Company       @relation(fields: [companyId], references: [id])
-  professional Professional? @relation(fields: [professionalId], references: [id])
+  user                User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company             Company       @relation(fields: [companyId], references: [id])
+  professional        Professional? @relation(fields: [professionalId], references: [id])
 
-  sentIntroductions IntroductionRequest[] @relation("SentByHr")
-  createdRoles      JobRole[]
-  profileViews      ProfileView[]
-  firewallLogs      PrivacyFirewallLog[]
+  sentIntroductions   IntroductionRequest[] @relation("SentByHr")
+  createdRoles        JobRole[]
+  profileViews        ProfileView[]
+  firewallLogs        PrivacyFirewallLog[]
+  savedProfessionals  SavedProfessional[]
+  conversations       Conversation[]
 
   @@index([userId])
   @@index([companyId])
@@ -518,6 +540,8 @@ model IntroductionRequest {
   sentBy       HrPartner    @relation("SentByHr", fields: [sentByHrId], references: [id])
   professional Professional @relation("ReceivedByProfessional", fields: [sentToProfessionalId], references: [id])
 
+  conversations Conversation[]
+
   @@unique([jobRoleId, sentToProfessionalId])
   @@index([jobRoleId])
   @@index([companyId])
@@ -553,11 +577,12 @@ model ProfileView {
   jobRoleId           String?
   viewDurationSeconds Int?
 
-  viewedAt DateTime @default(now())
+  viewedAt            DateTime @default(now())
 
-  viewer       HrPartner    @relation(fields: [viewerHrId], references: [id])
-  professional Professional @relation("ViewedProfessional", fields: [viewedProfessionalId], references: [id])
+  viewer              HrPartner    @relation(fields: [viewerHrId], references: [id])
+  professional        Professional @relation("ViewedProfessional", fields: [viewedProfessionalId], references: [id])
 
+  @@unique([viewerHrId, viewedProfessionalId])
   @@index([viewerHrId])
   @@index([viewedProfessionalId])
   @@index([viewedAt])
@@ -569,6 +594,61 @@ enum ViewSource {
   SAVED
   RECOMMENDATION
   DIRECT
+}
+
+// ============================================
+// CONVERSATION & MESSAGES MODELS
+// ============================================
+model Conversation {
+  id                    String @id @default(cuid())
+  introductionRequestId String @unique
+  hrPartnerId           String
+  professionalId        String
+
+  status                ConversationStatus @default(ACTIVE)
+  lastMessageAt         DateTime?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  introductionRequest   IntroductionRequest @relation(fields: [introductionRequestId], references: [id])
+  hrPartner             HrPartner          @relation(fields: [hrPartnerId], references: [id])
+  professional          Professional       @relation(fields: [professionalId], references: [id])
+  messages              Message[]
+
+  @@index([hrPartnerId])
+  @@index([professionalId])
+  @@index([status])
+  @@map("conversations")
+}
+
+model Message {
+  id              String @id @default(cuid())
+  conversationId  String
+
+  senderId        String
+  senderType      MessageSenderType
+  content         String @db.Text
+
+  sentAt          DateTime @default(now())
+
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([sentAt])
+  @@map("messages")
+}
+
+enum ConversationStatus {
+  ACTIVE
+  ARCHIVED
+  CLOSED
+}
+
+enum MessageSenderType {
+  HR_PARTNER
+  PROFESSIONAL
 }
 
 // ============================================
@@ -634,7 +714,7 @@ model Notification {
 
   createdAt         DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user              User @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([notificationType])
@@ -645,6 +725,7 @@ model Notification {
 }
 
 enum NotificationType {
+  CONVERSATION_STARTED
   INTRO_REQUEST
   INTRO_ACCEPTED
   INTRO_DECLINED
@@ -686,6 +767,12 @@ model UserActivityLog {
   userAgent   String? @db.Text
   metadata    Json?
 
+  // Search analytics extensions
+  searchQuery       String? @db.VarChar(500)
+  filtersUsed       Json?   // Store filter parameters as JSON
+  resultsCount      Int?
+  searchSessionId   String? @db.VarChar(100) // Track search sessions
+
   createdAt   DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
@@ -693,6 +780,7 @@ model UserActivityLog {
   @@index([userId])
   @@index([actionType])
   @@index([createdAt])
+  @@index([searchSessionId])
   @@map("user_activity_logs")
 }
 

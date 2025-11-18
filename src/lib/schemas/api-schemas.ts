@@ -51,8 +51,7 @@ export const hrPartnerCreateSchema = z.object({
 export const introductionRequestSchema = z.object({
     professionalId: z.string().min(1, "Professional ID is required"),
     jobRoleId: z.string().min(1, "Job role ID is required"),
-    message: z.string().min(1, "Message is required").max(1000, "Message too long"),
-    urgency: z.enum(['low', 'normal', 'high']).default('normal'),
+    personalizedMessage: z.string().min(50, "Message must be at least 50 characters").max(1000, "Message too long"),
 });
 
 // Phone Send Code API Schema

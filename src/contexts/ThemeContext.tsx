@@ -8,16 +8,18 @@ type ThemeProviderProps = {
     children: React.ReactNode;
     defaultTheme?: Theme;
     storageKey?: string;
-};
+} & React.HTMLAttributes<HTMLDivElement>;
 
 type ThemeProviderState = {
     theme: Theme;
     setTheme: (theme: Theme) => void;
+    _initialized?: boolean;
 };
 
 const initialState: ThemeProviderState = {
     theme: 'system',
     setTheme: () => null,
+    _initialized: false,
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
@@ -28,17 +30,15 @@ export function ThemeProvider({
     storageKey = 'theNexus-ui-theme',
     ...props
 }: ThemeProviderProps) {
-    const [theme, setTheme] = useState<Theme>('system');
+    const [theme, setTheme] = useState<Theme>(defaultTheme);
     const [mounted, setMounted] = useState(false);
 
     // Handle SSR - only access localStorage on client
     useEffect(() => {
         setMounted(true);
         const storedTheme = localStorage.getItem(storageKey) as Theme;
-        if (storedTheme) {
-            setTheme(storedTheme);
-        }
-    }, [storageKey]);
+        setTheme(storedTheme || defaultTheme);
+    }, [storageKey, defaultTheme]);
 
     useEffect(() => {
         const root = window.document.documentElement;
@@ -64,6 +64,7 @@ export function ThemeProvider({
             localStorage.setItem(storageKey, theme);
             setTheme(theme);
         },
+        _initialized: true,
     };
 
     // Prevent hydration mismatch by not rendering until mounted
@@ -81,7 +82,7 @@ export function ThemeProvider({
 export const useTheme = () => {
     const context = useContext(ThemeProviderContext);
 
-    if (context === undefined)
+    if (!context._initialized)
         throw new Error('useTheme must be used within a ThemeProvider');
 
     return context;

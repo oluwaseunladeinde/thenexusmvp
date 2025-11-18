@@ -261,6 +261,22 @@ export async function POST(request: NextRequest) {
         // Convert notice period to days
         const noticePeriodDays = getNoticePeriodDays(validatedData.noticePeriod)
 
+        // Update Clerk metadata first (fail fast if Clerk is unavailable)
+        try {
+            const clerk = await clerkClient();
+            await clerk.users.updateUserMetadata(clerkUserId, {
+                publicMetadata: {
+                    userType: 'professional',
+                    onboardingComplete: true,
+                }
+            });
+        } catch (clerkError) {
+            return NextResponse.json(
+                { error: 'Failed to update user metadata. Please try again.' },
+                { status: 500 }
+            );
+        }
+
         // Create professional profile and skills in a transaction
         const professional = await prisma.$transaction(async (tx) => {
             const newProfessional = await tx.professional.create({
@@ -302,15 +318,19 @@ export async function POST(request: NextRequest) {
             return newProfessional;
         });
 
-        // Update Clerk user metadata
-        const clerk = await clerkClient();
-        await clerk.users.updateUserMetadata(clerkUserId, {
-            publicMetadata: {
-                userType: 'professional',
-                onboardingComplete: true,
-                professionalId: professional.id,
-            }
-        });
+        // Update Clerk metadata with professionalId after successful DB transaction
+        try {
+            const clerk = await clerkClient();
+            await clerk.users.updateUserMetadata(clerkUserId, {
+                publicMetadata: {
+                    professionalId: professional.id,
+                }
+            });
+        } catch (clerkError) {
+            // Log error but don't rollback since DB transaction succeeded
+            console.error('Failed to update professionalId in Clerk metadata:', clerkError);
+            // Professional profile was created successfully, so we can continue
+        }
 
         return NextResponse.json(
             {

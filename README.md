@@ -1,4 +1,4 @@
-# theNexus - Nigeria's Premier Senior Professional Network
+te# theNexus - Nigeria's Premier Senior Professional Network
 
 ## 🎯 About
 theNexus is Nigeria's premier network connecting verified senior professionals with forward-thinking companies through confidential, opt-in introductions. We're disrupting traditional recruitment by replacing mass job applications with curated, high-quality professional introductions.
@@ -44,9 +44,6 @@ theNexus is Nigeria's premier network connecting verified senior professionals w
 - 🔄 Smart Data Caching - Optimized user profile context to eliminate redundant API calls
 - 📊 Activity Feed - Real-time tracking of introduction requests, profile views, and messages with relative timestamps
 - 👁️ Profile Preview - "How HR sees your profile" with verification badges and top skills display
-- 📈 Profile View Analytics - Comprehensive view tracking with 7/30-day aggregation and trend indicators
-- 📊 Activity Feed - Real-time tracking of introduction requests, profile views, and messages
-- 👁️ Profile Preview - "How HR sees your profile" with verification badges and top skills
 - 📈 Profile View Analytics - Comprehensive view tracking with 7/30-day aggregation and trend indicators
 
 ## For Companies & HR Leaders

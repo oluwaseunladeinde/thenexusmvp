@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,12 +42,14 @@ export default function JobRoleApplicantsPage() {
     const [jobRole, setJobRole] = useState<JobRole | null>(null);
     const [applicants, setApplicants] = useState<IntroductionRequest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set());
 
     useEffect(() => {
+        if (!params.id) return;
         fetchData();
     }, [params.id]);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             // Fetch job role details
             const roleResponse = await fetch(`/api/v1/job-roles/${params.id}`);
@@ -66,9 +68,12 @@ export default function JobRoleApplicantsPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [params.id]);
 
     const updateApplicantStatus = async (applicantId: string, status: 'ACCEPTED' | 'REJECTED') => {
+        if (updatingIds.has(applicantId)) return;
+
+        setUpdatingIds(prev => new Set(prev).add(applicantId));
         try {
             const response = await fetch(`/api/v1/introduction-requests/${applicantId}/status`, {
                 method: 'PATCH',
@@ -79,7 +84,7 @@ export default function JobRoleApplicantsPage() {
             if (!response.ok) throw new Error('Failed to update status');
 
             // Update local state
-            setApplicants(applicants.map(applicant =>
+            setApplicants(prev => prev.map(applicant =>
                 applicant.id === applicantId
                     ? { ...applicant, status }
                     : applicant
@@ -89,8 +94,38 @@ export default function JobRoleApplicantsPage() {
         } catch (error) {
             console.error('Error updating applicant status:', error);
             toast.error('Failed to update applicant status');
+        } finally {
+            setUpdatingIds(prev => {
+                const next = new Set(prev);
+                next.delete(applicantId);
+                return next;
+            });
         }
     };
+
+    // const updateApplicantStatus = async (applicantId: string, status: 'ACCEPTED' | 'REJECTED') => {
+    //     try {
+    //         const response = await fetch(`/api/v1/introduction-requests/${applicantId}/status`, {
+    //             method: 'PATCH',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({ status }),
+    //         });
+
+    //         if (!response.ok) throw new Error('Failed to update status');
+
+    //         // Update local state
+    //         setApplicants(prev => prev.map(applicant =>
+    //             applicant.id === applicantId
+    //                 ? { ...applicant, status }
+    //                 : applicant
+    //         ));
+
+    //         toast.success(`Applicant ${status.toLowerCase()}`);
+    //     } catch (error) {
+    //         console.error('Error updating applicant status:', error);
+    //         toast.error('Failed to update applicant status');
+    //     }
+    // };
 
     const getStatusBadgeVariant = (status: string) => {
         switch (status) {
@@ -172,7 +207,7 @@ export default function JobRoleApplicantsPage() {
                                     <Avatar className="w-12 h-12">
                                         <AvatarImage src={applicant.professional.profilePicture} />
                                         <AvatarFallback>
-                                            {applicant.professional.firstName[0]}{applicant.professional.lastName[0]}
+                                            {((applicant.professional.firstName?.[0] || '') + (applicant.professional.lastName?.[0] || '')).trim() || 'U'}
                                         </AvatarFallback>
                                     </Avatar>
 

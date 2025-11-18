@@ -40,7 +40,7 @@ export default function SkillsSelector({
         if (requiredInput) {
             const filtered = PREDEFINED_SKILLS.filter(skill =>
                 skill.toLowerCase().includes(requiredInput.toLowerCase()) &&
-                !requiredSkills.includes(skill)
+                !requiredSkills.some(s => s.toLowerCase() === skill.toLowerCase())
             );
             setFilteredRequiredSkills(filtered);
         } else {
@@ -52,7 +52,7 @@ export default function SkillsSelector({
         if (preferredInput) {
             const filtered = PREDEFINED_SKILLS.filter(skill =>
                 skill.toLowerCase().includes(preferredInput.toLowerCase()) &&
-                !preferredSkills.includes(skill)
+                !preferredSkills.some(s => s.toLowerCase() === skill.toLowerCase())
             );
             setFilteredPreferredSkills(filtered);
         } else {
@@ -61,14 +61,14 @@ export default function SkillsSelector({
     }, [preferredInput, preferredSkills]);
 
     const addRequiredSkill = (skill: string) => {
-        if (skill && !requiredSkills.includes(skill)) {
+        if (skill && !requiredSkills.some(s => s.toLowerCase() === skill.toLowerCase())) {
             onRequiredSkillsChange([...requiredSkills, skill]);
         }
         setRequiredInput('');
     };
 
     const addPreferredSkill = (skill: string) => {
-        if (skill && !preferredSkills.includes(skill)) {
+        if (skill && !preferredSkills.some(s => s.toLowerCase() === skill.toLowerCase())) {
             onPreferredSkillsChange([...preferredSkills, skill]);
         }
         setPreferredInput('');
@@ -82,14 +82,14 @@ export default function SkillsSelector({
         onPreferredSkillsChange(preferredSkills.filter(skill => skill !== skillToRemove));
     };
 
-    const handleRequiredKeyPress = (e: React.KeyboardEvent) => {
+    const handleRequiredKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             addRequiredSkill(requiredInput.trim());
         }
     };
 
-    const handlePreferredKeyPress = (e: React.KeyboardEvent) => {
+    const handlePreferredKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             addPreferredSkill(preferredInput.trim());
@@ -107,7 +107,7 @@ export default function SkillsSelector({
                             id="required-skills"
                             value={requiredInput}
                             onChange={(e) => setRequiredInput(e.target.value)}
-                            onKeyPress={handleRequiredKeyPress}
+                            onKeyDown={handleRequiredKeyDown}
                             placeholder="Type a skill and press Enter, or select from suggestions"
                             className="flex-1"
                         />
@@ -124,15 +124,16 @@ export default function SkillsSelector({
 
                     {/* Suggestions for required skills */}
                     {filteredRequiredSkills.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-2 p-2 border rounded bg-gray-50">
+                        <div className="flex flex-wrap gap-1 mb-2 p-2 border rounded bg-gray-50 dark:bg-gray-800">
                             {filteredRequiredSkills.slice(0, 8).map((skill) => (
                                 <button
                                     key={skill}
                                     type="button"
                                     onClick={() => addRequiredSkill(skill)}
-                                    className="text-sm px-2 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
+                                    aria-label={`Add ${skill} to required skills`}
+                                    className="text-sm px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
                                 >
-                                    + {skill}
+                                    {skill}
                                 </button>
                             ))}
                         </div>
@@ -147,6 +148,7 @@ export default function SkillsSelector({
                                     <button
                                         type="button"
                                         onClick={() => removeRequiredSkill(skill)}
+                                        aria-label={`Remove ${skill} from required skills`}
                                         className="ml-1 hover:bg-red-200 rounded-full p-0.5"
                                     >
                                         <X className="w-3 h-3" />
@@ -167,7 +169,7 @@ export default function SkillsSelector({
                             id="preferred-skills"
                             value={preferredInput}
                             onChange={(e) => setPreferredInput(e.target.value)}
-                            onKeyPress={handlePreferredKeyPress}
+                            onKeyDown={handlePreferredKeyDown}
                             placeholder="Type a skill and press Enter, or select from suggestions"
                             className="flex-1"
                         />
@@ -184,13 +186,13 @@ export default function SkillsSelector({
 
                     {/* Suggestions for preferred skills */}
                     {filteredPreferredSkills.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-2 p-2 border rounded bg-gray-50">
+                        <div className="flex flex-wrap gap-1 mb-2 p-2 border rounded bg-gray-50 dark:bg-gray-800">
                             {filteredPreferredSkills.slice(0, 8).map((skill) => (
                                 <button
                                     key={skill}
                                     type="button"
                                     onClick={() => addPreferredSkill(skill)}
-                                    className="text-sm px-2 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200 transition-colors"
+                                    className="text-sm px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors"
                                 >
                                     + {skill}
                                 </button>
@@ -198,7 +200,6 @@ export default function SkillsSelector({
                         </div>
                     )}
 
-                    {/* Selected preferred skills */}
                     {preferredSkills.length > 0 && (
                         <div className="flex flex-wrap gap-2">
                             {preferredSkills.map((skill) => (
@@ -207,7 +208,8 @@ export default function SkillsSelector({
                                     <button
                                         type="button"
                                         onClick={() => removePreferredSkill(skill)}
-                                        className="ml-1 hover:bg-red-200 rounded-full p-0.5"
+                                        aria-label={`Remove ${skill} from preferred skills`}
+                                        className="ml-1 hover:bg-red-200 dark:hover:bg-red-900 rounded-full p-0.5"
                                     >
                                         <X className="w-3 h-3" />
                                     </button>

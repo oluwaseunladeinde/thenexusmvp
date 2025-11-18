@@ -53,11 +53,12 @@ const ProfessionalDashboardPage = () => {
 
             clearTimeout(timeoutId);
 
-            if (profileResponse.ok) {
-                const data = await profileResponse.json();
-                setProfileData(data.data?.professional || data);
-                setCompletenessData(data.data?.completeness || data.completenessBreakdown);
+            if (!profileResponse.ok) {
+                throw new Error('Failed to fetch profile data');
             }
+            const data = await profileResponse.json();
+            setProfileData(data.data?.professional || data);
+            setCompletenessData(data.data?.completeness || data.completenessBreakdown);
 
             let viewStats = { views7Days: 0, trend: 'neutral' };
             if (viewStatsResponse.ok) {
@@ -150,11 +151,11 @@ const ProfessionalDashboardPage = () => {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-[#F4F6F8] flex items-center justify-center">
-                <div className="bg-white rounded-lg shadow border border-gray-200 p-8 text-center max-w-md">
+            <div className="min-h-screen bg-[#F4F6F8] dark:bg-gray-900 flex items-center justify-center">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-8 text-center max-w-md">
                     <div className="text-red-500 text-4xl mb-4">⚠️</div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h3>
-                    <p className="text-gray-600 mb-4">{error}</p>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
                     <button
                         onClick={fetchProfileData}
                         className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-[#1F5F3F] transition"
@@ -170,10 +171,8 @@ const ProfessionalDashboardPage = () => {
     const introductionRequests = profileData?.introductionRequests || [];
     const profileCompleteness = completenessData?.overall || 0;
 
-    console.log({ profileCompleteness });
-
     return (
-        <div className="min-h-screen bg-[#F4F6F8]">
+        <div className="min-h-screen bg-[#F4F6F8] dark:bg-gray-900">
             <div className="max-w-7xl mx-auto px-4 py-6">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* Left Sidebar */}
@@ -200,25 +199,27 @@ const ProfessionalDashboardPage = () => {
 
                         {/* Introduction Requests */}
                         <div className="space-y-4">
-                            <div className="bg-white rounded-sm border border-gray-200 p-6">
+                            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
                                 <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-xl font-bold text-secondary">
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                                         Recent Introduction Requests
                                     </h3>
                                     <Link
                                         href="/professional/introductions"
-                                        className="text-primary text-sm font-semibold hover:text-[#1F5F3F]"
+                                        className="text-primary dark:text-primary text-sm font-semibold hover:text-[#1F5F3F] dark:hover:text-[#4ADE80] transition-colors"
                                     >
                                         View All →
                                     </Link>
                                 </div>
                                 {introductionRequests.length > 0 ? (
-                                    introductionRequests.slice(0, 3).map((request: any) => (
-                                        <IntroductionRequestCard
-                                            key={request.id}
-                                            request={request}
-                                        />
-                                    ))
+                                    <div className="space-y-4">
+                                        {introductionRequests.slice(0, 3).map((request: any) => (
+                                            <IntroductionRequestCard
+                                                key={request.id}
+                                                request={request}
+                                            />
+                                        ))}
+                                    </div>
                                 ) : (
                                     <EmptyIntroductionRequests />
                                 )}

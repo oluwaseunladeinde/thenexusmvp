@@ -38,7 +38,7 @@ import { prisma } from '@/lib/database';
  *                         description: Introduction request ID
  *                       status:
  *                         type: string
- *                         enum: [PENDING, ACCEPTED, REJECTED, WITHDRAWN]
+ *                         enum: [PENDING, ACCEPTED, DECLINED, WITHDRAWN]
  *                       createdAt:
  *                         type: string
  *                         format: date-time
@@ -54,12 +54,26 @@ import { prisma } from '@/lib/database';
  *                             type: string
  *                           lastName:
  *                             type: string
- *                           email:
- *                             type: string
- *                           phone:
- *                             type: string
- *                           profilePicture:
- *                             type: string
+ *                           professional:
+ *                             type: object
+ *                             properties:
+ *                               id:
+ *                                 type: string
+ *                               firstName:
+ *                                 type: string
+ *                               lastName:
+ *                                 type: string
+ *                               currentTitle:
+ *                                 type: string
+ *                               currentCompany:
+ *                                 type: string
+ *                               yearsOfExperience:
+ *                                 type: integer
+ *                               user:
+ *                                 type: object
+ *                                 properties:
+ *                                   email:
+ *                                     type: string
  *                           currentTitle:
  *                             type: string
  *                           currentCompany:

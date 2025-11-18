@@ -148,13 +148,44 @@ export default function EditJobRolePage() {
 
     const handleSubmit = async () => {
         setIsLoading(true);
+
+        // Validate required fields
+        if (!formData.roleTitle || !formData.roleDescription || !formData.requirements ||
+            !formData.seniorityLevel || !formData.industry || !formData.locationState ||
+            !formData.locationCity || !formData.salaryRangeMin || !formData.salaryRangeMax ||
+            !formData.yearsExperienceMin) {
+            toast.error('Please fill in all required fields');
+            return;
+        }
+
+        // Validate numeric fields
+        const salaryMin = parseInt(formData.salaryRangeMin);
+        const salaryMax = parseInt(formData.salaryRangeMax);
+        const expMin = parseInt(formData.yearsExperienceMin);
+        const expMax = formData.yearsExperienceMax ? parseInt(formData.yearsExperienceMax) : undefined;
+
+        if (isNaN(salaryMin) || isNaN(salaryMax) || isNaN(expMin) || (expMax !== undefined && isNaN(expMax))) {
+            toast.error('Please enter valid numbers for salary and experience fields');
+            return;
+        }
+
+        if (salaryMin > salaryMax) {
+            toast.error('Minimum salary cannot exceed maximum salary');
+            return;
+        }
+
+        if (expMax !== undefined && expMin > expMax) {
+            toast.error('Minimum experience cannot exceed maximum experience');
+            return;
+        }
+
         try {
             const payload = {
                 ...formData,
-                salaryRangeMin: parseInt(formData.salaryRangeMin),
-                salaryRangeMax: parseInt(formData.salaryRangeMax),
-                yearsExperienceMin: parseInt(formData.yearsExperienceMin),
-                yearsExperienceMax: formData.yearsExperienceMax ? parseInt(formData.yearsExperienceMax) : undefined,
+                salaryRangeMin: salaryMin,
+                salaryRangeMax: salaryMax,
+                yearsExperienceMin: expMin,
+                yearsExperienceMax: expMax,
                 applicationDeadline: formData.applicationDeadline || undefined,
                 expectedStartDate: formData.expectedStartDate || undefined,
             };
@@ -170,6 +201,7 @@ export default function EditJobRolePage() {
             toast.success('Job role updated successfully');
             router.push(`/dashboard/hr-partner/roles/${params.id}`);
         } catch (error) {
+            console.error('Error updating job role:', error);
             toast.error('Failed to update job role');
         } finally {
             setIsLoading(false);

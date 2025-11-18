@@ -6,10 +6,11 @@ import dynamic from 'next/dynamic';
 // Dynamically import MDEditor to avoid SSR issues
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
     ssr: false,
-    loading: () => <div className="h-32 bg-gray-100 animate-pulse rounded"></div>
+    loading: () => <div className="h-[200px] bg-gray-100 dark:bg-gray-800 animate-pulse rounded"></div>
 });
 
 import '@uiw/react-md-editor/markdown-editor.css';
+// import '@uiw/react-md-editor/markdown-editor-dark.css'; // Commented out as it's not available
 
 interface RichTextEditorProps {
     value: string;
@@ -25,7 +26,7 @@ export default function RichTextEditor({
     className = ""
 }: RichTextEditorProps) {
     return (
-        <div className={`rich-text-editor ${className}`} data-color-mode="light">
+        <div className={`rich-text-editor ${className}`} data-color-mode="auto">
             <MDEditor
                 value={value}
                 onChange={(val) => onChange(val || '')}

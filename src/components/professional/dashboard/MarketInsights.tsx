@@ -24,16 +24,16 @@ const marketInsights = [
 
 const MarketInsights = () => {
     return (
-        <div className="bg-white rounded-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-bold text-secondary mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h3 className="text-lg font-bold text-secondary dark:text-gray-100 mb-4">
                 Market Insights
             </h3>
             <div className="space-y-4">
                 {marketInsights.map((insight, index) => (
-                    <div key={index} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                        <p className="text-sm text-gray-600 mb-1">{insight.title}</p>
+                    <div key={index} className="border-b border-gray-100 dark:border-gray-600 pb-4 last:border-0 last:pb-0">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{insight.title}</p>
                         <div className="flex items-center justify-between">
-                            <p className="text-2xl font-bold text-secondary">
+                            <p className="text-2xl font-bold text-secondary dark:text-gray-100">
                                 {insight.value}
                             </p>
                             {insight.trend === 'up' && (
@@ -41,8 +41,8 @@ const MarketInsights = () => {
                             )}
                         </div>
                         <p className={`text-xs mt-1 ${insight.trend === 'up' ? 'text-green-600' :
-                                insight.trend === 'down' ? 'text-red-600' :
-                                    'text-gray-600'
+                            insight.trend === 'down' ? 'text-red-600' :
+                                'text-gray-600 dark:text-gray-400'
                             }`}>
                             {insight.change}
                         </p>

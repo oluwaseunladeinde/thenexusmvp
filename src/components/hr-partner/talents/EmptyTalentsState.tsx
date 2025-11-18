@@ -4,9 +4,12 @@ import { Button } from '@/components/ui/button';
 interface EmptyTalentsStateProps {
     hasFilters: boolean;
     onClearFilters: () => void;
+    onBrowseAllTalents?: () => void;
+    onPostJob?: () => void;
+    onInviteProfessionals?: () => void;
 }
 
-const EmptyTalentsState = ({ hasFilters, onClearFilters }: EmptyTalentsStateProps) => {
+const EmptyTalentsState = ({ hasFilters, onClearFilters, onBrowseAllTalents, onPostJob, onInviteProfessionals }: EmptyTalentsStateProps) => {
     if (hasFilters) {
         return (
             <div className="text-center py-16">
@@ -22,7 +25,7 @@ const EmptyTalentsState = ({ hasFilters, onClearFilters }: EmptyTalentsStateProp
                         <Filter className="w-4 h-4 mr-2" />
                         Clear All Filters
                     </Button>
-                    <Button variant="default">
+                    <Button onClick={onBrowseAllTalents} variant="default">
                         <Search className="w-4 h-4 mr-2" />
                         Browse All Talents
                     </Button>
@@ -38,14 +41,14 @@ const EmptyTalentsState = ({ hasFilters, onClearFilters }: EmptyTalentsStateProp
                 No talents available yet
             </h3>
             <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
-                We're building our network of verified professionals. 
+                We're building our network of verified professionals.
                 Check back soon or invite talented professionals to join theNexus.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="outline">
+                <Button onClick={onInviteProfessionals} variant="outline">
                     Invite Professionals
                 </Button>
-                <Button variant="default">
+                <Button onClick={onPostJob} variant="default">
                     Post a Job Instead
                 </Button>
             </div>

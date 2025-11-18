@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
                 type: 'introduction_request' as const,
                 title: intro.status === 'PENDING' ? 'New Introduction Request' :
                     intro.status === 'ACCEPTED' ? 'Introduction Accepted' : 'Introduction Declined',
-                description: `${intro.company.companyName} sent you an introduction request for ${intro.jobRole.roleTitle}`,
+                description: `${intro.company?.companyName ?? 'A company'} sent you an introduction request for ${intro.jobRole?.roleTitle ?? 'a position'}`,
                 timestamp: intro.sentAt.toISOString(),
                 actionUrl: '/professional/introductions',
                 isNew: !intro.viewedByProfessional && intro.status === 'PENDING'

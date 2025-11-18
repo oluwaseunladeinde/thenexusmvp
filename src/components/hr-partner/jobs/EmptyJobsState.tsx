@@ -40,22 +40,22 @@ const EmptyJobsState = ({ hasFilters, onClearFilters }: EmptyJobsStateProps) => 
                 No offers created yet
             </h3>
             <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
-                Create your first opportunity to start connecting with talented professionals. 
+                Create your first opportunity to start connecting with talented professionals.
                 You can also browse talents and send introduction requests directly.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/dashboard/hr-partner/jobs/create">
-                    <Button size="lg">
+                <Button size="lg" asChild>
+                    <Link href="/dashboard/hr-partner/jobs/create">
                         <Plus className="w-5 h-5 mr-2" />
                         Create Your First Offer
-                    </Button>
-                </Link>
-                <Link href="/dashboard/hr-partner/talents">
-                    <Button variant="outline" size="lg">
+                    </Link>
+                </Button>
+                <Button variant="outline" size="lg" asChild>
+                    <Link href="/dashboard/hr-partner/talents">
                         <Search className="w-5 h-5 mr-2" />
                         Browse Talents
-                    </Button>
-                </Link>
+                    </Link>
+                </Button>
             </div>
         </div>
     );

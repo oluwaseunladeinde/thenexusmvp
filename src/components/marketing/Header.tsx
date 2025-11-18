@@ -2,10 +2,23 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useUser } from '@clerk/nextjs'
 import { ThemeToggle } from '@/components/platform/ThemeToggle'
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const { user, isLoaded } = useUser()
+
+    // Determine user type from metadata
+    const userType = user?.publicMetadata?.userType as string
+    const isLoggedIn = isLoaded && !!user
+
+    // Get dashboard URL based on user type
+    const getDashboardUrl = () => {
+        if (userType === 'professional') return '/professional/dashboard'
+        if (userType === 'hr-partner') return '/dashboard/hr-partner'
+        return '/dashboard' // fallback
+    }
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen)
@@ -62,18 +75,29 @@ const Header = () => {
                     {/* Desktop CTA */}
                     <div className="hidden md:flex items-center space-x-4">
                         <ThemeToggle />
-                        <Link
-                            href="/sign-in"
-                            className="text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
-                        >
-                            Sign In
-                        </Link>
-                        <Link
-                            href="/sign-up"
-                            className="bg-primary hover:bg-[#1F5F3F] text-white px-6 py-2 rounded-lg font-semibold transition-colors"
-                        >
-                            Get Started
-                        </Link>
+                        {isLoggedIn ? (
+                            <Link
+                                href={getDashboardUrl()}
+                                className="bg-primary hover:bg-[#1F5F3F] text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                            >
+                                Go to Dashboard
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href="/sign-in"
+                                    className="text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
+                                >
+                                    Sign In
+                                </Link>
+                                <Link
+                                    href="/sign-up"
+                                    className="bg-primary hover:bg-[#1F5F3F] text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                                >
+                                    Get Started
+                                </Link>
+                            </>
+                        )}
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -130,20 +154,32 @@ const Header = () => {
                                 <div className="flex justify-center mb-2">
                                     <ThemeToggle />
                                 </div>
-                                <Link
-                                    href="/sign-in"
-                                    className="text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    Sign In
-                                </Link>
-                                <Link
-                                    href="/sign-up"
-                                    className="bg-primary hover:bg-[#1F5F3F] text-white px-6 py-2 rounded-lg font-semibold transition-colors text-center"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    Get Started
-                                </Link>
+                                {isLoggedIn ? (
+                                    <Link
+                                        href={getDashboardUrl()}
+                                        className="bg-primary hover:bg-[#1F5F3F] text-white px-6 py-2 rounded-lg font-semibold transition-colors text-center"
+                                        onClick={() => setIsMenuOpen(false)}
+                                    >
+                                        Go to Dashboard
+                                    </Link>
+                                ) : (
+                                    <>
+                                        <Link
+                                            href="/sign-in"
+                                            className="text-secondary hover:text-primary transition-colors font-medium dark:text-gray-300 dark:hover:text-primary"
+                                            onClick={() => setIsMenuOpen(false)}
+                                        >
+                                            Sign In
+                                        </Link>
+                                        <Link
+                                            href="/sign-up"
+                                            className="bg-primary hover:bg-[#1F5F3F] text-white px-6 py-2 rounded-lg font-semibold transition-colors text-center"
+                                            onClick={() => setIsMenuOpen(false)}
+                                        >
+                                            Get Started
+                                        </Link>
+                                    </>
+                                )}
                             </div>
                         </nav>
                     </div>

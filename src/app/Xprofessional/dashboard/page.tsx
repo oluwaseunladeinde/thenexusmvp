@@ -51,25 +51,33 @@ const ProfessionalDashboardPage = () => {
                 fetch('/api/v1/professionals/me', { signal: controller.signal }),
                 fetch('/api/v1/professionals/me/views', { signal: controller.signal })
             ]);
-            
+
             clearTimeout(timeoutId);
 
             if (profileResponse.ok) {
                 const data = await profileResponse.json();
                 setProfileData(data.data?.professional || data);
                 setCompletenessData(data.data?.completeness || data.completenessBreakdown);
+            } else {
+                setError(`Failed to load profile: ${profileResponse.status} ${profileResponse.statusText}`);
+                return;
             }
 
-            let viewStats = { views7Days: 0, trend: 'neutral' };
+            let viewStats = { views7Days: 0, trend: 'stable' };
             if (viewStatsResponse.ok) {
                 viewStats = await viewStatsResponse.json();
             }
+
+            const normalizedTrend =
+                viewStats.trend === 'up' || viewStats.trend === 'down' || viewStats.trend === 'stable'
+                    ? (viewStats.trend as 'up' | 'down' | 'stable')
+                    : 'stable';
 
             setStats({
                 profileViews: viewStats.views7Days || 0,
                 pending: 0,
                 accepted: 0,
-                trend: viewStats.trend as 'up' | 'down' | 'stable'
+                trend: normalizedTrend,
             });
 
         } catch (error) {
