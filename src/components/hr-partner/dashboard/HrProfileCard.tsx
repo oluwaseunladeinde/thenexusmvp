@@ -18,14 +18,16 @@ interface HrProfileCardProps {
 const HrProfileCard = ({ hrData }: HrProfileCardProps) => {
     const initials = `${hrData.firstName?.[0] || ''}${hrData.lastName?.[0] || ''}`;
 
+
+
     return (
         <div className="bg-card rounded-lg border border-border p-6">
             <div className="flex items-center space-x-4 mb-4">
                 <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xl font-semibold">
                     {hrData.profilePhotoUrl ? (
-                        <img 
-                            src={hrData.profilePhotoUrl} 
-                            alt="Profile" 
+                        <img
+                            src={hrData.profilePhotoUrl}
+                            alt="Profile"
                             className="w-16 h-16 rounded-full object-cover"
                         />
                     ) : (

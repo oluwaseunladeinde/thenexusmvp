@@ -1,6 +1,7 @@
 const TalentsSkeleton = () => {
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background" role="status" aria-label="Loading talents" aria-busy="true">
+            <span className="sr-only" role="status">Loading talents...</span>
             <div className="max-w-7xl mx-auto px-4 py-6">
                 {/* Header Skeleton */}
                 <div className="mb-6">
@@ -14,7 +15,7 @@ const TalentsSkeleton = () => {
                         <div className="flex-1 h-10 bg-muted rounded"></div>
                         <div className="h-10 w-32 bg-muted rounded"></div>
                     </div>
-                    
+
                     {/* Results Summary Skeleton */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-border gap-3">
                         <div className="h-5 bg-muted rounded w-32"></div>

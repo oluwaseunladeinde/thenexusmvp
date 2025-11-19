@@ -6,22 +6,33 @@ import Link from 'next/link';
 import { ExternalLink, Book, Code, Shield, Zap } from 'lucide-react';
 
 const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false });
+import 'swagger-ui-react/swagger-ui.css';
 
 export default function ApiDocsPage() {
   const [spec, setSpec] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/docs/swagger.json')
-      .then(res => res.json())
+    const controller = new AbortController();
+
+    fetch('/api/docs/swagger.json', { signal: controller.signal })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         setSpec(data);
         setLoading(false);
       })
       .catch(err => {
+        if (err.name === 'AbortError') return;
         console.error('Failed to load API spec:', err);
         setLoading(false);
       });
+
+    return () => controller.abort();
   }, []);
 
   if (loading) {
@@ -61,7 +72,7 @@ export default function ApiDocsPage() {
                 Complete API reference for Nigeria's Premier Senior Professional Network
               </p>
             </div>
-            <Link 
+            <Link
               href="/"
               className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors"
             >
@@ -87,7 +98,7 @@ export default function ApiDocsPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white p-4 rounded-lg shadow-sm border">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-green-100 rounded-lg">
@@ -99,7 +110,7 @@ export default function ApiDocsPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white p-4 rounded-lg shadow-sm border">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 rounded-lg">
@@ -111,7 +122,7 @@ export default function ApiDocsPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white p-4 rounded-lg shadow-sm border">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-orange-100 rounded-lg">
@@ -144,10 +155,10 @@ export default function ApiDocsPage() {
           </div>
         </div>
       </div>
-      
+
       {/* Swagger UI */}
       <div className="max-w-7xl mx-auto">
-        <SwaggerUI 
+        <SwaggerUI
           spec={spec}
           docExpansion="list"
           defaultModelsExpandDepth={2}

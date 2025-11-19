@@ -5,11 +5,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-    Building2, 
-    MapPin, 
-    Clock, 
-    DollarSign, 
+import {
+    Building2,
+    MapPin,
+    Clock,
+    DollarSign,
     Eye,
     CheckCircle,
     XCircle,
@@ -55,15 +55,15 @@ interface IntroductionRequestCardProps {
     className?: string;
 }
 
-export function IntroductionRequestCard({ 
-    introduction, 
-    onAccept, 
-    onDecline, 
+export function IntroductionRequestCard({
+    introduction,
+    onAccept,
+    onDecline,
     onViewDetails,
-    className = '' 
+    className = ''
 }: IntroductionRequestCardProps) {
     const [isExpanded, setIsExpanded] = useState(false);
-    
+
     const isExpired = new Date() > new Date(introduction.expiresAt);
     const isPending = introduction.status === 'PENDING' && !isExpired;
     const isConfidential = introduction.company.id === 'confidential';
@@ -71,7 +71,7 @@ export function IntroductionRequestCard({
     const getStatusBadge = () => {
         switch (introduction.status) {
             case 'PENDING':
-                return isExpired ? 
+                return isExpired ?
                     <Badge variant="secondary" className="bg-gray-100 text-gray-600">Expired</Badge> :
                     <Badge variant="default" className="bg-blue-100 text-blue-700">Pending</Badge>;
             case 'ACCEPTED':
@@ -167,8 +167,8 @@ export function IntroductionRequestCard({
 
                 {/* Actions */}
                 <div className="flex items-center justify-between">
-                    <Button 
-                        variant="outline" 
+                    <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => onViewDetails(introduction.id)}
                         className="flex items-center gap-2"
@@ -179,8 +179,8 @@ export function IntroductionRequestCard({
 
                     {isPending && (
                         <div className="flex gap-2">
-                            <Button 
-                                variant="outline" 
+                            <Button
+                                variant="outline"
                                 size="sm"
                                 onClick={() => onDecline(introduction.id)}
                                 className="text-red-600 border-red-200 hover:bg-red-50"
@@ -188,7 +188,7 @@ export function IntroductionRequestCard({
                                 <XCircle className="w-4 h-4 mr-1" />
                                 Decline
                             </Button>
-                            <Button 
+                            <Button
                                 size="sm"
                                 onClick={() => onAccept(introduction.id)}
                                 className="bg-green-600 hover:bg-green-700"

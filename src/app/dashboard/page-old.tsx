@@ -1,4 +1,4 @@
-// app/dashboard/page.tsx
+// app/dashboard/page-old.tsx
 import RoleSwitcher from '@/components/platform/RoleSwitcher';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
@@ -16,7 +16,7 @@ export default async function Dashboard() {
 
     // Get full user object for more metadata
     const user = await currentUser();
-    const onboardingComplete = user?.publicMetadata?.onboardingComplete as boolean;
+    const onboardingComplete = user?.publicMetadata?.onboardingComplete === true;
 
     if (!onboardingComplete) {
         redirect('/onboarding');

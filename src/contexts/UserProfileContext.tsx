@@ -26,12 +26,32 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
 
     const fetchProfile = async () => {
         if (!user) return;
-        
+
+        // Access publicMetadata
+        const metadata = user.publicMetadata;
+        const isProfessional = metadata?.userType === 'professional';
+        const isHrPartner = metadata?.userType === 'hr-partner';
+        const isAdmin = metadata?.userType === 'admin';
+
         try {
-            const response = await fetch('/api/v1/professionals/me');
-            if (response.ok) {
-                const data = await response.json();
-                setProfile(data);
+            if (isProfessional) {
+                const response = await fetch('/api/v1/professionals/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    setProfile(data);
+                }
+            } else if (isHrPartner) {
+                const response = await fetch('/api/v1/hr-partners/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    setProfile(data);
+                }
+            } else if (isAdmin) {
+                const response = await fetch('/api/v1/admins/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    setProfile(data);
+                }
             }
         } catch (error) {
             console.error('Error fetching profile:', error);

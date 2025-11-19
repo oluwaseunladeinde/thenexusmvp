@@ -24,18 +24,18 @@ interface DashboardNavBarProps {
 
 const professionalNavItems = [
     {
-        href: '/professional/dashboard',
+        href: '/dashboard/professional',
         label: 'Dashboard',
         icon: LayoutDashboard
     },
     {
-        href: '/professional/introductions',
+        href: '/dashboard/professional/introductions',
         label: 'Introductions',
         icon: Sparkles
     },
     {
-        href: '/professional/conversations',
-        label: 'Opportunities',
+        href: '/dashboard/professional/offers',
+        label: 'Offers',
         icon: Sparkles
     },
 ];
@@ -239,11 +239,11 @@ const DashboardNavBar = ({ userType }: DashboardNavBarProps) => {
                     </div>
                     <div className="flex items-center gap-4">
                         <RoleSwitcherWithPrivacy />
-                        <button className="p-2 text-gray-600 hover:text-primary relative dark:text-gray-400 dark:hover:text-primary">
+                        <button aria-label="Notifications" className="p-2 text-gray-600 hover:text-primary relative dark:text-gray-400 dark:hover:text-primary">
                             <Bell className="w-5 h-5" />
                             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                         </button>
-                        <button className="p-2 text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary">
+                        <button aria-label="Settings" className="p-2 text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary">
                             <Settings className="w-5 h-5" />
                         </button>
                         <CustomUserButton />

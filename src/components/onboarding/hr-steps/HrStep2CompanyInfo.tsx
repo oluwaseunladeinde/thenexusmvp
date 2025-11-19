@@ -196,7 +196,7 @@ export function HrStep2CompanyInfo({ data, onChange, onValidation }: Props) {
                         <FormItem>
                             <FormLabel className="dark:text-gray-200">Headquarters Location *</FormLabel>
                             <FormControl>
-                                <Input placeholder="e.g., Lagos, Nigeria" {...field} className="dark:bg-gray-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400" />
+                                <Input placeholder="e.g., Lagos, Nigeria" {...field} className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

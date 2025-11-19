@@ -164,6 +164,11 @@ export default function ProfessionalProfilePage() {
                 setCurrentSkills(skillsData);
 
                 setSelectedState(data.data.professional.locationState || '');
+
+                // Fetch cities if state is already set
+                if (data.data.professional.locationState) {
+                    fetchCities(data.data.professional.locationState);
+                }
             }
         } catch (error) {
             console.error('Error fetching profile:', error);
@@ -440,7 +445,8 @@ export default function ProfessionalProfilePage() {
                             )}
                             {profileData?.locationCity && profileData?.locationState && (
                                 <p className="text-sm text-gray-500">
-                                    {states.find(s => s.id === profileData.locationState)?.name}, {cities.find(c => c.id === profileData.locationCity)?.name}
+                                    {states.find(s => s.id === profileData.locationState)?.name || profileData.locationState}
+                                    {cities.length > 0 && `, ${cities.find(c => c.id === profileData.locationCity)?.name || profileData.locationCity}`}
                                 </p>
                             )}
                             <p className="text-gray-600 mt-2">A complete profile increases your chances of getting introduction requests by 5x</p>

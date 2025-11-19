@@ -10,9 +10,12 @@ export class CacheService {
     private redis: Redis;
 
     constructor() {
+        if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+            throw new Error('Missing required environment variables: UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN');
+        }
         this.redis = new Redis({
-            url: process.env.UPSTASH_REDIS_REST_URL!,
-            token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+            url: process.env.UPSTASH_REDIS_REST_URL,
+            token: process.env.UPSTASH_REDIS_REST_TOKEN,
         });
     }
 
@@ -73,9 +76,18 @@ export const cacheService = new CacheService();
 // Re-export cache keys and TTL from services
 export { CACHE_KEYS, CACHE_TTL } from '@/lib/services';
 
+const resolveApiUrl = (path: string) => {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL;
+    if (!baseUrl) {
+        throw new Error('Missing base URL for server-side API fetches');
+    }
+    return new URL(path, baseUrl).toString();
+};
+
 export const getIndustries = cache(async () => {
     try {
-        const response = await fetch('/api/industries');
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+        const response = await fetch(`${baseUrl}/api/v1/industries`);
         if (!response.ok) throw new Error('Failed to fetch industries');
         return await response.json();
     } catch (error) {
@@ -86,7 +98,8 @@ export const getIndustries = cache(async () => {
 
 export const getStates = cache(async () => {
     try {
-        const response = await fetch('/api/v1/states');
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+        const response = await fetch(`${baseUrl}/api/v1/states`);
         if (!response.ok) throw new Error('Failed to fetch states');
         return await response.json();
     } catch (error) {
@@ -97,7 +110,8 @@ export const getStates = cache(async () => {
 
 export const getCitiesByState = cache(async (stateId: string) => {
     try {
-        const response = await fetch(`/api/v1/states/${stateId}/cities`);
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+        const response = await fetch(`${baseUrl}/api/v1/states/${stateId}/cities`);
         if (!response.ok) throw new Error('Failed to fetch cities');
         return await response.json();
     } catch (error) {

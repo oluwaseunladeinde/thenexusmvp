@@ -87,13 +87,17 @@ export async function GET(request: Request) {
             job: {
                 id: match.jobRole.id,
                 title: match.jobRole.roleTitle,
-                location: `${match.jobRole.locationCity}, ${match.jobRole.locationState}`,
+                location: match.jobRole.locationCity && match.jobRole.locationState
+                    ? `${match.jobRole.locationCity}, ${match.jobRole.locationState}`
+                    : null,
                 employmentType: match.jobRole.employmentType,
                 experienceLevel: match.jobRole.seniorityLevel,
             },
             professional: {
                 id: match.professional.id,
-                name: `${match.professional.firstName} ${match.professional.lastName}`,
+                name: [match.professional.firstName, match.professional.lastName]
+                    .filter(Boolean)
+                    .join(' ') || null,
                 currentTitle: match.professional.currentTitle,
                 currentCompany: match.professional.currentCompany,
                 location: `${match.professional.locationCity}, ${match.professional.locationState}`,

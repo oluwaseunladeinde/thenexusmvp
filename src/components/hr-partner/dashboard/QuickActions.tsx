@@ -7,7 +7,7 @@ const QuickActions = () => {
             icon: Plus,
             title: 'Post New Job',
             description: 'Create a new job posting',
-            href: '/dashboard/hr-partner/jobs/create',
+            href: '/dashboard/hr-partner/roles/new',
             color: 'bg-primary text-white'
         },
         {
@@ -36,7 +36,7 @@ const QuickActions = () => {
     return (
         <div className="bg-card rounded-lg border border-border p-6">
             <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
-            
+
             <div className="space-y-3">
                 {actions.map((action, index) => {
                     const Icon = action.icon;

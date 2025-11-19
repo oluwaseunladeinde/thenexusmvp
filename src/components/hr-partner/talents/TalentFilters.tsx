@@ -104,13 +104,13 @@ const TalentFilters = ({ filters, onFilterChange, onClearFilters }: TalentFilter
             <div className="flex flex-wrap gap-2 mt-4">
                 {Object.entries(filters).map(([key, value]) => {
                     if (!value) return null;
-                    
+
                     const getFilterLabel = (key: string, value: string) => {
                         switch (key) {
                             case 'location': return `Location: ${value}`;
                             case 'experience': return `${value}+ years exp`;
                             case 'skills': return `Skills: ${value}`;
-                            case 'availability': 
+                            case 'availability':
                                 const availabilityMap: Record<string, string> = {
                                     'available': 'Actively Looking',
                                     'open': 'Open to Offers',

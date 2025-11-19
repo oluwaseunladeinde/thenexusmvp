@@ -35,6 +35,10 @@ const CandidateMatchesCard = ({ matches }: CandidateMatchesCardProps) => {
         return 'text-gray-600';
     };
 
+    const handleViewProfile = (candidateId: number) => {
+        // Handle view profile logic here
+    };
+
     return (
         <div className="bg-card rounded-lg border border-border p-6">
             <div className="flex items-center justify-between mb-6">
@@ -52,8 +56,11 @@ const CandidateMatchesCard = ({ matches }: CandidateMatchesCardProps) => {
                     <div key={match.id} className="border border-border rounded-lg p-4 hover:shadow-sm transition">
                         <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center space-x-3">
-                                <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-semibold">
-                                    {match.name.split(' ').map(n => n[0]).join('')}
+                                <div
+                                    className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-semibold"
+                                    aria-label={`${match.name}'s avatar`}
+                                >
+                                    {match.name.split(' ').filter(n => n).map(n => n[0]).join('')}
                                 </div>
                                 <div>
                                     <h4 className="font-semibold text-foreground">{match.name}</h4>
@@ -101,7 +108,9 @@ const CandidateMatchesCard = ({ matches }: CandidateMatchesCardProps) => {
 
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
-                                <button className="flex items-center space-x-1 text-primary text-sm font-medium hover:text-primary/80">
+                                <button
+                                    onClick={() => handleViewProfile(match.id)}
+                                    className="flex items-center space-x-1 text-primary text-sm font-medium hover:text-primary/80">
                                     <Eye className="w-4 h-4" />
                                     <span>View Profile</span>
                                 </button>
@@ -115,14 +124,16 @@ const CandidateMatchesCard = ({ matches }: CandidateMatchesCardProps) => {
                 ))}
             </div>
 
-            {matches.length === 0 && (
-                <div className="text-center py-8">
-                    <div className="text-muted-foreground text-4xl mb-4">🎯</div>
-                    <h4 className="text-lg font-semibold text-foreground mb-2">No matches yet</h4>
-                    <p className="text-muted-foreground">Candidate matches will appear here once you post jobs.</p>
-                </div>
-            )}
-        </div>
+            {
+                matches.length === 0 && (
+                    <div className="text-center py-8">
+                        <div className="text-muted-foreground text-4xl mb-4">🎯</div>
+                        <h4 className="text-lg font-semibold text-foreground mb-2">No matches yet</h4>
+                        <p className="text-muted-foreground">Candidate matches will appear here once you post jobs.</p>
+                    </div>
+                )
+            }
+        </div >
     );
 };
 

@@ -52,24 +52,24 @@ interface ProfileCardProps {
 
 export default function ProfileCard({ profileData, stats, premiumText }: ProfileCardProps) {
     return (
-        <div className="bg-white rounded-lg shadow border border-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
             <div className="p-6 text-center">
                 <div className="flex justify-center mb-4">
                     <ProfileAvatar
                         src={profileData?.profilePhotoUrl}
                         size="lg"
-                        className="border-2 border-gray-100"
+                        className="border-2 border-gray-100 dark:border-gray-600"
                     />
                 </div>
                 <div className="flex items-center justify-center gap-2 mb-2">
-                    <h3 className="font-semibold text-[#0D1B2A]">
+                    <h3 className="font-semibold text-[#0D1B2A] dark:text-gray-100">
                         {profileData?.firstName || 'User'} {profileData?.lastName || ''}
                     </h3>
                     {profileData?.verificationStatus === 'full' && (
                         <CheckCircle className="w-4 h-4 text-primary" />
                     )}
                 </div>
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                     {profileData?.profileHeadline || 'Complete your profile to get discovered'}
                 </p>
                 {profileData?.currentCompany && (
@@ -79,7 +79,7 @@ export default function ProfileCard({ profileData, stats, premiumText }: Profile
                     </div>
                 )}
                 {(profileData?.cityName || profileData?.stateName) && (
-                    <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                         <div className="flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
                             {[profileData?.cityName, profileData?.stateName].filter(Boolean).join(', ')}
@@ -88,10 +88,10 @@ export default function ProfileCard({ profileData, stats, premiumText }: Profile
                 )}
             </div>
 
-            <div className="border-t px-6 py-4">
+            <div className="border-t border-gray-200 dark:border-gray-600 px-6 py-4">
                 <div className="flex justify-between text-sm">
                     <div>
-                        <div className="flex items-center gap-1 text-gray-600">
+                        <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                             <Eye className="w-3 h-3" />
                             Profile views
                             {stats.trend && stats.trend !== 'neutral' && (
@@ -103,7 +103,7 @@ export default function ProfileCard({ profileData, stats, premiumText }: Profile
                         <div className="font-semibold text-primary">{stats.profileViews}</div>
                     </div>
                     <div>
-                        <div className="flex items-center gap-1 text-gray-600">
+                        <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                             Impressions
                         </div>
                         <div className="font-semibold text-primary">{stats.impressions}</div>
@@ -112,8 +112,8 @@ export default function ProfileCard({ profileData, stats, premiumText }: Profile
             </div>
 
             {premiumText && (
-                <div className="border-t px-6 py-4">
-                    <button className="w-full text-left text-sm text-primary hover:bg-gray-50 py-2 rounded">
+                <div className="border-t border-gray-200 dark:border-gray-600 px-6 py-4">
+                    <button className="w-full text-left text-sm text-primary hover:bg-gray-50 dark:hover:bg-gray-700 py-2 rounded">
                         {premiumText}
                     </button>
                 </div>

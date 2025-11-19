@@ -75,15 +75,48 @@ export default function NewJobRolePage() {
     } else {
       setIsPublishLoading(true);
     }
-    
+
+    // Validate required fields
+    if (!formData.roleTitle || !formData.roleDescription || !formData.requirements ||
+      !formData.seniorityLevel || !formData.industry || !formData.locationState ||
+      !formData.locationCity) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Sanitize and validate numeric fields
+    const sanitizeNumber = (value: string) => {
+      const cleaned = value.trim().replace(/,/g, '');
+      const parsed = parseInt(cleaned, 10);
+      return isFinite(parsed) ? parsed : undefined;
+    };
+
+    const salaryMin = sanitizeNumber(formData.salaryRangeMin);
+    const salaryMax = sanitizeNumber(formData.salaryRangeMax);
+    const expMin = sanitizeNumber(formData.yearsExperienceMin);
+    const expMax = formData.yearsExperienceMax ? sanitizeNumber(formData.yearsExperienceMax) : undefined;
+
+    // For published roles, require salary fields
+    if (!isDraft && (!salaryMin || !salaryMax)) {
+      toast.error('Please enter valid salary ranges for published roles');
+      return;
+    }
+
+    if (salaryMin && salaryMax && salaryMin >= salaryMax) {
+      toast.error('Maximum salary must be greater than minimum salary');
+      return;
+    }
+
     try {
-      const payload = {
+      const payload: any = {
         ...formData,
-        salaryRangeMin: parseInt(formData.salaryRangeMin),
-        salaryRangeMax: parseInt(formData.salaryRangeMax),
-        yearsExperienceMin: parseInt(formData.yearsExperienceMin),
-        yearsExperienceMax: formData.yearsExperienceMax ? parseInt(formData.yearsExperienceMax) : undefined,
       };
+
+      // Only include numeric fields if they have valid values
+      if (salaryMin !== undefined) payload.salaryRangeMin = salaryMin;
+      if (salaryMax !== undefined) payload.salaryRangeMax = salaryMax;
+      if (expMin !== undefined) payload.yearsExperienceMin = expMin;
+      if (expMax !== undefined) payload.yearsExperienceMax = expMax;
 
       const response = await fetch('/api/v1/job-roles', {
         method: 'POST',
@@ -99,11 +132,16 @@ export default function NewJobRolePage() {
         toast.success('Job role saved as draft');
       } else {
         // Update status to ACTIVE
-        await fetch(`/api/v1/job-roles/${result.data.id}/status`, {
+        const statusResponse = await fetch(`/api/v1/job-roles/${result.data.id}/status`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'ACTIVE' }),
         });
+
+        if (!statusResponse.ok) {
+          throw new Error('Failed to publish job role');
+        }
+
         toast.success('Job role published successfully');
       }
 

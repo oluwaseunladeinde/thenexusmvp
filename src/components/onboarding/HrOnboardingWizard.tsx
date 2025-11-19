@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -95,7 +95,6 @@ export default function HrOnboardingWizard({ userId, userEmail }: Props) {
     };
 
     const handleLogoUploadSuccess = (url: string) => {
-        setLogoUrl(url);
         form.setValue('companyLogoUrl', url);
     };
 

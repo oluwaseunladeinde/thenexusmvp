@@ -27,6 +27,15 @@ const createJobRoleSchema = z.object({
   confidentialReason: z.string().optional(),
   applicationDeadline: z.string().optional(),
   expectedStartDate: z.string().optional(),
+}).refine((data) => data.salaryRangeMax >= data.salaryRangeMin, {
+  message: "salaryRangeMax must be greater than or equal to salaryRangeMin",
+  path: ["salaryRangeMax"],
+}).refine((data) => !data.yearsExperienceMax || data.yearsExperienceMax >= data.yearsExperienceMin, {
+  message: "yearsExperienceMax must be greater than or equal to yearsExperienceMin",
+  path: ["yearsExperienceMax"],
+}).refine((data) => !data.isConfidential || data.confidentialReason, {
+  message: "confidentialReason is required when isConfidential is true",
+  path: ["confidentialReason"],
 });
 
 /**
@@ -75,7 +84,7 @@ const createJobRoleSchema = z.object({
  *                 description: Preferred qualifications (optional)
  *               seniorityLevel:
  *                 type: string
- *                 enum: [DIRECTOR, VP, C_SUITE, EXECUTIVE]
+ *                 enum: [SENIOR, DIRECTOR, VP, C_SUITE, EXECUTIVE]
  *                 description: Required seniority level
  *               industry:
  *                 type: string
@@ -282,8 +291,16 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'HR partner not found' }, { status: 404 });
     }
 
+    const validStatuses = ['DRAFT', 'ACTIVE', 'PAUSED', 'FILLED', 'CLOSED'];
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
+
+    if (status && !validStatuses.includes(status)) {
+      return NextResponse.json(
+        { error: 'Invalid status value' },
+        { status: 400 }
+      );
+    }
 
     const jobRoles = await prisma.jobRole.findMany({
       where: {

@@ -1,4 +1,6 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
+
+import { Prisma } from '@prisma/client';
+import { currentUser } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database';
 
@@ -36,7 +38,7 @@ export async function POST(
             return NextResponse.json({ error: 'HR Partner not found' }, { status: 404 });
         }
 
-        await prisma.$transaction(async (tx: any) => {
+        await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             const existingView = await tx.profileView.findFirst({
                 where: {
                     viewedProfessionalId: professionalId,

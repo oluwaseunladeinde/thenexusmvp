@@ -19,8 +19,8 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-        description: 'Development server'
+        url: process.env.API_URL || 'http://localhost:3000',
+        description: 'API server'
       },
       {
         url: 'https://jointhenexus.ng',

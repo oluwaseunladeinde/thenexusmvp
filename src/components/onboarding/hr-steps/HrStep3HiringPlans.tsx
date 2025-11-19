@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -64,14 +64,20 @@ export function HrStep3HiringPlans({ data, onChange, onValidation, onSubmit, loa
 
     const { watch, formState: { isValid } } = form;
     const watchedValues = watch();
+    const serializedWatchedValues = JSON.stringify(watchedValues);
+    const lastSerializedValuesRef = useRef(serializedWatchedValues);
 
     // Update parent data when form values change
     useEffect(() => {
-        onChange({
-            ...data,
-            ...watchedValues,
-        });
-    }, [watchedValues, data, onChange]);
+        if (serializedWatchedValues !== lastSerializedValuesRef.current) {
+            lastSerializedValuesRef.current = serializedWatchedValues;
+            onChange({
+                ...data,
+                ...JSON.parse(serializedWatchedValues),
+            });
+        }
+    }, [serializedWatchedValues, data, onChange]);
+
 
     // Update validation status
     useEffect(() => {
@@ -171,21 +177,21 @@ export function HrStep3HiringPlans({ data, onChange, onValidation, onSubmit, loa
                 </CardHeader>
                 <CardContent className="text-green-700 space-y-3 dark:text-green-300">
                     <div className="flex items-start gap-3">
-                        <Clock className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                        <Clock className="h-5 w-5 mt-0.5 shrink-0" />
                         <div>
                             <p className="font-medium">14-day free trial</p>
                             <p className="text-sm">Full access to all features, no credit card required</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-3">
-                        <Target className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                        <Target className="h-5 w-5 mt-0.5 shrink-0" />
                         <div>
                             <p className="font-medium">5 introduction credits</p>
                             <p className="text-sm">Connect with up to 5 senior professionals immediately</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-3">
-                        <Users className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                        <Users className="h-5 w-5 mt-0.5 shrink-0" />
                         <div>
                             <p className="font-medium">Dedicated support</p>
                             <p className="text-sm">Our team will help you get started and find the right talent</p>

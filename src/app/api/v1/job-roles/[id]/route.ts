@@ -244,6 +244,13 @@ const updateJobRoleSchema = z.object({
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
+
+const JobRoleStatus = {
+  OPEN: 'OPEN',
+  CLOSED: 'CLOSED',
+  // ... other statuses
+} as const;
+
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
@@ -313,6 +320,20 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const body = await request.json();
     const validatedData = updateJobRoleSchema.parse(body);
 
+    // Validate date strings before conversion
+    if (validatedData.applicationDeadline) {
+      const date = new Date(validatedData.applicationDeadline);
+      if (isNaN(date.getTime())) {
+        return NextResponse.json({ error: 'Invalid applicationDeadline format' }, { status: 400 });
+      }
+    }
+    if (validatedData.expectedStartDate) {
+      const date = new Date(validatedData.expectedStartDate);
+      if (isNaN(date.getTime())) {
+        return NextResponse.json({ error: 'Invalid expectedStartDate format' }, { status: 400 });
+      }
+    }
+
     const updatedJobRole = await prisma.jobRole.update({
       where: { id: id },
       data: {
@@ -367,7 +388,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     const deletedJobRole = await prisma.jobRole.update({
       where: { id: id },
       data: {
-        status: 'CLOSED',
+        status: JobRoleStatus.CLOSED,
         closedAt: new Date()
       }
     });

@@ -1,0 +1,181 @@
+# Development To-Do List
+
+## Application Overview
+theNexus: A platform enabling HR leaders/agencies to send verified, opt-in introductions to a curated pool of senior professionals. Features include verified portfolios, private intro requests, candidate consent, outcome tracking, and localized UX optimized for Nigerian business practices.
+
+
+- MVP Implementation Plan
+- 4-Week Build Schedule
+- Build Duration: 4 weeks (October 1-28, 2025)
+- Team Structure: 1 Full-stack Developer + 1 Designer (part-time) + Oluwaseun (Product Owner)
+- ✅ Design system finalized
+- ✅ Development environment set up
+- Set up project management tool (Trello/Asana)
+- Create a Slack/WhatsApp group for the team
+- Developer (6 hours):
+- Review feature requirements
+- Set up development environment (Node.js, PostgreSQL)
+- Set up project structure (frontend + backend)
+- Designer (4 hours):
+- Review the design system document
+- Create a Figma workspace
+- Design landing page final mockup
+- Development environment running
+- Review the landing page design
+- Test domain DNS settings
+- Developer (8 hours):
+- Set up hosting (Vercel frontend, Railway backend)
+- Configure database (PostgreSQL on Railway)
+- Set up environment variables
+- Build landing page (HTML/CSS/React)
+- Deploy the landing page to production
+- Designer (2 hours):
+- Create email signature templates (HTML)
+- Design email notification templates
+- Set up Figma component library
+- Developer (8 hours):
+- Build an authentication system (JWT)
+- Create user registration API endpoints
+- Create database tables:
+- Set up email service (SendGrid)
+- Test authentication flows
+- Designer (4 hours):
+- Design signup form UI (professionals)
+- Design signup form UI (HR partners)
+- Design email verification screen
+- Design password reset flow
+- Test signup flows
+- Write help text for form fields
+- Developer (8 hours):
+- Build a professional signup form (multi-step)
+- Designer (3 hours):
+- Design form validation states
+- Design success confirmation screen
+- Design profile preview
+- Developer (8 hours):
+- Build HR partner signup form
+- Designer (4 hours):
+- Design HR partner signup form
+- Design admin panel layout
+- Design a user approval interface
+- WEEKEND, OCT 6-7 - Testing & Bug Fixes
+- Developer (4 hours):
+- Fix critical bugs
+- Deploy to production
+- Write basic documentation
+- Test all signup flows
+- Document bugs
+- Prepare Week 2 tasks
+- Designer (4 hours):
+- Design the professional dashboard layout
+- Design profile completion widget
+- Design activity feed cards
+- Developer (8 hours):
+- Build the professional dashboard structure
+- Designer (4 hours):
+- Design HR partner dashboard
+- Design metrics cards
+- Design sidebar navigation
+- Developer (8 hours):
+- Build HR partner dashboard structure
+- Designer (4 hours):
+- Design search interface
+- Design filter panel
+- Design professional profile cards
+- Developer (8 hours):
+- Build search functionality
+- Designer (4 hours):
+- Design full profile view page
+- Design work samples display
+- Design verification badge display
+- Developer (8 hours):
+- Build professional profile view page
+- Developer (8 hours):
+- Admin: Document review functionality
+- Designer (2 hours):
+- Design verification review interface
+- Design document viewer
+- WEEKEND, OCT 13-14 - Week 2 Testing
+- Developer (4 hours):
+- Test all dashboard functionality
+- Fix bugs
+- Deploy to production
+- Test user flows
+- Document bugs
+- Review Week 2 deliverables
+- Designer (4 hours):
+- Design introduction request form
+- Design role brief template
+- Design message composer
+- Developer (8 hours):
+- Build an introduction request form
+- Developer (8 hours):
+- Create introduction_requests database record
+- Designer (4 hours):
+- Design introduction inbox
+- Design request detail view
+- Design accept/decline interface
+- Developer (8 hours):
+- Build introduction requests inbox
+- Developer (8 hours):
+- Developer (8 hours):
+- Test all email flows
+- Designer (4 hours):
+- Design email templates (HTML)
+- WEEKEND, OCT 20-21 - Week 3 Testing
+- Developer (6 hours):
+- Fix critical bugs
+- Deploy to production
+- Test complete introduction flow
+- Document any issues
+- ✅ Documentation complete
+- MONDAY, OCT 22 - Bug Fixes & Polish
+- Developer (8 hours):
+- Fix all medium/high priority bugs
+- Prepare pilot user onboarding materials
+- Developer (8 hours):
+- Set up error monitoring (Sentry)
+- Set up analytics (Google Analytics)
+- Write help documentation
+- Create video walkthrough (Loom)
+- Prepare onboarding emails
+- Create FAQ page content
+- Developer (4 hours):
+- Build FAQ page
+- Create onboarding tooltips
+- Designer (2 hours):
+- Design help section
+- Design onboarding tooltips
+- Document any issues
+- Fix critical bugs immediately
+- Developer (6 hours):
+- Prepare launch announcement
+- Prepare launch day communication plan
+- Fix any urgent issues
+- Developer (2-4 hours daily):
+- Fix bugs as they arise
+- Testing Protocol
+- Before Each Deployment:
+- User Acceptance Testing:
+- Design
+- Development
+- Risk 4: Developer Availability
+- Mitigation: Document everything, keep code simple
+- Before Every Production Deploy:
+- Pre-Deployment:
+- Deployment:
+- Deploy to staging first
+- Deploy to production
+- Post-Deployment:
+- For Future Developers:
+- DEPLOYMENT.md - Deployment procedures
+- Developer: 😊/😐/😟
+- Designer: 😊/😐/😟
+- Fix critical bugs immediately
+- End of Day Review:
+- Document any issues encountered
+- Developer: 8 AM - 8 PM WAT
+- Document:
+- Document Owner: Oluwaseun Ladeinde, Founder & CEO
+- Technical Lead: [Developer Name]
+- Next Review: End of each sprint (Fridays)

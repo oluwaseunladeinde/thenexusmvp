@@ -33,7 +33,7 @@ const statusUpdateSchema = z.object({
  *             properties:
  *               status:
  *                 type: string
- *                 enum: [ACCEPTED, REJECTED]
+ *                 enum: [ACCEPTED, DECLINED]
  *                 description: New status for the introduction request
  *                 example: "ACCEPTED"
  *     responses:
@@ -109,24 +109,24 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         }
 
         // Update the status
-        const updatedRequest = await prisma.introductionRequest.update({
-            where: { id: id },
-            data: { status }
-        });
-
-        // Send notification to the professional about the status change
-        await prisma.notification.create({
-            data: {
-                userId: introductionRequest.professional.user.id,
-                notificationType: 'INTRO_REQUEST',
-                title: `Introduction Request ${status.toLowerCase()}`,
-                message: `Your introduction request for "${introductionRequest.jobRole.roleTitle}" has been ${status.toLowerCase()}.`,
-                relatedEntityType: 'introduction_request',
-                relatedEntityId: id,
-                actionUrl: `/professional/introductions/${id}`,
-                channel: 'IN_APP',
-            }
-        });
+        const [updatedRequest] = await prisma.$transaction([
+            prisma.introductionRequest.update({
+                where: { id: id },
+                data: { status }
+            }),
+            prisma.notification.create({
+                data: {
+                    userId: introductionRequest.professional.user.id,
+                    notificationType: 'INTRO_REQUEST',
+                    title: `Introduction Request ${status.toLowerCase()}`,
+                    message: `Your introduction request for "${introductionRequest.jobRole.roleTitle}" has been ${status.toLowerCase()}.`,
+                    relatedEntityType: 'introduction_request',
+                    relatedEntityId: id,
+                    actionUrl: `/professional/introductions/${id}`,
+                    channel: 'IN_APP',
+                }
+            })
+        ]);
         // This could be implemented as a separate notification system
 
         return NextResponse.json({ success: true, data: updatedRequest });

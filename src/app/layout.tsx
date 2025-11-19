@@ -4,6 +4,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import { UserProfileProvider } from '@/contexts/UserProfileContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { Toaster } from "sonner";
 
 const manRope = Manrope({
@@ -64,11 +65,18 @@ export default function RootLayout({
             defaultTheme="system"
             storageKey="theNexus-ui-theme"
           >
-            <UserProfileProvider>
-              {children}
-            </UserProfileProvider>
+            <NextThemesProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <UserProfileProvider>
+                {children}
+              </UserProfileProvider>
+              <Toaster position="top-right" richColors />
+            </NextThemesProvider>
           </ThemeProvider>
-          <Toaster position="top-right" richColors />
         </body>
       </html>
     </ClerkProvider>

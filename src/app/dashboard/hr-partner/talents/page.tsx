@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Search, Filter, MapPin, Briefcase, Star, MessageCircle, Eye, Users } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,27 +9,46 @@ import TalentCard from '@/components/hr-partner/talents/TalentCard';
 import TalentFilters from '@/components/hr-partner/talents/TalentFilters';
 import TalentsSkeleton from '@/components/hr-partner/talents/TalentsSkeleton';
 import EmptyTalentsState from '@/components/hr-partner/talents/EmptyTalentsState';
+import Pagination from '@/components/hr-partner/talents/Pagination';
+import SearchHeader from '@/components/hr-partner/talents/SearchHeader';
 
 interface Professional {
     id: number;
     name: string;
-    title: string;
-    company: string;
+    initials: string;
+    profileHeadline: string;
+    profilePhotoUrl?: string;
     location: string;
-    experience: string;
-    skills: string[];
-    profilePhoto?: string;
-    verified: boolean;
-    matchScore?: number;
-    salaryRange: string;
-    availability: 'available' | 'open' | 'not_looking';
-    lastActive: string;
+    experience: number;
+    currentTitle: string;
+    currentCompany: string;
+    industry: string;
+    salaryRange: string | null;
+    verificationStatus: string;
+    isVerified: boolean;
+    topSkills: string[];
+    profileViews: number;
+    isConfidential: boolean;
+}
+
+interface PaginationInfo {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+}
+
+interface ApiResponse {
+    professionals: Professional[];
+    pagination: PaginationInfo;
 }
 
 const TalentsPage = () => {
     const [professionals, setProfessionals] = useState<Professional[]>([]);
-    const [filteredProfessionals, setFilteredProfessionals] = useState<Professional[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [filters, setFilters] = useState({
@@ -39,137 +58,149 @@ const TalentsPage = () => {
         availability: '',
         salaryRange: ''
     });
+    const [pagination, setPagination] = useState<PaginationInfo>({
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false
+    });
+    const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+    const [searchSessionId, setSearchSessionId] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchProfessionals();
+    const fetchProfessionals = useCallback(async (page: number = 1, query?: string, filterState?: typeof filters) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Use provided params or current state
+            const currentQuery = query !== undefined ? query : searchQuery;
+            const currentFilters = filterState !== undefined ? filterState : filters;
+
+            // Track search interactions
+            if (currentQuery || Object.values(currentFilters).some(f => f !== '')) {
+                // Generate or use existing session ID
+                let sessionId = searchSessionId;
+                if (!sessionId) {
+                    sessionId = `frontend_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    setSearchSessionId(sessionId);
+                }
+
+                // Track filter changes
+                if (filterState) {
+                    await fetch('/api/v1/analytics/track', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            eventType: 'SEARCH_FILTER_CHANGE',
+                            sessionId,
+                            data: {
+                                filters: currentFilters,
+                                query: currentQuery,
+                                page,
+                                timestamp: new Date().toISOString(),
+                            },
+                        }),
+                    });
+                }
+            }
+
+            // Map filters to API format
+            const apiFilters: any = {
+                page,
+                limit: 20,
+            };
+
+            if (currentQuery.trim()) {
+                apiFilters.query = currentQuery.trim();
+            }
+
+            // Location mapping
+            if (currentFilters.location) {
+                if (currentFilters.location === 'Remote') {
+                    // Handle remote separately if needed
+                } else {
+                    apiFilters.location = { city: currentFilters.location };
+                }
+            }
+
+            // Experience mapping
+            if (currentFilters.experience) {
+                const minExp = parseInt(currentFilters.experience);
+                apiFilters.experienceRange = { min: minExp };
+            }
+
+            // Skills mapping
+            if (currentFilters.skills.trim()) {
+                apiFilters.skills = currentFilters.skills.split(',').map(s => s.trim()).filter(s => s);
+            }
+
+            // Availability mapping (API uses openToOpportunities, but we map to verification status for now)
+            if (currentFilters.availability) {
+                // Map availability to verification status
+                const statusMap: Record<string, string> = {
+                    'available': 'VERIFIED',
+                    'open': 'BASIC',
+                    'not_looking': 'UNVERIFIED'
+                };
+                apiFilters.verificationStatus = statusMap[currentFilters.availability];
+            }
+
+            const response = await fetch('/api/v1/professionals/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(apiFilters),
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Authentication required');
+                } else if (response.status === 403) {
+                    throw new Error('Insufficient permissions');
+                } else {
+                    throw new Error('Failed to fetch professionals');
+                }
+            }
+
+            const data: ApiResponse = await response.json();
+            setProfessionals(data.professionals);
+            setPagination(data.pagination);
+        } catch (err: any) {
+            setError(err.message || 'Failed to load professionals');
+            console.error('Error fetching professionals:', err);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
     useEffect(() => {
-        filterProfessionals();
-    }, [searchQuery, filters, professionals]);
+        fetchProfessionals();
+    }, [fetchProfessionals]);
 
-    const fetchProfessionals = async () => {
-        // Mock data - replace with actual API call
-        setTimeout(() => {
-            const mockProfessionals: Professional[] = [
-                {
-                    id: 1,
-                    name: 'Adebayo Ogundimu',
-                    title: 'Senior Software Engineer',
-                    company: 'Flutterwave',
-                    location: 'Lagos, Nigeria',
-                    experience: '8 years',
-                    skills: ['React', 'Node.js', 'TypeScript', 'AWS', 'Python'],
-                    verified: true,
-                    matchScore: 95,
-                    salaryRange: '₦8-12M',
-                    availability: 'open',
-                    lastActive: '2 days ago'
-                },
-                {
-                    id: 2,
-                    name: 'Kemi Adebayo',
-                    title: 'Product Manager',
-                    company: 'Paystack',
-                    location: 'Lagos, Nigeria',
-                    experience: '6 years',
-                    skills: ['Product Strategy', 'Analytics', 'Agile', 'User Research'],
-                    verified: true,
-                    matchScore: 88,
-                    salaryRange: '₦6-10M',
-                    availability: 'available',
-                    lastActive: '1 day ago'
-                },
-                {
-                    id: 3,
-                    name: 'Tunde Okafor',
-                    title: 'Data Scientist',
-                    company: 'Interswitch',
-                    location: 'Abuja, Nigeria',
-                    experience: '5 years',
-                    skills: ['Python', 'Machine Learning', 'SQL', 'Tableau', 'R'],
-                    verified: true,
-                    matchScore: 82,
-                    salaryRange: '₦7-11M',
-                    availability: 'open',
-                    lastActive: '3 days ago'
-                },
-                {
-                    id: 4,
-                    name: 'Funmi Adeyemi',
-                    title: 'UX Designer',
-                    company: 'Andela',
-                    location: 'Remote',
-                    experience: '4 years',
-                    skills: ['Figma', 'User Research', 'Prototyping', 'Design Systems'],
-                    verified: false,
-                    salaryRange: '₦4-7M',
-                    availability: 'not_looking',
-                    lastActive: '1 week ago'
-                },
-                {
-                    id: 5,
-                    name: 'Chidi Okwu',
-                    title: 'DevOps Engineer',
-                    company: 'Kuda Bank',
-                    location: 'Lagos, Nigeria',
-                    experience: '7 years',
-                    skills: ['Docker', 'Kubernetes', 'AWS', 'Terraform', 'Jenkins'],
-                    verified: true,
-                    matchScore: 90,
-                    salaryRange: '₦9-13M',
-                    availability: 'available',
-                    lastActive: '5 hours ago'
-                }
-            ];
-            setProfessionals(mockProfessionals);
-            setLoading(false);
-        }, 1000);
-    };
-
-    const filterProfessionals = () => {
-        let filtered = professionals;
-
-        // Search query filter
-        if (searchQuery) {
-            filtered = filtered.filter(prof =>
-                prof.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                prof.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                prof.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
-            );
+    // Debounced search effect
+    useEffect(() => {
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
         }
 
-        // Location filter
-        if (filters.location) {
-            filtered = filtered.filter(prof =>
-                prof.location.toLowerCase().includes(filters.location.toLowerCase())
-            );
-        }
+        const timer = setTimeout(() => {
+            fetchProfessionals(1, searchQuery, filters);
+        }, 500);
 
-        // Experience filter
-        if (filters.experience) {
-            const expYears = parseInt(filters.experience);
-            filtered = filtered.filter(prof => {
-                const profExp = parseInt(prof.experience);
-                return profExp >= expYears;
-            });
-        }
+        setDebounceTimer(timer);
 
-        // Skills filter
-        if (filters.skills) {
-            filtered = filtered.filter(prof =>
-                prof.skills.some(skill =>
-                    skill.toLowerCase().includes(filters.skills.toLowerCase())
-                )
-            );
-        }
+        return () => {
+            if (timer) {
+                clearTimeout(timer);
+            }
+        };
+    }, [searchQuery, filters, fetchProfessionals]);
 
-        // Availability filter
-        if (filters.availability) {
-            filtered = filtered.filter(prof => prof.availability === filters.availability);
-        }
-
-        setFilteredProfessionals(filtered);
+    const handlePageChange = (page: number) => {
+        fetchProfessionals(page);
     };
 
     const handleFilterChange = (key: string, value: string) => {
@@ -191,6 +222,25 @@ const TalentsPage = () => {
         return <TalentsSkeleton />;
     }
 
+    if (error) {
+        return (
+            <div className="min-h-screen bg-[#F4F6F8] dark:bg-gray-900">
+                <div className="max-w-7xl mx-auto px-4 py-6">
+                    <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                        <p className="text-red-800 dark:text-red-200">{error}</p>
+                        <Button
+                            onClick={() => fetchProfessionals()}
+                            className="mt-2"
+                            variant="outline"
+                        >
+                            Try Again
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-[#F4F6F8] dark:bg-gray-900">
             <div className="max-w-7xl mx-auto px-4 py-6">
@@ -204,25 +254,14 @@ const TalentsPage = () => {
 
                 {/* Search and Filters */}
                 <div className="bg-card rounded-lg border border-border p-4 mb-6">
-                    <div className="flex flex-col md:flex-row gap-3 mb-4">
-                        <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                            <Input
-                                placeholder="Search talents..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10"
-                            />
-                        </div>
-                        <Button
-                            variant="outline"
-                            onClick={() => setShowFilters(!showFilters)}
-                            className="flex items-center justify-center gap-2 md:w-auto"
-                        >
-                            <Filter className="w-4 h-4" />
-                            {showFilters ? 'Hide Filters' : 'Show Filters'}
-                        </Button>
-                    </div>
+                    <SearchHeader
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        showFilters={showFilters}
+                        onToggleFilters={() => setShowFilters(!showFilters)}
+                        resultsCount={pagination.total}
+                        loading={loading}
+                    />
 
                     {showFilters && (
                         <TalentFilters
@@ -235,7 +274,7 @@ const TalentsPage = () => {
                     {/* Results Summary */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-border gap-3">
                         <p className="text-sm text-muted-foreground">
-                            {filteredProfessionals.length} of {professionals.length} talents
+                            {pagination.total} talents found
                         </p>
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-muted-foreground">Sort:</span>
@@ -256,7 +295,7 @@ const TalentsPage = () => {
 
                 {/* Talent Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {filteredProfessionals.map((professional) => (
+                    {professionals.map((professional) => (
                         <TalentCard
                             key={professional.id}
                             professional={professional}
@@ -264,8 +303,17 @@ const TalentsPage = () => {
                     ))}
                 </div>
 
+                {/* Pagination */}
+                {pagination.totalPages > 1 && (
+                    <Pagination
+                        pagination={pagination}
+                        onPageChange={handlePageChange}
+                        loading={loading}
+                    />
+                )}
+
                 {/* Empty State */}
-                {filteredProfessionals.length === 0 && (
+                {professionals.length === 0 && !loading && (
                     <EmptyTalentsState
                         hasFilters={Object.values(filters).some(f => f !== '') || searchQuery !== ''}
                         onClearFilters={clearFilters}

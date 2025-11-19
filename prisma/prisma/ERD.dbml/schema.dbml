@@ -69,6 +69,8 @@ Table professionals {
   profileViews profile_views [not null]
   firewallLogs privacy_firewall_logs [not null]
   hrPartnerLink hr_partners
+  savedBy saved_professionals [not null]
+  conversations conversations [not null]
 }
 
 Table professional_work_histories {
@@ -132,6 +134,20 @@ Table professional_certifications {
   professional professionals [not null]
 }
 
+Table saved_professionals {
+  id String [pk]
+  hrPartnerId String [not null]
+  professionalId String [not null]
+  notes String
+  savedAt DateTime [default: `now()`, not null]
+  hrPartner hr_partners [not null]
+  professional professionals [not null]
+
+  indexes {
+    (hrPartnerId, professionalId) [unique]
+  }
+}
+
 Table companies {
   id String [pk]
   companyName String [unique, not null]
@@ -188,6 +204,8 @@ Table hr_partners {
   createdRoles job_roles [not null]
   profileViews profile_views [not null]
   firewallLogs privacy_firewall_logs [not null]
+  savedProfessionals saved_professionals [not null]
+  conversations conversations [not null]
 }
 
 Table job_roles {
@@ -254,6 +272,7 @@ Table introduction_requests {
   company companies [not null]
   sentBy hr_partners [not null]
   professional professionals [not null]
+  conversations conversations [not null]
 
   indexes {
     (jobRoleId, sentToProfessionalId) [unique]
@@ -270,6 +289,35 @@ Table profile_views {
   viewedAt DateTime [default: `now()`, not null]
   viewer hr_partners [not null]
   professional professionals [not null]
+
+  indexes {
+    (viewerHrId, viewedProfessionalId) [unique]
+  }
+}
+
+Table conversations {
+  id String [pk]
+  introductionRequestId String [unique, not null]
+  hrPartnerId String [not null]
+  professionalId String [not null]
+  status ConversationStatus [not null, default: 'ACTIVE']
+  lastMessageAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  introductionRequest introduction_requests [not null]
+  hrPartner hr_partners [not null]
+  professional professionals [not null]
+  messages messages [not null]
+}
+
+Table messages {
+  id String [pk]
+  conversationId String [not null]
+  senderId String [not null]
+  senderType MessageSenderType [not null]
+  content String [not null]
+  sentAt DateTime [default: `now()`, not null]
+  conversation conversations [not null]
 }
 
 Table privacy_firewall_logs {
@@ -315,6 +363,10 @@ Table user_activity_logs {
   ipAddress String
   userAgent String
   metadata Json
+  searchQuery String
+  filtersUsed Json
+  resultsCount Int
+  searchSessionId String
   createdAt DateTime [default: `now()`, not null]
   user users [not null]
 }
@@ -548,6 +600,17 @@ Enum ViewSource {
   DIRECT
 }
 
+Enum ConversationStatus {
+  ACTIVE
+  ARCHIVED
+  CLOSED
+}
+
+Enum MessageSenderType {
+  HR_PARTNER
+  PROFESSIONAL
+}
+
 Enum FirewallEventType {
   SEARCH_FILTERED
   INTRODUCTION_BLOCKED
@@ -558,6 +621,7 @@ Enum FirewallEventType {
 }
 
 Enum NotificationType {
+  CONVERSATION_STARTED
   INTRO_REQUEST
   INTRO_ACCEPTED
   INTRO_DECLINED
@@ -599,6 +663,10 @@ Ref: professional_skills.professionalId > professionals.id [delete: Cascade]
 
 Ref: professional_certifications.professionalId > professionals.id [delete: Cascade]
 
+Ref: saved_professionals.hrPartnerId > hr_partners.id [delete: Cascade]
+
+Ref: saved_professionals.professionalId > professionals.id [delete: Cascade]
+
 Ref: hr_partners.userId - users.id [delete: Cascade]
 
 Ref: hr_partners.companyId > companies.id
@@ -620,6 +688,14 @@ Ref: introduction_requests.sentToProfessionalId > professionals.id
 Ref: profile_views.viewerHrId > hr_partners.id
 
 Ref: profile_views.viewedProfessionalId > professionals.id
+
+Ref: conversations.introductionRequestId > introduction_requests.id
+
+Ref: conversations.hrPartnerId > hr_partners.id
+
+Ref: conversations.professionalId > professionals.id
+
+Ref: messages.conversationId > conversations.id [delete: Cascade]
 
 Ref: privacy_firewall_logs.hrPartnerId > hr_partners.id
 

@@ -78,7 +78,7 @@ export async function GET(request: Request) {
         });
 
         // Get introduction credits remaining
-        const introductionCredits = hrPartner.company.introductionCredits || 0;
+        const introductionCredits = hrPartner.company?.introductionCredits || 0;
 
         // Get recent matches (introduction requests with status updates)
         const recentMatches = await prisma.introductionRequest.findMany({
@@ -117,14 +117,16 @@ export async function GET(request: Request) {
             recentMatches: recentMatches.map(match => ({
                 id: match.id,
                 status: match.status,
-                jobTitle: match.jobRole.roleTitle,
-                jobLocation: `${match.jobRole.locationCity}, ${match.jobRole.locationState}`,
-                professionalName: `${match.professional.firstName} ${match.professional.lastName}`,
-                professionalTitle: match.professional.currentTitle,
-                professionalCompany: match.professional.currentCompany,
+                jobTitle: match.jobRole?.roleTitle || 'Unknown',
+                jobLocation: match.jobRole?.locationCity && match.jobRole?.locationState
+                    ? `${match.jobRole.locationCity}, ${match.jobRole.locationState}`
+                    : 'Unknown',
+                professionalName: `${match.professional?.firstName || ''} ${match.professional?.lastName || ''}`.trim() || 'Unknown',
+                professionalTitle: match.professional?.currentTitle || null,
+                professionalCompany: match.professional?.currentCompany || null,
                 updatedAt: match.updatedAt,
             })),
-            trialEndsAt: hrPartner.company.subscriptionExpiresAt,
+            trialEndsAt: hrPartner.company?.subscriptionExpiresAt || null,
         };
 
         return NextResponse.json({
@@ -135,7 +137,10 @@ export async function GET(request: Request) {
     } catch (error) {
         console.error('Error fetching HR partner stats:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
+            {
+                error: 'Internal server error',
+                ...(process.env.NODE_ENV === 'development' && { details: error instanceof Error ? error.message : 'Unknown error' })
+            },
             { status: 500 }
         );
     }

@@ -163,7 +163,11 @@ export default function ProfessionalProfilePage() {
                 });
                 setCurrentSkills(skillsData);
 
-                setSelectedState(data.data.professional.locationState || '');
+                const initialStateId = data.data.professional.locationState || '';
+                setSelectedState(initialStateId);
+                if (initialStateId) {
+                    await fetchCities(initialStateId);
+                }
             }
         } catch (error) {
             console.error('Error fetching profile:', error);

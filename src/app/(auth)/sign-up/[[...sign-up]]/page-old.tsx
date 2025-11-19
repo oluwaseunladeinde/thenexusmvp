@@ -7,7 +7,8 @@ import { useSearchParams } from 'next/navigation';
 export default function SignUpPage() {
 
     const searchParams = useSearchParams();
-    const userType = searchParams.get('type') || 'professional';
+    const rawUserType = searchParams.get('type') || 'professional';
+    const userType = rawUserType.toLowerCase().replace('_', '-'); // Normalize for UI comparisons
 
 
     return (
@@ -55,7 +56,7 @@ export default function SignUpPage() {
                         }}
                         // CRITICAL: Set user type in metadata during sign-up
                         unsafeMetadata={{
-                            userType: userType,
+                            userType: rawUserType,
                             onboardingComplete: false,
                             hasDualRole: false,
                         }}

@@ -34,6 +34,9 @@ const JobsPage = () => {
     const [statusFilter, setStatusFilter] = useState('');
     const [showFilters, setShowFilters] = useState(false);
 
+    // Add state
+    const [sortBy, setSortBy] = useState('recent');
+
     useEffect(() => {
         fetchJobs();
     }, []);
@@ -116,7 +119,7 @@ const JobsPage = () => {
         let filtered = jobs;
 
         if (searchQuery) {
-            filtered = filtered.filter(job => 
+            filtered = filtered.filter(job =>
                 job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 job.department.toLowerCase().includes(searchQuery.toLowerCase())
             );
@@ -217,7 +220,7 @@ const JobsPage = () => {
                         </p>
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-muted-foreground">Sort:</span>
-                            <Select defaultValue="recent">
+                            <Select value={sortBy} onValueChange={setSortBy}>
                                 <SelectTrigger className="w-28">
                                     <SelectValue />
                                 </SelectTrigger>
@@ -240,7 +243,7 @@ const JobsPage = () => {
 
                 {/* Empty State */}
                 {filteredJobs.length === 0 && (
-                    <EmptyJobsState 
+                    <EmptyJobsState
                         hasFilters={searchQuery !== '' || statusFilter !== ''}
                         onClearFilters={clearFilters}
                     />
