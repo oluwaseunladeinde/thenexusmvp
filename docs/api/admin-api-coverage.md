@@ -247,7 +247,7 @@
         {
           "month": "2024-01-01T00:00:00Z",
           "count": 145,
-          "user_type": "PROFESSIONAL"
+          "userType": "PROFESSIONAL"
         }
       ]
     },

@@ -43,7 +43,7 @@ const JobsPage = () => {
 
     useEffect(() => {
         filterJobs();
-    }, [searchQuery, statusFilter, jobs]);
+    }, [searchQuery, statusFilter, sortBy, jobs]);
 
     const fetchJobs = async () => {
         // Mock data - replace with actual API call
@@ -127,6 +127,22 @@ const JobsPage = () => {
 
         if (statusFilter) {
             filtered = filtered.filter(job => job.status === statusFilter);
+        }
+
+        // Apply sorting
+        switch (sortBy) {
+            case 'title':
+                filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case 'applicants':
+                filtered = filtered.sort((a, b) => b.applicants - a.applicants);
+                break;
+            case 'recent':
+            default:
+                // TODO: For 'recent', would need actual dates. Currently using postedDate string.
+                // This is a placeholder - ideally use Date objects for proper sorting
+                filtered = [...filtered].reverse();
+                break;
         }
 
         setFilteredJobs(filtered);

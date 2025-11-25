@@ -71,7 +71,7 @@ export default function IntroductionsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
 
-    const fetchIntroductions = async (page = 1, status = 'all') => {
+    const fetchIntroductions = async (page = 1, status = 'all', search = '') => {
         try {
             setLoading(true);
             const params = new URLSearchParams({

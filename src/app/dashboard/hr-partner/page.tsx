@@ -10,6 +10,8 @@ import ActiveJobsCard from '@/components/hr-partner/dashboard/ActiveJobsCard';
 import CandidateMatchesCard from '@/components/hr-partner/dashboard/CandidateMatchesCard';
 import HiringInsights from '@/components/hr-partner/dashboard/HiringInsights';
 import QuickActions from '@/components/hr-partner/dashboard/QuickActions';
+import RecentActivityFeed from '@/components/hr-partner/dashboard/RecentActivityFeed';
+import PipelineView from '@/components/hr-partner/dashboard/PipelineView';
 import { capitalize, getCompanySizeLabel } from '@/lib/utils';
 
 interface HrStats {
@@ -111,7 +113,6 @@ const HrPartnerDashboard = () => {
             let profileData = null;
             if (profileResponse.ok) {
                 profileData = await profileResponse.json();
-                console.log({ profileData });
             }
 
             // Set HR data from profile or use defaults
@@ -222,11 +223,17 @@ const HrPartnerDashboard = () => {
                     {/* Left Sidebar */}
                     <div className="lg:col-span-1 space-y-4">
                         <HrProfileCard hrData={hrData} />
-                        <QuickActions />
+                        <QuickActions introductionCredits={stats?.introductionCredits || 0} />
                     </div>
 
                     {/* Middle Feed */}
                     <div className="lg:col-span-2 space-y-4">
+                        {/* Recent Activity Feed */}
+                        <RecentActivityFeed />
+
+                        {/* Pipeline View */}
+                        <PipelineView />
+
                         {/* Active Jobs */}
                         <ActiveJobsCard jobs={activeJobs} />
 

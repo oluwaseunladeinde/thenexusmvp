@@ -504,6 +504,7 @@ Professional Dashboard
 
 ## SPRINT 3: INTRODUCTION WORKFLOW (Week 3 - Oct 15-21)
 Introduction Request Creation
+
 ### INTRO-001: Request Form Modal
 •	Create modal component
 •	Job title field
@@ -518,7 +519,7 @@ Introduction Request Creation
 •	Estimated Time: 5 hours
 •	Priority: P0 - Blocker
 •	Dependencies: PROFILE-005
-INTRO-002: Create Introduction API
+
 ### INTRO-002: Create Introduction API
 •	Save to introduction_requests table
 •	Set status = 'pending'
@@ -527,7 +528,7 @@ INTRO-002: Create Introduction API
 •	Estimated Time: 3 hours
 •	Priority: P0 - Blocker
 •	Dependencies: DB-001, AUTH-005
-INTRO-003: Save Draft Functionality
+
 ### INTRO-003: Save Draft Functionality
 •	Clear on successful submission
 •	Estimated Time: 2 hours

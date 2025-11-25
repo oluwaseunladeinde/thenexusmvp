@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
         const now = new Date();
         const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
         // Get all introduction requests for the company
         const allRequests = await prisma.introductionRequest.findMany({

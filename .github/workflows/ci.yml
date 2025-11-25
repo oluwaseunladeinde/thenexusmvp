@@ -22,8 +22,10 @@ jobs:
     - name: Run linter
       run: pnpm lint
 
-    - name: Generate Prisma client
-      run: pnpm exec prisma generate
+    - name: Generate Prisma client (skip ERD)
+      run: |
+        export CI=true
+        pnpm exec prisma generate
 
     - name: Build project
       run: pnpm build

@@ -81,6 +81,8 @@ export default function NewJobRolePage() {
       !formData.seniorityLevel || !formData.industry || !formData.locationState ||
       !formData.locationCity) {
       toast.error('Please fill in all required fields');
+      setIsDraftLoading(false);
+      setIsPublishLoading(false);
       return;
     }
 
@@ -99,11 +101,15 @@ export default function NewJobRolePage() {
     // For published roles, require salary fields
     if (!isDraft && (!salaryMin || !salaryMax)) {
       toast.error('Please enter valid salary ranges for published roles');
+      setIsDraftLoading(false);
+      setIsPublishLoading(false);
       return;
     }
 
     if (salaryMin && salaryMax && salaryMin >= salaryMax) {
       toast.error('Maximum salary must be greater than minimum salary');
+      setIsDraftLoading(false);
+      setIsPublishLoading(false);
       return;
     }
 

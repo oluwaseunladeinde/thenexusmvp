@@ -374,21 +374,38 @@ export class PrivacyFirewallService {
   ): Promise<string[]> {
     const visibleIds: string[] = [];
 
-    for (const professionalId of professionalIds) {
-      const isHidden = await this.isProfileHidden(professionalId, companyId);
-      
-      if (isHidden) {
-        // Log the firewall event
-        await this.logFirewallEvent({
+  static async filterSearchResults(
+    professionalIds: string[],
+    companyId: string
+  ): Promise<string[]> {
+    // Single batch query instead of looping
+    const hiddenProfessionals = await prisma.professional.findMany({
+      where: {
+        id: { in: professionalIds },
+        hideFromCompanyIds: {
+          has: companyId,
+        },
+      },
+      select: { id: true },
+    });
+
+    const hiddenIds = new Set(hiddenProfessionals.map(p => p.id));
+
+    // Log all filtered events in batch
+    const hiddenProfIds = professionalIds.filter(id => hiddenIds.has(id));
+    if (hiddenProfIds.length > 0) {
+      await prisma.privacyFirewallLog.createMany({
+        data: hiddenProfIds.map(professionalId => ({
           eventType: 'SEARCH_FILTERED',
           professionalId,
           companyId,
           actionTaken: 'profile_hidden_from_search',
-        });
-      } else {
-        visibleIds.push(professionalId);
-      }
+        })),
+      });
     }
+
+    return professionalIds.filter(id => !hiddenIds.has(id));
+  }
 
     return visibleIds;
   }
@@ -645,17 +662,41 @@ export class DualRoleService {
     }
 
     // Create professional profile
+    const existingProfessional = await prisma.professional.findUnique({
+      where: { userId },
+    });
+
+    if (existingProfessional) {
+      // If professional profile already exists, update it instead
+      return await prisma.professional.update({
+       where: { id: existingProfessional.id },
+       data: {
+         isAlsoHrPartner: true,
+         hideFromCompanyIds: {
+           set: [...new Set([...existingProfessional.hideFromCompanyIds, hrPartner.companyId])],
+         },
+         confidentialSearch: true,
+         profileVisibility: 'PRIVATE',
+       },
+      });
+    }
+
     const professional = await prisma.professional.create({
       data: {
         userId,
         ...professionalData,
         isAlsoHrPartner: true,
-        hideFromCompanyIds: [hrPartner.companyId], // CRITICAL: Block current company
+        // CRITICAL: Validate company exists before blocking
+        hideFromCompanyIds: hrPartner.companyId ? [hrPartner.companyId] : [],
         confidentialSearch: true, // Force confidential mode
         profileVisibility: 'PRIVATE', // Default to private
         openToOpportunities: true,
       },
     });
+
+    if (!hrPartner.companyId) {
+     throw new Error('HR partner has no associated company. Cannot activate dual role safely.');
+    }
 
     // Link to HR partner
     await prisma.hrPartner.update({
@@ -2267,6 +2308,7 @@ Create `tests/services/privacyFirewall.test.ts`:
 
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest';
+import { afterEach } from 'vitest';
 import { PrivacyFirewallService } from '@/lib/services/privacyFirewall';
 import { prisma } from '@/lib/prisma';
 
@@ -2274,6 +2316,7 @@ describe('PrivacyFirewallService', () => {
   let testProfessionalId: string;
   let testCompanyId: string;
   let testHrPartnerId: string;
+  let testUserId: string;
 
   beforeEach(async () => {
     // Setup test data
@@ -2321,7 +2364,17 @@ describe('PrivacyFirewallService', () => {
         professionalId: professional.id,
       },
     });
+    testUserId = user.id;
     testHrPartnerId = hrPartner.id;
+  });
+
+  afterEach(async () => {
+    // Clean up in reverse dependency order
+    await prisma.privacyFirewallLog.deleteMany({});
+    await prisma.professional.deleteMany({});
+    await prisma.hrPartner.deleteMany({});
+    await prisma.user.deleteMany({});
+    await prisma.company.deleteMany({});
   });
 
   describe('isProfileHidden', () => {

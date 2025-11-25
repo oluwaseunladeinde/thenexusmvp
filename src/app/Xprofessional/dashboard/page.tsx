@@ -39,13 +39,17 @@ const ProfessionalDashboardPage = () => {
 
     useEffect(() => {
         fetchProfileData();
+        return () => {
+            // TODO: Cleanup on unmount - consider storing AbortController in ref
+        };
     }, []);
 
     const fetchProfileData = async () => {
+        let timeoutId: NodeJS.Timeout | undefined;
         try {
             setError(null);
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            timeoutId = setTimeout(() => controller.abort(), 10000);
 
             const [profileResponse, viewStatsResponse] = await Promise.all([
                 fetch('/api/v1/professionals/me', { signal: controller.signal }),
@@ -53,6 +57,7 @@ const ProfessionalDashboardPage = () => {
             ]);
 
             clearTimeout(timeoutId);
+            timeoutId = undefined;
 
             if (profileResponse.ok) {
                 const data = await profileResponse.json();
@@ -82,6 +87,7 @@ const ProfessionalDashboardPage = () => {
 
         } catch (error) {
             console.error('Error fetching profile:', error);
+            if (timeoutId) clearTimeout(timeoutId);
             if (error instanceof Error && error.name === 'AbortError') {
                 setError('Request timed out. Please try again.');
             } else {
@@ -95,63 +101,6 @@ const ProfessionalDashboardPage = () => {
     const dismissPost = (postId: string) => {
         setDismissedPosts(prev => [...prev, postId]);
     };
-
-    const suggestions = [
-        {
-            name: 'Kemi Adebayo',
-            headline: 'Senior Data Scientist | AI/ML Expert | Fintech',
-            photo: '👩💼',
-            mutualConnections: 5
-        },
-        {
-            name: 'Tunde Okafor',
-            headline: 'Product Manager | SaaS | Growth Strategy',
-            photo: '👨💼',
-            mutualConnections: 3
-        }
-    ];
-
-    const mockIntroductionRequests = [
-        {
-            id: 1,
-            company: "FinanceHub Ltd",
-            companyLogo: "FH",
-            role: "VP of Strategy",
-            salary: "₦12-18M",
-            location: "Lagos",
-            postedDate: "2 days ago",
-            status: "pending",
-            matchScore: 95,
-            description: "Leading strategy and operations for Nigeria's fastest-growing fintech",
-            requirements: ["10+ years experience", "Strategic planning", "Team leadership"],
-        },
-        {
-            id: 2,
-            company: "Global Energy Corp",
-            companyLogo: "GE",
-            role: "Head of Operations",
-            salary: "₦15-22M",
-            location: "Port Harcourt",
-            postedDate: "5 days ago",
-            status: "pending",
-            matchScore: 88,
-            description: "Oversee operations across multiple facilities in the Niger Delta region",
-            requirements: ["Oil & Gas experience", "Operations management", "P&L responsibility"],
-        },
-        {
-            id: 3,
-            company: "RetailPro Nigeria",
-            companyLogo: "RP",
-            role: "Director of Operations",
-            salary: "₦10-14M",
-            location: "Lagos",
-            postedDate: "1 week ago",
-            status: "pending",
-            matchScore: 82,
-            description: "Lead operational excellence across 50+ retail locations nationwide",
-            requirements: ["Retail experience", "Multi-site management", "Process optimization"],
-        },
-    ];
 
     if (loading) {
         return <DashboardSkeleton />;
@@ -178,8 +127,6 @@ const ProfessionalDashboardPage = () => {
     // Real introduction requests from API
     const introductionRequests = profileData?.introductionRequests || [];
     const profileCompleteness = completenessData?.overall || 0;
-
-    console.log({ profileCompleteness });
 
     return (
         <div className="min-h-screen bg-[#F4F6F8]">

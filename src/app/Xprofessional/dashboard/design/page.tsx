@@ -379,7 +379,7 @@ export default function ProfessionalDashboard() {
                                     <div className="space-y-3">
                                         {recentActivity.map((activity) => (
                                             <div key={activity.id} className="flex items-start gap-3">
-                                                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
                                                     <activity.icon className="w-4 h-4 text-gray-600" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">

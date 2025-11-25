@@ -8,6 +8,11 @@ interface AnalyticsQuery {
     groupBy?: 'day' | 'week' | 'month';
 }
 
+interface PopularQuery {
+    query: string;
+    count: bigint;
+}
+
 /**
  * @swagger
  * /api/v1/analytics/search:
@@ -44,7 +49,7 @@ interface AnalyticsQuery {
  *                   type: array
  *                 filterUsage:
  *                   type: object
- *                 popularSkills:
+ *                 popularQueries:
  *                   type: array
  *                 conversionRates:
  *                   type: object
@@ -70,7 +75,13 @@ export async function GET(req: Request) {
 
         const startDate = searchParams.get('startDate') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
         const endDate = searchParams.get('endDate') || new Date().toISOString();
-        const groupBy = (searchParams.get('groupBy') as 'day' | 'week' | 'month') || 'day';
+        const groupByParam = searchParams.get('groupBy') || 'day';
+        const allowedGroupBy = ['day', 'week', 'month'];
+        if (!allowedGroupBy.includes(groupByParam)) {
+            return NextResponse.json({ error: 'Invalid groupBy value' }, { status: 400 });
+        }
+
+        const groupBy = groupByParam as 'day' | 'week' | 'month';
 
         // Get search queries analytics
         const searchQueries = await prisma.userActivityLog.findMany({
@@ -106,7 +117,7 @@ export async function GET(req: Request) {
         });
 
         // Get popular search terms
-        const popularQueries = await prisma.$queryRaw`
+        const popularQueriesRaw = await prisma.$queryRaw<PopularQuery[]>`
             SELECT
                 "searchQuery" as query,
                 COUNT(*) as count
@@ -120,6 +131,11 @@ export async function GET(req: Request) {
             ORDER BY count DESC
             LIMIT 10
         `;
+
+        const popularQueries = popularQueriesRaw.map(q => ({
+            query: q.query,
+            count: Number(q.count),
+        }));
 
         // Get profile view analytics
         const profileViews = await prisma.profileView.findMany({
@@ -166,7 +182,7 @@ export async function GET(req: Request) {
         };
 
         // Group data by time period
-        const timeSeriesData = await generateTimeSeriesData(userId, startDate, endDate, groupBy);
+        const timeSeriesData = await generateTimeSeriesData(userId, hrPartner.id, startDate, endDate, groupBy);
 
         return NextResponse.json({
             summary: {
@@ -192,13 +208,29 @@ export async function GET(req: Request) {
     }
 }
 
-async function generateTimeSeriesData(userId: string, startDate: string, endDate: string, groupBy: string) {
+async function generateTimeSeriesData(
+    userId: string,
+    hrPartnerId: string,
+    startDate: string,
+    endDate: string,
+    groupBy: 'day' | 'week' | 'month'
+) {
+
     const dateFormat = groupBy === 'day' ? 'YYYY-MM-DD' :
         groupBy === 'week' ? 'YYYY-WW' : 'YYYY-MM';
 
-    const searches = await prisma.$queryRaw`
+    // Map to PostgreSQL DATE_TRUNC values (whitelist)
+    const dateTruncMap = {
+        'day': 'day',
+        'week': 'week',
+        'month': 'month'
+    } as const;
+    const truncValue = dateTruncMap[groupBy];
+
+
+    const searches = await prisma.$queryRaw<Array<{ period: Date, searches: bigint, avg_results: number | null }>>`
         SELECT
-            DATE_TRUNC('${groupBy === 'day' ? 'day' : groupBy === 'week' ? 'week' : 'month'}', "createdAt") as period,
+            DATE_TRUNC(${truncValue}, "createdAt") as period,
             COUNT(*) as searches,
             AVG("resultsCount") as avg_results
         FROM "user_activity_logs"
@@ -210,12 +242,12 @@ async function generateTimeSeriesData(userId: string, startDate: string, endDate
         ORDER BY period
     `;
 
-    const views = await prisma.$queryRaw`
+    const views = await prisma.$queryRaw<Array<{ period: Date, views: bigint }>>`
         SELECT
-            DATE_TRUNC('${groupBy === 'day' ? 'day' : groupBy === 'week' ? 'week' : 'month'}', "viewedAt") as period,
+            DATE_TRUNC(${truncValue}, "viewedAt") as period,
             COUNT(*) as views
         FROM "profile_views"
-        WHERE "viewerHrId" = (SELECT id FROM "hr_partners" WHERE "userId" = ${userId})
+        WHERE "viewerHrId" = ${hrPartnerId}
             AND "viewedAt" >= ${new Date(startDate)}
             AND "viewedAt" <= ${new Date(endDate)}
         GROUP BY period
@@ -223,7 +255,14 @@ async function generateTimeSeriesData(userId: string, startDate: string, endDate
     `;
 
     return {
-        searches,
-        views,
+        searches: searches.map(s => ({
+            period: s.period,
+            searches: Number(s.searches),
+            avg_results: s.avg_results
+        })),
+        views: views.map(v => ({
+            period: v.period,
+            views: Number(v.views)
+        })),
     };
 }

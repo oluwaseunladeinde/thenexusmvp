@@ -31,12 +31,17 @@ async function validateAdminAccess(requiredRole: 'ADMIN' | 'SUPER_ADMIN' = 'ADMI
     if (!userId) {
         throw new Error('Unauthorized');
     }
+
+    function isRoleSufficient(userRole: string, required: string): boolean {
+        const roleHierarchy = { 'ADMIN': 0, 'SUPER_ADMIN': 1 };
+        return (roleHierarchy[userRole] ?? -1) >= (roleHierarchy[required] ?? 0);
+    }
     
     const adminUser = await prisma.adminUser.findUnique({
         where: { clerkId: userId }
     });
     
-    if (!adminUser || !hasPermission(adminUser.role, requiredRole)) {
+    if (!adminUser || !isRoleSufficient(adminUser.role, requiredRole)) {
         throw new Error('Insufficient permissions');
     }
     
@@ -47,6 +52,36 @@ async function validateAdminAccess(requiredRole: 'ADMIN' | 'SUPER_ADMIN' = 'ADMI
 ### Audit Logging
 All admin actions must be logged:
 ```typescript
+async function logAdminAction(
+    adminId: string,
+    action: string,
+    resourceType: string,
+    resourceId: string,
+    details?: Record<string, any>
+) {
+    try {
+        await prisma.adminAuditLog.create({
+            data: {
+                adminId,
+                action,
+                resourceType,
+                resourceId,
+                details: sanitizeDetails(details),
+                timestamp: new Date()
+            }
+        });
+    } catch (error) {
+        // Log to error tracking (e.g., Sentry) but don't block the admin action
+        console.error('Failed to create audit log:', error);
+    }
+}
+
+function sanitizeDetails(details?: Record<string, any>): Record<string, any> {
+    if (!details) return {};
+    // Remove sensitive fields like emails, passwords, tokens
+    const { password, token, email, ...safe } = details;
+    return safe;
+}
 await prisma.adminAuditLog.create({
     data: {
         adminId: adminUser.id,
@@ -62,16 +97,38 @@ await prisma.adminAuditLog.create({
 ```typescript
 export async function POST(request: NextRequest) {
     const adminUser = await validateAdminAccess();
-    const { action, userIds } = await request.json();
+    const body = await request.json();
+    const { action, userIds } = body;
+
+    // Validate action
+    const ALLOWED_ACTIONS = ['SUSPEND', 'UNSUSPEND', 'DELETE', 'VERIFY'];
+    if (!ALLOWED_ACTIONS.includes(action)) {
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    }
+
+    // Validate userIds
+    if (!Array.isArray(userIds) || userIds.length === 0 || userIds.length > 1000) {
+        return NextResponse.json(
+            { error: 'userIds must be a non-empty array with max 1000 items' },
+            { status: 400 }
+        );
+    }
+
+    if (!userIds.every(id => typeof id === 'string')) {
+        return NextResponse.json({ error: 'All userIds must be strings' }, { status: 400 });
+    }
     
     const results = await Promise.allSettled(
-        userIds.map(id => performUserAction(id, action))
+        userIds.map(id => performAdminUserAction(id, action, adminUser.id))
     );
     
     return NextResponse.json({
         success: results.filter(r => r.status === 'fulfilled').length,
         failed: results.filter(r => r.status === 'rejected').length,
-        results
+        results: results.map(r => ({
+            status: r.status,
+            ...(r.status === 'fulfilled' ? { data: r.value } : { error: r.reason?.message })
+        }))
     });
 }
 ```

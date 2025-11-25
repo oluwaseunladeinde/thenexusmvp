@@ -1,4 +1,4 @@
-te# theNexus - Nigeria's Premier Senior Professional Network
+# theNexus - Nigeria's Premier Senior Professional Network
 
 ## 🎯 About
 theNexus is Nigeria's premier network connecting verified senior professionals with forward-thinking companies through confidential, opt-in introductions. We're disrupting traditional recruitment by replacing mass job applications with curated, high-quality professional introductions.

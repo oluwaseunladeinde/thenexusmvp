@@ -96,9 +96,9 @@ const SavedProfessionalsPage = () => {
             toast.success(`${professionalName} has been removed from your saved list`);
             // Refresh the list
             fetchSavedProfessionals(pagination.page);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Remove saved professional error:', err);
-            toast.error(err.message || 'Failed to remove professional from saved list');
+            toast.error(err instanceof Error ? err.message : 'Failed to remove professional from saved list');
         }
     };
 
@@ -172,8 +172,8 @@ const SavedProfessionalsPage = () => {
                 {savedProfessionals.length === 0 ? (
                     <Card className="p-12 text-center">
                         <Bookmark className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No saved professionals yet</h3>
-                        <p className="text-gray-600 mb-4">
+                        <h3 className="text-lg font-medium text-foreground mb-2">No saved professionals yet</h3>
+                        <p className="text-muted-foreground mb-4">
                             Start browsing talents and save professionals you're interested in for later.
                         </p>
                         <Button onClick={() => router.push('/dashboard/search')}>
@@ -187,9 +187,9 @@ const SavedProfessionalsPage = () => {
                                 <CardContent className="p-6">
                                     <div className="flex flex-col md:flex-row gap-4">
                                         <Avatar className="h-16 w-16">
-                                            <AvatarImage src={undefined} />
+                                            {/* <AvatarImage src={undefined} /> */}
                                             <AvatarFallback className="bg-green-100 text-green-700">
-                                                {saved.professional.firstName[0]}{saved.professional.lastName[0]}
+                                                {saved.professional.firstName[0] || '?'}{saved.professional.lastName[0] || '?'}
                                             </AvatarFallback>
                                         </Avatar>
 
@@ -265,7 +265,7 @@ const SavedProfessionalsPage = () => {
                                                 Request Intro
                                             </Button>
                                             <Button
-                                                onClick={() => handleRemoveSaved(saved.professional.id, `${saved.professional.firstName} ${saved.professional.lastName}`)}
+                                                onClick={() => handleRemoveSaved(saved.id, `${saved.professional.firstName} ${saved.professional.lastName}`)}
                                                 variant="outline"
                                                 size="sm"
                                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"

@@ -82,7 +82,15 @@ export async function POST(
         }
 
         const professionalId = id;
-        const { notes }: SaveProfessionalRequest = await req.json();
+        //const { notes }: SaveProfessionalRequest = await req.json();
+        let notes: string | undefined;
+        try {
+            const body = await req.json();
+            notes = body.notes;
+        } catch {
+            // Body is optional, so ignore parse errors
+            notes = undefined;
+        }
 
         // Check if professional exists
         const professional = await prisma.professional.findUnique({

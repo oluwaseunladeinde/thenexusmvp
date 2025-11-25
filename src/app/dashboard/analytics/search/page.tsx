@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Calendar, TrendingUp, Users, Eye, MessageCircle, BarChart3, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,11 +33,8 @@ const SearchAnalyticsPage = () => {
     const [timeRange, setTimeRange] = useState('30d');
     const [groupBy, setGroupBy] = useState('day');
 
-    useEffect(() => {
-        fetchAnalytics();
-    }, [timeRange, groupBy]);
 
-    const fetchAnalytics = async () => {
+    const fetchAnalytics = useCallback(async () => {
         try {
             setLoading(true);
             const params = new URLSearchParams({
@@ -77,7 +74,11 @@ const SearchAnalyticsPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [timeRange, groupBy]);
+
+    useEffect(() => {
+        fetchAnalytics();
+    }, [fetchAnalytics]);
 
     if (loading) {
         return (
@@ -175,7 +176,7 @@ const SearchAnalyticsPage = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {analytics.summary.conversionRates.searchToView.toFixed(1)}%
+                            {(analytics.summary.conversionRates.searchToView ?? 0).toFixed(1)}%
                         </div>
                         <p className="text-xs text-muted-foreground">Search to view conversion</p>
                     </CardContent>

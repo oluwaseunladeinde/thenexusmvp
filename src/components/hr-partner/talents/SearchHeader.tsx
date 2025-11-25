@@ -11,13 +11,13 @@ interface SearchHeaderProps {
     loading?: boolean;
 }
 
-const SearchHeader = ({ 
-    searchQuery, 
-    onSearchChange, 
-    showFilters, 
-    onToggleFilters, 
+const SearchHeader = ({
+    searchQuery,
+    onSearchChange,
+    showFilters,
+    onToggleFilters,
     resultsCount,
-    loading 
+    loading
 }: SearchHeaderProps) => {
     return (
         <div className="space-y-4">
@@ -41,7 +41,7 @@ const SearchHeader = ({
 
             {/* Search Bar */}
             <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" aria-hidden="true" />
                 <Input
                     placeholder="Search by title, skills, or keywords..."
                     value={searchQuery}
@@ -54,7 +54,7 @@ const SearchHeader = ({
             {resultsCount !== undefined && (
                 <div className="flex items-center justify-between">
                     <p className="text-sm text-gray-600">
-                        {loading ? 'Searching...' : `${resultsCount} professionals found`}
+                        {loading ? 'Searching...' : `${resultsCount} professional${resultsCount !== 1 ? 's' : ''} found`}
                     </p>
                 </div>
             )}

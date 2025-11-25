@@ -71,13 +71,18 @@ interface IntroductionDetailViewProps {
 
 function StartConversationButton({ introductionId }: { introductionId: string }) {
     const [isStarting, setIsStarting] = useState(false);
+    const [showMessageDialog, setShowMessageDialog] = useState(false);
+    const [message, setMessage] = useState('');
 
     const handleStartConversation = async () => {
-        const initialMessage = prompt('Enter your initial message to start the conversation:');
-        if (!initialMessage || initialMessage.trim().length < 10) {
+        if (!message || message.trim().length < 10) {
             toast.error('Please enter a message with at least 10 characters');
             return;
+
+            //TODO: Replace prompt() with a proper dialog component.
         }
+
+        const initialMessage = message.trim();
 
         setIsStarting(true);
         try {
@@ -92,14 +97,15 @@ function StartConversationButton({ introductionId }: { introductionId: string })
                 }),
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
+                const data = await response.json().catch(() => ({ error: 'Failed to start conversation' }));
                 throw new Error(data.error || 'Failed to start conversation');
             }
 
+            const data = await response.json();
+
             toast.success('Conversation started successfully!');
-            // Optionally redirect to conversation page or refresh
+            //TODO: Optionally redirect to conversation page or refresh
         } catch (error) {
             console.error('Error starting conversation:', error);
             toast.error(error instanceof Error ? error.message : 'Failed to start conversation');
@@ -107,6 +113,8 @@ function StartConversationButton({ introductionId }: { introductionId: string })
             setIsStarting(false);
         }
     };
+
+
 
     return (
         <Button onClick={handleStartConversation} disabled={isStarting}>
@@ -179,6 +187,19 @@ export function IntroductionDetailView({
         }).format(amount);
     };
 
+    const formatSalaryRange = (min?: number, max?: number) => {
+        if (min && max) {
+            return `${formatCurrency(min)} - ${formatCurrency(max)}`;
+        }
+        if (min) {
+            return `From ${formatCurrency(min)}`;
+        }
+        if (max) {
+            return `Up to ${formatCurrency(max)}`;
+        }
+        return null;
+    };
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -186,7 +207,7 @@ export function IntroductionDetailView({
                     <DialogTitle className="flex items-center gap-2">
                         {getStatusIcon(introduction.status)}
                         Introduction Request Details
-                        <Badge variant={getStatusBadgeVariant(introduction.status) as any}>
+                        <Badge variant={getStatusBadgeVariant(introduction.status)}>
                             {introduction.status.toLowerCase()}
                         </Badge>
                     </DialogTitle>
@@ -271,17 +292,11 @@ export function IntroductionDetailView({
                                         {introduction.jobRole.locationCity}, {introduction.jobRole.locationState}
                                     </span>
                                 </div>
-                                {(introduction.jobRole.salaryRangeMin || introduction.jobRole.salaryRangeMax) && (
+                                {formatSalaryRange(introduction.jobRole.salaryRangeMin, introduction.jobRole.salaryRangeMax) && (
                                     <div className="flex items-center gap-2">
                                         <DollarSign className="w-4 h-4 text-gray-500" />
-                                        <span className="text-sm">
-                                            {introduction.jobRole.salaryRangeMin && introduction.jobRole.salaryRangeMax
-                                                ? `${formatCurrency(introduction.jobRole.salaryRangeMin)} - ${formatCurrency(introduction.jobRole.salaryRangeMax)}`
-                                                : introduction.jobRole.salaryRangeMin
-                                                    ? `From ${formatCurrency(introduction.jobRole.salaryRangeMin)}`
-                                                    : `Up to ${formatCurrency(introduction.jobRole.salaryRangeMax!)}`
-                                            }
-                                        </span>
+                                        <span className="text-sm">{formatSalaryRange(introduction.jobRole.salaryRangeMin, introduction.jobRole.salaryRangeMax)}</span>
+
                                     </div>
                                 )}
                             </div>

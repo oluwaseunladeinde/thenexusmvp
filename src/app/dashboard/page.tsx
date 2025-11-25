@@ -14,8 +14,6 @@ export default async function Dashboard() {
     const userType = (user?.publicMetadata?.userType as string) ?? (user?.unsafeMetadata?.userType as string) ?? '';
     const onboardingComplete = (user?.publicMetadata?.onboardingComplete as boolean) ?? (user?.unsafeMetadata?.onboardingComplete as boolean) ?? false;
 
-    console.log("dashboard...", { userType, onboardingComplete })
-
     if (!onboardingComplete) {
         redirect('/onboarding');
     }

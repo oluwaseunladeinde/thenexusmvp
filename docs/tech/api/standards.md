@@ -509,8 +509,7 @@ Example annotation:
 npm install next-swagger-doc swagger-ui-react
 ```
 
-2. Create `src/lib/swagger.ts`:
-```typescript
+import path from 'path';
 import { createSwaggerSpec } from 'next-swagger-doc';
 
 const apiDirectory = path.join(process.cwd(), 'src/app/api');
@@ -542,7 +541,6 @@ const spec = createSwaggerSpec({
 });
 
 export default spec;
-```
 
 3. Create docs page at `src/app/api/docs/route.ts`
 

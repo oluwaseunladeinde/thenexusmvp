@@ -35,7 +35,11 @@ const jobSchema = z.object({
     experience: z.string().min(1, 'Experience level is required'),
     urgency: z.enum(['high', 'medium', 'low']),
     expiryDays: z.string().min(1, 'Expiry period is required'),
-}).refine((data) => Number(data.salaryMax) > Number(data.salaryMin), {
+}).refine((data) => {
+    const min = Number(data.salaryMin);
+    const max = Number(data.salaryMax);
+    return !isNaN(min) && !isNaN(max) && max > min;
+}, {
     message: 'Maximum salary must be greater than minimum salary',
     path: ['salaryMax'],
 });
@@ -70,12 +74,19 @@ const CreateJobPage = () => {
         },
     });
 
+    const mapYearsToExperienceLevel = (years: number): string => {
+        if (years >= 9) return 'lead';
+        if (years >= 6) return 'senior';
+        if (years >= 3) return 'mid';
+        return 'entry';
+    };
+
     const handleTemplateSelect = (template: JobTemplate) => {
         form.setValue('title', template.roleTitle);
         form.setValue('department', template.department || '');
         setRequiredSkills(template.requiredSkills);
         setPreferredSkills(template.preferredSkills || []);
-        form.setValue('experience', template.yearsExperienceMin.toString());
+        form.setValue('experience', mapYearsToExperienceLevel(template.yearsExperienceMin));
         form.setValue('description', template.roleDescription);
         form.setValue('requirements', template.requirements);
         form.setValue('benefits', template.benefits || '');
@@ -365,8 +376,14 @@ const CreateJobPage = () => {
                                         <SkillsSelector
                                             requiredSkills={requiredSkills}
                                             preferredSkills={preferredSkills}
-                                            onRequiredSkillsChange={setRequiredSkills}
-                                            onPreferredSkillsChange={setPreferredSkills}
+                                            onRequiredSkillsChange={(skills) => {
+                                                setRequiredSkills(skills);
+                                                form.setValue('skills', skills);
+                                            }}
+                                            onPreferredSkillsChange={(skills) => {
+                                                setPreferredSkills(skills);
+                                                form.setValue('preferredSkills', skills);
+                                            }}
                                         />
 
                                         <FormField
@@ -462,10 +479,10 @@ const CreateJobPage = () => {
                                         {loading ? (
                                             <>
                                                 <Loader2 className="w-4 h-4 animate-spin" />
-                                                Creating Offer...
+                                                Creating Job...
                                             </>
                                         ) : (
-                                            'Create Offer'
+                                            'Create Job'
                                         )}
                                     </Button>
                                 </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { JobCard } from '@/components/professional/JobCard';
@@ -159,12 +159,11 @@ export default function IntroductionRequestsPage() {
 
             if (response.ok) {
                 toast.success('Introduction request accepted!');
-                setAllIntroductions(prev =>
-                    prev.map(intro =>
-                        intro.id === id ? { ...intro, status: 'ACCEPTED' as const } : intro
-                    )
+                const updated = allIntroductions.map(intro =>
+                    intro.id === id ? { ...intro, status: 'ACCEPTED' as const } : intro
                 );
-                handleFilterChange(activeFilter);
+                setAllIntroductions(updated);
+                handleFilterChange(activeFilter, undefined, updated);
             } else {
                 toast.error('Failed to accept introduction request');
             }
@@ -230,6 +229,25 @@ export default function IntroductionRequestsPage() {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+
+    const stats = useMemo(() => {
+        const total = allIntroductions.length;
+        const responded = allIntroductions.filter(i => i.status !== 'PENDING').length;
+        const responseRate = total > 0 ? Math.round((responded / total) * 100) : 0;
+
+        const withScores = allIntroductions.filter(i => i.matchScore !== undefined);
+        const avgMatchScore = withScores.length > 0
+            ? Math.round(withScores.reduce((sum, i) => sum + (i.matchScore || 0), 0) / withScores.length)
+            : 0;
+
+        const now = new Date();
+        const thisMonth = allIntroductions.filter(i => {
+            const sentDate = new Date(i.sentAt);
+            return sentDate.getMonth() === now.getMonth() && sentDate.getFullYear() === now.getFullYear();
+        }).length;
+
+        return { responseRate, avgMatchScore, thisMonth };
+    }, [allIntroductions]);
 
     return (
         <div className="min-h-screen bg-[#F4F6F8]">
@@ -310,15 +328,15 @@ export default function IntroductionRequestsPage() {
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-gray-600">Response Rate</span>
-                                                <span className="font-medium">85%</span>
+                                                <span className="font-medium">{stats.responseRate}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-gray-600">Avg. Match Score</span>
-                                                <span className="font-medium">88%</span>
+                                                <span className="font-medium">{stats.avgMatchScore}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-gray-600">This Month</span>
-                                                <span className="font-medium">{counts.all} requests</span>
+                                                <span className="font-medium">{stats.thisMonth} requests</span>
                                             </div>
                                         </div>
                                     </div>

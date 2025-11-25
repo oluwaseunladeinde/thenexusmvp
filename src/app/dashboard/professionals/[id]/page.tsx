@@ -164,7 +164,7 @@ const ProfessionalProfilePage = () => {
     }
 
     const getInitials = (name: string) => {
-        return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase();
     };
 
     return (
@@ -324,7 +324,7 @@ const ProfessionalProfilePage = () => {
                                         <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                                             <Calendar className="h-4 w-4" />
                                             {new Date(work.startDate).toLocaleDateString()} -
-                                            {work.isCurrent ? ' Present' : ` ${new Date(work.endDate).toLocaleDateString()}`}
+                                            {work.isCurrent ? ' Present' : work.endDate ? ` ${new Date(work.endDate).toLocaleDateString()}` : ' N/A'}
                                             {work.location && (
                                                 <>
                                                     <span>•</span>
@@ -363,7 +363,7 @@ const ProfessionalProfilePage = () => {
                                         )}
                                         <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                                             <Calendar className="h-4 w-4" />
-                                            {new Date(edu.startDate).getFullYear()} - {new Date(edu.endDate).getFullYear()}
+                                            {edu.startDate ? new Date(edu.startDate).getFullYear() : 'N/A'} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'N/A'}
                                             {edu.grade && (
                                                 <>
                                                     <span>•</span>
@@ -395,7 +395,7 @@ const ProfessionalProfilePage = () => {
                                     <p className="text-gray-600">{cert.issuingOrganization}</p>
                                     <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                                         <Calendar className="h-4 w-4" />
-                                        Obtained: {new Date(cert.dateObtained).toLocaleDateString()}
+                                        Obtained: {cert.dateObtained ? new Date(cert.dateObtained).toLocaleDateString() : 'N/A'}
                                         {cert.expiryDate && (
                                             <>
                                                 <span>•</span>
@@ -444,7 +444,7 @@ const ProfessionalProfilePage = () => {
                         )}
                     </div>
 
-                    {(professional.linkedinUrl || professional.portfolioUrl) && (
+                    {professional.canViewContactInfo && (professional.linkedinUrl || professional.portfolioUrl) && (
                         <div className="flex flex-wrap gap-3 pt-2">
                             {professional.linkedinUrl && (
                                 <a
@@ -472,7 +472,7 @@ const ProfessionalProfilePage = () => {
                     {!professional.canViewContactInfo && (
                         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                             <p className="text-sm text-amber-700">
-                                Contact information and external links will be available after the professional accepts your introduction request.
+                                Contact information will be available after the professional accepts your introduction request.
                             </p>
                         </div>
                     )}

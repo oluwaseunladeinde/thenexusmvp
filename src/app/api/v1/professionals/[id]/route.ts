@@ -64,18 +64,26 @@ export async function GET(
         if (!professional) {
             return NextResponse.json({ error: 'Professional not found' }, { status: 404 });
         }
-
-        // Log profile view
-        await prisma.profileView.create({
-            data: {
-                viewedProfessionalId: professional.id,
-                viewerHrId: hrPartner.id,
-                viewSource: 'DIRECT',
-            },
-        });
+        // Log profile view (non-blocking)
+        try {
+            await prisma.profileView.create({
+                data: {
+                    viewedProfessionalId: professional.id,
+                    viewerHrId: hrPartner.id,
+                    viewSource: 'DIRECT',
+                },
+            });
+        } catch (viewError) {
+            console.error('Failed to log profile view:', viewError);
+            // Continue with response even if logging fails
+        }
 
         const acceptedIntroduction = professional.introductionRequests.find(
             req => req.status === 'ACCEPTED'
+        );
+
+        const activeIntroduction = professional.introductionRequests.find(
+            req => req.status === 'PENDING' || req.status === 'ACCEPTED'
         );
 
         const profileData = {
@@ -108,9 +116,12 @@ export async function GET(
             education: professional.education,
             skills: professional.skills,
             certifications: professional.certifications,
-            hasActiveIntroduction: professional.introductionRequests.length > 0,
-            introductionStatus: professional.introductionRequests[0]?.status || null,
-            canRequestIntroduction: professional.introductionRequests.length === 0,
+            //hasActiveIntroduction: professional.introductionRequests.length > 0,
+            //introductionStatus: professional.introductionRequests[0]?.status || null,
+            //canRequestIntroduction: professional.introductionRequests.length === 0,
+            hasActiveIntroduction: !!activeIntroduction,
+            introductionStatus: activeIntroduction?.status || null,
+            canRequestIntroduction: !activeIntroduction,
             canViewContactInfo: !!acceptedIntroduction,
         };
 

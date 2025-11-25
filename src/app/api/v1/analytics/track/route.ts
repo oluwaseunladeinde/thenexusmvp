@@ -56,6 +56,22 @@ export async function POST(req: Request) {
 
         const { eventType, sessionId, data }: TrackEventRequest = await req.json();
 
+        // Validate required fields and event type
+        if (!eventType || !data || !data.timestamp) {
+            return NextResponse.json(
+                { error: 'Missing required fields' },
+                { status: 400 }
+            );
+        }
+
+        const validEventTypes = ['SEARCH_FILTER_CHANGE', 'SEARCH_RESULT_CLICK', 'PROFILE_VIEW', 'INTRODUCTION_REQUEST'];
+        if (!validEventTypes.includes(eventType)) {
+            return NextResponse.json(
+                { error: 'Invalid event type' },
+                { status: 400 }
+            );
+        }
+
         // Get HR partner info for context
         const hrPartner = await prisma.hrPartner.findUnique({
             where: { userId },
@@ -76,14 +92,32 @@ export async function POST(req: Request) {
 
         const actionType = actionTypeMap[eventType] || eventType;
 
+        // Determine entity type based on event type and data
+        let entityType: string;
+        let entityId: string | null;
+
+        if (eventType === 'SEARCH_RESULT_CLICK' && data.professionalId) {
+            entityType = 'PROFESSIONAL';
+            entityId = data.professionalId
+        } else if (eventType === 'INTRODUCTION_REQUEST' && data.professionalId) {
+            entityType = 'PROFESSIONAL';
+            entityId = data.professionalId;
+        } else if (eventType === 'PROFILE_VIEW' && data.professionalId) {
+            entityType = 'PROFESSIONAL';
+            entityId = data.professionalId;
+        } else {
+            entityType = 'SEARCH';
+            entityId = null;
+        }
+
         // Create activity log entry
         await prisma.userActivityLog.create({
             data: {
                 userId,
                 actionType,
-                entityType: data.professionalId ? 'PROFESSIONAL' : 'SEARCH',
-                entityId: data.professionalId || null,
-                description: `${eventType.replace('_', ' ').toLowerCase()} event`,
+                entityType,
+                entityId,
+                description: `${eventType.replaceAll('_', ' ').toLowerCase()} event`,
                 metadata: {
                     eventType,
                     sessionId,
@@ -97,6 +131,13 @@ export async function POST(req: Request) {
 
         // Handle specific event types
         if (eventType === 'PROFILE_VIEW' && data.professionalId) {
+
+            // Validate viewSource - adjust valid values based on your Prisma schema
+            const validViewSources = ['DIRECT', 'SEARCH', 'RECOMMENDATION'];
+            const viewSource = data.source && validViewSources.includes(data.source)
+                ? data.source
+                : 'DIRECT';
+
             // Update or create profile view record
             await prisma.profileView.upsert({
                 where: {
@@ -108,6 +149,9 @@ export async function POST(req: Request) {
                 update: {
                     viewedAt: new Date(),
                     viewSource: (data.source as any) || 'DIRECT',
+                    // viewSource: data.source && validViewSources.includes(data.source)
+                    //     ? data.source
+                    //     : 'DIRECT'
                 },
                 create: {
                     viewerHrId: hrPartner.id,
