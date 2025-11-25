@@ -25,10 +25,12 @@ const EmptyTalentsState = ({ hasFilters, onClearFilters, onBrowseAllTalents, onP
                         <Filter className="w-4 h-4 mr-2" />
                         Clear All Filters
                     </Button>
-                    <Button onClick={onBrowseAllTalents} variant="default">
-                        <Search className="w-4 h-4 mr-2" />
-                        Browse All Talents
-                    </Button>
+                    {onBrowseAllTalents && (
+                        <Button onClick={onBrowseAllTalents} variant="default" disabled={!onBrowseAllTalents}>
+                            <Search className="w-4 h-4 mr-2" />
+                            Browse All Talents
+                        </Button>
+                    )}
                 </div>
             </div>
         );

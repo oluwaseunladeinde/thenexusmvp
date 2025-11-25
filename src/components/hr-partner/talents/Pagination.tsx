@@ -25,9 +25,9 @@ const Pagination = ({ pagination, onPageChange, loading }: PaginationProps) => {
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-border">
             <p className="text-sm text-muted-foreground">
-                Showing {startItem} to {endItem} of {pagination.total} results
+                Showing {startItem} to {endItem} of {pagination.total} {pagination.total === 1 ? 'result' : 'results'}
             </p>
-            
+
             <div className="flex items-center gap-2">
                 <Button
                     variant="outline"
@@ -39,7 +39,7 @@ const Pagination = ({ pagination, onPageChange, loading }: PaginationProps) => {
                     <ChevronLeft className="h-4 w-4" />
                     Previous
                 </Button>
-                
+
                 <div className="flex items-center gap-1">
                     {/* Show page numbers */}
                     {pagination.totalPages <= 7 ? (
@@ -75,7 +75,7 @@ const Pagination = ({ pagination, onPageChange, loading }: PaginationProps) => {
                                     )}
                                 </>
                             )}
-                            
+
                             {Array.from(
                                 { length: Math.min(5, pagination.totalPages) },
                                 (_, i) => {
@@ -99,7 +99,7 @@ const Pagination = ({ pagination, onPageChange, loading }: PaginationProps) => {
                                         {pageNum}
                                     </Button>
                                 ))}
-                            
+
                             {pagination.page < pagination.totalPages - 2 && (
                                 <>
                                     {pagination.page < pagination.totalPages - 3 && (
@@ -119,7 +119,7 @@ const Pagination = ({ pagination, onPageChange, loading }: PaginationProps) => {
                         </>
                     )}
                 </div>
-                
+
                 <Button
                     variant="outline"
                     size="sm"

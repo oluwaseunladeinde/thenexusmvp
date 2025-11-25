@@ -71,43 +71,32 @@ export async function GET() {
                 {
                     error: 'HR partner profile not found',
                     details: 'User may not have completed HR partner onboarding or may be a professional',
-                    userId: userId,
-                    userRecord: user
+                    // userId: userId,
+                    // userRecord: user
                 },
                 { status: 404 }
             );
         }
+        // Get all stats in parallel
+        const [activeJobsCount, introStats] = await Promise.all([
+            prisma.jobRole.count({
+                where: {
+                    companyId: hrPartner.companyId,
+                    status: 'ACTIVE',
+                }
+            }),
+            prisma.introductionRequest.groupBy({
+                by: ['status'],
+                where: {
+                    sentByHrId: hrPartner.id,
+                },
+                _count: true,
+            })
+        ]);
 
-        // Get active jobs count
-        const activeJobsCount = await prisma.jobRole.count({
-            where: {
-                companyId: hrPartner.companyId,
-                status: 'ACTIVE',
-            }
-        });
-
-        // Get total introductions requested
-        const totalIntroductions = await prisma.introductionRequest.count({
-            where: {
-                sentByHrId: hrPartner.id,
-            }
-        });
-
-        // Get pending introductions
-        const pendingIntroductions = await prisma.introductionRequest.count({
-            where: {
-                sentByHrId: hrPartner.id,
-                status: 'PENDING',
-            }
-        });
-
-        // Get completed introductions
-        const completedIntroductions = await prisma.introductionRequest.count({
-            where: {
-                sentByHrId: hrPartner.id,
-                status: 'ACCEPTED',
-            }
-        });
+        const totalIntroductions = introStats.reduce((sum, group) => sum + group._count, 0);
+        const pendingIntroductions = introStats.find(g => g.status === 'PENDING')?._count || 0;
+        const completedIntroductions = introStats.find(g => g.status === 'ACCEPTED')?._count || 0;
 
         // Get introduction credits remaining
         const introductionCredits = hrPartner.company?.introductionCredits || 0;

@@ -89,20 +89,24 @@ const TalentsPage = () => {
 
                 // Track filter changes
                 if (filterState) {
-                    await fetch('/api/v1/analytics/track', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            eventType: 'SEARCH_FILTER_CHANGE',
-                            sessionId,
-                            data: {
-                                filters: currentFilters,
-                                query: currentQuery,
-                                page,
-                                timestamp: new Date().toISOString(),
-                            },
-                        }),
-                    });
+                    try {
+                        await fetch('/api/v1/analytics/track', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                eventType: 'SEARCH_FILTER_CHANGE',
+                                sessionId,
+                                data: {
+                                    filters: currentFilters,
+                                    query: currentQuery,
+                                    page,
+                                    timestamp: new Date().toISOString(),
+                                },
+                            }),
+                        });
+                    } catch (error) {
+                        console.error('Analytics tracking failed:', error);
+                    }
                 }
             }
 
@@ -174,7 +178,7 @@ const TalentsPage = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [searchQuery, filters, searchSessionId]);
 
     useEffect(() => {
         fetchProfessionals();

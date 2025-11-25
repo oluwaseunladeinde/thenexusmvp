@@ -220,22 +220,30 @@ export async function POST(req: Request) {
             return { conversation, message };
         });
 
-        // Send notification to professional
-        await prisma.notification.create({
-            data: {
-                userId: await prisma.professional.findUnique({
-                    where: { id: introductionRequest.sentToProfessionalId },
-                    select: { userId: true }
-                }).then(p => p!.userId),
-                notificationType: 'CONVERSATION_STARTED',
-                title: 'New Conversation Started',
-                message: `A conversation has been started regarding your introduction for ${introductionRequest.jobRole.roleTitle}`,
-                relatedEntityType: 'conversation',
-                relatedEntityId: result.conversation.id,
-                actionUrl: `/conversations/${result.conversation.id}`,
-                channel: 'IN_APP',
-            }
+        // Get professional userId for notification
+        const professional = await prisma.professional.findUnique({
+            where: { id: introductionRequest.sentToProfessionalId },
+            select: { userId: true }
         });
+
+        if (!professional) {
+            console.error('Professional not found for notification:', introductionRequest.sentToProfessionalId);
+            // Continue without notification rather than failing the entire request
+        } else {
+            // Send notification to professional
+            await prisma.notification.create({
+                data: {
+                    userId: professional.userId,
+                    notificationType: 'CONVERSATION_STARTED',
+                    title: 'New Conversation Started',
+                    message: `A conversation has been started regarding your introduction for ${introductionRequest.jobRole.roleTitle}`,
+                    relatedEntityType: 'conversation',
+                    relatedEntityId: result.conversation.id,
+                    actionUrl: `/conversations/${result.conversation.id}`,
+                    channel: 'IN_APP',
+                }
+            });
+        }
 
         return NextResponse.json({
             message: 'Conversation started successfully',

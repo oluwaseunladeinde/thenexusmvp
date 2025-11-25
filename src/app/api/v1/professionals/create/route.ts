@@ -318,11 +318,13 @@ export async function POST(request: NextRequest) {
             return newProfessional;
         });
 
-        // Update Clerk metadata with professionalId after successful DB transaction
+        // Update Clerk metadata after successful DB transaction
         try {
             const clerk = await clerkClient();
             await clerk.users.updateUserMetadata(clerkUserId, {
                 publicMetadata: {
+                    userType: 'professional',
+                    onboardingComplete: true,
                     professionalId: professional.id,
                 }
             });

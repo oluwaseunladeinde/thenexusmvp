@@ -1,7 +1,11 @@
-import { Plus, Search, Users, BarChart3 } from 'lucide-react';
+import { Plus, Search, Users, BarChart3, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 
-const QuickActions = () => {
+interface QuickActionsProps {
+    introductionCredits?: number;
+}
+
+const QuickActions = ({ introductionCredits = 0 }: QuickActionsProps) => {
     const actions = [
         {
             icon: Plus,
@@ -30,8 +34,18 @@ const QuickActions = () => {
             description: 'Hiring performance metrics',
             href: '/dashboard/hr-partner/analytics',
             color: 'bg-purple-500 text-white'
+        },
+        {
+            icon: Users,
+            title: 'View Saved Professionals',
+            description: 'See your saved professionals',
+            href: '/dashboard/hr-partner/saved',
+            color: 'bg-indigo-500 text-white'
         }
     ];
+
+    // Condition to show "Buy Credits" button: e.g. show if introductionCredits < 10
+    const showBuyCredits = introductionCredits < 10;
 
     return (
         <div className="bg-card rounded-lg border border-border p-6">
@@ -58,6 +72,23 @@ const QuickActions = () => {
                         </Link>
                     );
                 })}
+
+                {showBuyCredits && (
+                    <Link
+                        href="/dashboard/hr-partner/buy-credits"
+                        className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition group"
+                    >
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-yellow-500 text-white group-hover:scale-105 transition">
+                            <CreditCard className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-medium text-foreground group-hover:text-primary transition">
+                                Buy Credits
+                            </h4>
+                            <p className="text-sm text-muted-foreground">Purchase introduction credits</p>
+                        </div>
+                    </Link>
+                )}
             </div>
         </div>
     );

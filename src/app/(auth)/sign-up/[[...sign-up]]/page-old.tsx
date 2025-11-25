@@ -8,7 +8,7 @@ export default function SignUpPage() {
 
     const searchParams = useSearchParams();
     const rawUserType = searchParams.get('type') || 'professional';
-    const userType = rawUserType.toLowerCase().replace('_', '-'); // Normalize for UI comparisons
+    const userType = rawUserType.toLowerCase().replace(/_/g, '-'); // Normalize for UI comparisons
 
 
     return (

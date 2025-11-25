@@ -155,29 +155,45 @@ export default function EditJobRolePage() {
             !formData.locationCity || !formData.salaryRangeMin || !formData.salaryRangeMax ||
             !formData.yearsExperienceMin) {
             toast.error('Please fill in all required fields');
+            setIsLoading(false);
             return;
         }
 
         // Validate numeric fields
-        const salaryMin = parseInt(formData.salaryRangeMin);
-        const salaryMax = parseInt(formData.salaryRangeMax);
-        const expMin = parseInt(formData.yearsExperienceMin);
-        const expMax = formData.yearsExperienceMax ? parseInt(formData.yearsExperienceMax) : undefined;
+        const salaryMin = parseInt(formData.salaryRangeMin, 10);
+        const salaryMax = parseInt(formData.salaryRangeMax, 10);
+        const expMin = parseInt(formData.yearsExperienceMin, 10);
+        const expMax = formData.yearsExperienceMax ? parseInt(formData.yearsExperienceMax, 10) : undefined;
 
         if (isNaN(salaryMin) || isNaN(salaryMax) || isNaN(expMin) || (expMax !== undefined && isNaN(expMax))) {
             toast.error('Please enter valid numbers for salary and experience fields');
+            setIsLoading(false);
             return;
         }
 
         if (salaryMin > salaryMax) {
             toast.error('Minimum salary cannot exceed maximum salary');
+            setIsLoading(false);
             return;
         }
 
         if (expMax !== undefined && expMin > expMax) {
             toast.error('Minimum experience cannot exceed maximum experience');
+            setIsLoading(false);
             return;
         }
+        if (salaryMin < 0 || salaryMax < 0) {
+            toast.error('Salary values must be positive');
+            setIsLoading(false);
+            return;
+        }
+
+        if (expMin < 0 || (expMax !== undefined && expMax < 0)) {
+            toast.error('Experience values must be positive');
+            setIsLoading(false);
+            return;
+        }
+
 
         try {
             const payload = {

@@ -129,6 +129,40 @@ Tags: database, API, development
 - Retry functionality works
 - Loading states enhance UX
 
+### 9. API Rate Limiting & DOS Prevention (P0)
+- Implement per-user/per-company rate limits on search API
+- Add query complexity limits (max filters, result count bounds)
+
+**Acceptance Criteria:**
+- Rate limits enforced
+- Abuse patterns logged
+
+### 10. Security Review for Search API (P0)
+- Full-text search is high-risk for injection attacks
+- Validate all filter inputs, sanitize query strings
+
+**Acceptance Criteria:**
+- Security audit passed
+- No SQL/NoSQL injection vulnerabilities
+
+### 11. Observability & Monitoring (P0)
+- Add structured logging for search queries (without PII leakage)
+- Add metrics: search latency, result count, error rate
+- Set up alerts for performance SLA violations (<2s)
+
+**Acceptance Criteria:**
+- Metrics dashboard shows search health
+- SLA monitored
+
+### 12. Data Privacy & Compliance (P0)
+- Document GDPR compliance for profile view logs and search analytics
+- Define data retention policies (when to purge old search logs, profile views)
+- Add user consent/opt-out mechanisms if required
+
+**Acceptance Criteria:**
+- Privacy impact assessment completed
+- Retention policies enforced
+
 ## P1 Tasks
 
 ### 1. Implement Saved Professionals Feature

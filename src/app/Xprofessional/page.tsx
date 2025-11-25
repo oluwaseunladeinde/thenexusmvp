@@ -17,8 +17,10 @@ const ProfessionalLandingPage = () => {
         }
 
         const userType = (user.publicMetadata?.userType as string | undefined) ?? '';
-        if (userType !== 'PROFESSIONAL' && userType !== 'HR_LEADER' &&
-            userType !== 'professional' && userType !== 'hr-partner' && userType !== 'admin') {
+        const normalizedUserType = userType.toLowerCase();
+        const allowedTypes = ['professional', 'hr-partner', 'admin'];
+
+        if (!allowedTypes.includes(normalizedUserType)) {
             router.push('/sign-in');
             return;
         }

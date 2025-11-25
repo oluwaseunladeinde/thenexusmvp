@@ -1280,6 +1280,22 @@ Critical indexes for query performance:
 - Right to be forgotten: Hard delete all user data on request
 - Data export: Provide JSON export of all user data
 - Consent tracking: Store in `user_activity_logs`
+```sql
+-- Define a stored procedure for GDPR deletion to prevent orphaned data:
+
+CREATE OR REPLACE FUNCTION gdpr_delete_user(user_id UUID)
+RETURNS void AS $
+BEGIN
+  -- Delete all user-related data in dependency order
+  DELETE FROM messages WHERE sender_user_id = user_id OR recipient_user_id = user_id;
+  DELETE FROM introduction_requests WHERE sent_by_hr_id IN (
+    SELECT id FROM hr_partners WHERE user_id = user_id
+  );
+  -- ... cascade all related deletes ...
+  DELETE FROM users WHERE id = user_id;
+END;
+$ LANGUAGE plpgsql;
+```
 
 ---
 
@@ -1896,7 +1912,82 @@ REFRESH MATERIALIZED VIEW mv_company_metrics;
 
 ---
 
-## **25. CONCLUSION**
+## **26. ENCRYPTION IMPLEMENTATION AND KEY MANAGEMENT**
+
+This section details the encryption implementation strategy for sensitive data within the theNexus platform, ensuring compliance with Nigerian Data Protection Act (NDPA) and GDPR requirements. Encryption is applied to protect Personally Identifiable Information (PII) and sensitive data both at rest and in transit.
+
+### **26.1 Encryption Algorithms and Standards**
+
+- **Primary Cipher:** AES-256-GCM (Advanced Encryption Standard with 256-bit keys in Galois/Counter Mode)
+  - **Rationale:** AES-256-GCM provides authenticated encryption, ensuring both confidentiality and integrity. It is FIPS 140-2 compliant and widely adopted for enterprise applications.
+  - **Usage:** Applied to all sensitive fields listed in Section 16 (reference_email, reference_phone, verification_notes). Password hashes use bcrypt for one-way encryption.
+- **Alternative Ciphers:** ChaCha20-Poly1305 for mobile client-side encryption where AES hardware acceleration is unavailable.
+- **Key Derivation:** PBKDF2 with 100,000 iterations for deriving encryption keys from master keys.
+- **Standards Compliance:** NIST SP 800-57 for key management, FIPS 140-2 Level 3 for cryptographic modules.
+
+### **26.2 Key Management Lifecycle**
+
+The key management lifecycle follows a structured process to ensure security throughout the key's existence:
+
+- **Generation:** Keys are generated using cryptographically secure random number generators (CSPRNG) in FIPS-compliant Hardware Security Modules (HSMs).
+- **Storage:** Master encryption keys are stored in AWS Key Management Service (KMS) or equivalent HSM-backed key stores. Data encryption keys (DEKs) are encrypted with master keys and stored separately from encrypted data.
+- **Rotation:** Automatic rotation every 90 days for data encryption keys, with manual rotation for master keys annually or upon security incidents.
+- **Destruction:** Keys are securely destroyed using NIST SP 800-88 guidelines (cryptographic erasure) when no longer needed or upon user data deletion requests.
+
+### **26.3 Implementation Layer Decisions**
+
+- **Application-Level Encryption:** Primary approach for sensitive fields (reference_email, reference_phone, verification_notes) to maintain control over encryption/decryption processes and enable fine-grained access controls.
+- **Database-Level Encryption:** Transparent Data Encryption (TDE) for the entire database to protect against physical media theft or unauthorized database access.
+- **Transit Encryption:** All data in transit uses TLS 1.3 with perfect forward secrecy. API communications require mutual TLS (mTLS) for service-to-service authentication.
+- **Client-Side Encryption:** Optional for highly sensitive user data, with keys derived from user passwords (not stored server-side).
+
+### **26.4 Key Storage and Security**
+
+- **Primary Storage:** AWS KMS or Azure Key Vault for cloud deployments, with HSM backing for physical security.
+- **Separation of Concerns:** Encryption keys are never stored with the encrypted data. Keys are managed in dedicated, geographically distributed key stores.
+- **Access Controls:** Keys are accessed only through authenticated, authorized API calls with audit logging. Multi-factor authentication required for key management operations.
+- **Customer-Managed Keys:** For enterprise customers, support for bring-your-own-key (BYOK) with keys stored in customer-controlled HSMs.
+
+### **26.5 Key Rotation Policy**
+
+- **Automated Rotation:** Data encryption keys rotate every 90 days automatically, with zero-downtime re-encryption of affected data.
+- **Manual Rotation Triggers:** Security incidents, key compromise suspicion, or regulatory requirements.
+- **Rotation Process:** New keys are generated, old data is re-encrypted with new keys, old keys are archived for 30 days before destruction.
+- **Cadence Documentation:** All rotations are logged in audit trails with timestamps, responsible parties, and success confirmations.
+
+### **26.6 Backup and Recovery Procedures**
+
+- **Key Backup:** Master keys are backed up in encrypted form to multiple geographically distributed locations. Backups are encrypted with separate backup keys.
+- **Recovery Process:** In case of key loss, recovery requires approval from multiple authorized administrators and follows a documented incident response plan.
+- **Data Recovery:** Encrypted data can be recovered using backed-up keys, with integrity verification to ensure data hasn't been tampered with.
+- **Testing:** Annual disaster recovery drills include key recovery scenarios to validate procedures.
+
+### **26.7 Compliance Frameworks**
+
+#### **Nigerian Data Protection Act (NDPA) Compliance**
+- **Data at Rest:** All sensitive PII encrypted using AES-256-GCM, with keys managed separately.
+- **Data in Transit:** TLS 1.3 encryption for all communications, with certificate pinning for mobile applications.
+- **Security Measures:** Multi-layered security including encryption, access controls, monitoring, and regular security assessments.
+- **Privacy by Design:** Encryption implemented from the initial system design phase, with data minimization principles.
+- **Documentation:** Comprehensive records of encryption processes, key management, and security controls maintained for regulatory audits.
+
+#### **GDPR Considerations**
+- **Article 32:** Technical and organizational measures for security of processing, including encryption of personal data.
+- **Documentation Requirements:** Detailed records of encryption algorithms, key management procedures, and rationale for encrypting specific data types.
+- **Data Subject Rights:** Encryption enables secure data deletion (cryptographic erasure) for right to erasure requests.
+- **Data Protection Impact Assessment (DPIA):** Encryption strategy documented as part of DPIA for high-risk processing activities.
+- **International Data Transfers:** Encrypted data can be safely transferred with appropriate safeguards.
+
+### **26.8 Rationale for Encrypted Fields**
+
+- **reference_email & reference_phone:** Contain contact information of third parties; encryption prevents unauthorized access and protects reference privacy.
+- **verification_notes:** May contain sensitive background check information; encryption ensures confidentiality during verification processes.
+- **password_hash:** Already uses bcrypt; included for completeness as it represents irreversible encryption for authentication.
+- **Future Fields:** Any new PII fields will be evaluated for encryption requirements based on data sensitivity and regulatory obligations.
+
+---
+
+## **27. CONCLUSION**
 
 This comprehensive data model supports theNexus platform's core features:
 
@@ -1907,7 +1998,7 @@ This comprehensive data model supports theNexus platform's core features:
 ✅ **Subscription billing** with multiple tiers  
 ✅ **Analytics and insights** for all stakeholders  
 ✅ **Scalable design** ready for growth  
-✅ **Security-focused** with audit trails  
+✅ **Security-focused** with audit trails and encryption  
 
 **Next Steps:**
 1. Implement schema in PostgreSQL
@@ -1923,4 +2014,4 @@ This comprehensive data model supports theNexus platform's core features:
 **Document Version:** 1.0  
 **Last Updated:** October 2025  
 **Maintainer:** theNexus Engineering Team  
-**Contact:** info@jointhenexus.com
+**Contact:** info@jointhenexus.ng

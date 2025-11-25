@@ -174,7 +174,7 @@ const PricingSection = () => {
     ]
 
     const currentTiers = userType === 'professional' ? professionalTiers : organizationTiers
-    const savings = billingCycle === 'annual' ? (userType === 'professional' ? 'Save ₦12k annually (20% off)' : 'Save ₦30k annually (20% off)') : null
+    const savings = billingCycle === 'annual' ? (userType === 'professional' ? 'Save up to ₦60k annually (20% off)' : 'Save up to ₦360k annually (20% off)') : null
 
     return (
         <section className="py-20 bg-gray-50 dark:bg-gray-900">
@@ -313,7 +313,7 @@ const PricingSection = () => {
                                         }`}
                                     variant={tier.name === 'Free' ? 'outline' : 'default'}
                                 >
-                                    <Link href={isLoggedIn ? getDashboardUrl() : "/sign-up"}>
+                                    <Link href={isLoggedIn ? getDashboardUrl() : (tier.cta === 'Contact Sales' ? '/contact-sales' : '/sign-up')}>
                                         {isLoggedIn ? "Go to Dashboard" : tier.cta}
                                     </Link>
                                 </Button>

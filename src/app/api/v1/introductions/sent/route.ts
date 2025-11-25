@@ -231,6 +231,18 @@ export async function GET(request: NextRequest) {
         const status = searchParams.get('status');
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '10');
+
+        // Validate pagination parameters
+        if (page < 1) {
+            return NextResponse.json({ error: 'Page must be at least 1' }, { status: 400 });
+        }
+        if (limit < 1 || limit > 100) {
+            return NextResponse.json({ error: 'Limit must be between 1 and 100' }, { status: 400 });
+        }
+        if (status && status !== 'all' && !['PENDING', 'ACCEPTED', 'DECLINED', 'EXPIRED'].includes(status.toUpperCase())) {
+            return NextResponse.json({ error: 'Invalid status value' }, { status: 400 });
+        }
+
         const offset = (page - 1) * limit;
 
         // Find HR partner

@@ -1,8 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -118,13 +116,8 @@ export default function ProfessionalProfilePage() {
         resolver: zodResolver(skillsSchema),
     });
 
-    // Load profile data
-    useEffect(() => {
-        fetchProfileData();
-        fetchStates();
-    }, []);
 
-    const fetchProfileData = async () => {
+    const fetchProfileData = useCallback(async () => {
         try {
             const response = await fetch('/api/v1/professionals/me');
             if (response.ok) {
@@ -175,9 +168,9 @@ export default function ProfessionalProfilePage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [personalInfoForm, professionalDetailsForm, skillsForm]);
 
-    const fetchStates = async () => {
+    const fetchStates = useCallback(async () => {
         try {
             const response = await fetch('/api/v1/states');
             if (response.ok) {
@@ -187,7 +180,7 @@ export default function ProfessionalProfilePage() {
         } catch (error) {
             console.error('Error fetching states:', error);
         }
-    };
+    }, []);
 
     const fetchCities = async (stateId: string) => {
         try {
@@ -200,6 +193,12 @@ export default function ProfessionalProfilePage() {
             console.error('Error fetching cities:', error);
         }
     };
+
+    // Load profile data
+    useEffect(() => {
+        fetchProfileData();
+        fetchStates();
+    }, [fetchProfileData, fetchStates]);
 
     const handleStateChange = (stateId: string) => {
         setSelectedState(stateId);
@@ -219,7 +218,6 @@ export default function ProfessionalProfilePage() {
                 ...(publicId && { [`${type}PublicId`]: publicId }),
             };
 
-            console.log('Profile update data:', updateData);
 
             const response = await fetch('/api/v1/professionals/me', {
                 method: 'PUT',

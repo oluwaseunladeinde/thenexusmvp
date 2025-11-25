@@ -113,25 +113,6 @@ Tags: database, API, development
 - Contact info only if intro accepted
 - 403 if unauthorized
 
-## [P0] Build Professional Result Card
-### Description
-- Create result card component showing: 
-  - Name initials (or photo if public)
-  - Profile headline
-  - Location, experience
-  - Top 3 skills
-  - Verification badge
-  - Salary range
-- "View Profile" button
-- Handle confidential profiles (limited info)
-
-### Acceptance Criteria: 
-- Card displays key info
-- Verification badge shows
-- Click opens profile
-- Responsive design
-
-
 ## [P0] Connect Search to API
 ### Description
 - Fetch search results on form submit

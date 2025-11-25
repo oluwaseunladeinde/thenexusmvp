@@ -77,11 +77,11 @@ export function IntroductionRequestModal({
                 }),
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
+                const data = await response.json().catch(() => ({ error: 'Request failed' }));
                 throw new Error(data.error || 'Failed to send introduction request');
             }
+            const data = await response.json();
 
             toast.success('The professional will be notified of your request.');
 

@@ -133,7 +133,7 @@ export async function POST(req: Request) {
         const skip = (page - 1) * limit;
 
         // Generate search session ID for tracking
-        const searchSessionId = `search_${hrPartner.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const searchSessionId = `search_${hrPartner.id}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
         // Log search activity
         await prisma.userActivityLog.create({
@@ -216,7 +216,8 @@ export async function POST(req: Request) {
                     skills: {
                         some: {
                             skillName: {
-                                in: searchTerms,
+                                contain: searchTerms,
+                                //contains: filters.query,
                                 mode: 'insensitive',
                             },
                         },
@@ -370,12 +371,12 @@ export async function POST(req: Request) {
         const transformedProfessionals = professionals.map(prof => ({
             id: prof.id,
             name: prof.confidentialSearch
-                ? `${prof.firstName} ${prof.lastName.charAt(0)}.`
+                ? `${prof.firstName} ${prof.lastName?.[0] ?? ''}.`
                 : `${prof.firstName} ${prof.lastName}`,
-            initials: `${prof.firstName.charAt(0)}${prof.lastName.charAt(0)}`,
+            initials: `${prof.firstName?.[0] ?? ''}${prof.lastName?.[0] ?? ''}`,
             profileHeadline: prof.profileHeadline,
             profilePhotoUrl: prof.profilePhotoUrl,
-            location: `${prof.locationCity}, ${prof.locationState}`,
+            location: [prof.locationCity, prof.locationState].filter(Boolean).join(', '),
             experience: prof.yearsOfExperience,
             currentTitle: prof.currentTitle,
             currentCompany: prof.confidentialSearch ? 'Confidential' : prof.currentCompany,

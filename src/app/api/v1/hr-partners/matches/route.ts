@@ -100,7 +100,9 @@ export async function GET(request: Request) {
                     .join(' ') || null,
                 currentTitle: match.professional.currentTitle,
                 currentCompany: match.professional.currentCompany,
-                location: `${match.professional.locationCity}, ${match.professional.locationState}`,
+                location: match.professional.locationCity && match.professional.locationState
+                    ? `${match.professional.locationCity}, ${match.professional.locationState}`
+                    : null,
                 linkedinUrl: match.professional.linkedinUrl,
                 profileImageUrl: match.professional.profilePhotoUrl,
             }

@@ -27,7 +27,7 @@ theNexus: A platform enabling HR leaders/agencies to send verified, opt-in intro
 
 ## Week 3: Introduction Workflow
 - **Intro request form**: role brief fields, message composer, confidentiality settings, validation, save draft
-- **Send intro logic**: create DB record, send email, manual WhatsApp notification, dashboard update
+- **Send intro logic**: create DB record, send email, in-app notification, automated WhatsApp notification via Business API, dashboard update
 - **Professional inbox**: list requests, detail modal, accept/decline buttons, request info option
 - **Accept/Decline logic**: update status, exchange contact details, notify both parties, update dashboards
 - **Notification system**: email templates (welcome, new intro, accepted, declined, verified), queue, preferences

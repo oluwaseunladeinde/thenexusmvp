@@ -85,7 +85,7 @@ Tags: database, API, development
 
 ## [P0] Create Get Introduction Requests API (HR Side)
 ### Description
-- Create GET /api/introductions/sent
+- Create GET /api/v1/introductions/sent
 - Filter by HR partner's company
 - Include professional and job role data
 - Sort by date (newest first)
@@ -97,20 +97,6 @@ Tags: database, API, development
 - Properly paginated
 - Authenticated
 
-## [P0] Build Introduction Detail View (HR Side)
-### Description
-- Create detail modal or page
-- Show full request details
-- Show professional's response (if any)
-- Show status timeline
-- If accepted: show contact details
-- Add message/conversation link
-
-### Acceptance Criteria: 
-- All details visible
-- Contact info shown if accepted
-- Status history displayed
-- Can start conversation
 
 ## [P0] Build Introduction Detail View (HR Side)
 ### Description

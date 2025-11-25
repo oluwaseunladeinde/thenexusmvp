@@ -8,6 +8,7 @@ generator client {
 generator erd {
   provider = "prisma-erd-generator"
   output   = "./ERD.svg" // You can use .png or .md if you prefer
+  disabled = env("CI")
 }
 
 generator dbml {
