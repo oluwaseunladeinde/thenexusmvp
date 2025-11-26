@@ -528,6 +528,7 @@ Enum CompanyVerificationStatus {
   PENDING
   VERIFIED
   PREMIUM
+  UNVERIFIED
 }
 
 Enum CompanyStatus {

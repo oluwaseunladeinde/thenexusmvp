@@ -124,7 +124,9 @@ export function VerificationIcon({
 
   const Icon = config.icon;
 
-  const icon = <Icon className={`w-4 h-4 text-green-600 ${className}`} />;
+  // Extract text color from config (e.g., "text-green-700" from "bg-green-100 text-green-700 border-green-300")
+  const textColor = config.color.match(/text-[\w-]+/)?.[0] || 'text-green-600';
+  const icon = <Icon className={`w-4 h-4 ${textColor} ${className}`} />;
 
   if (!showTooltip) {
     return icon;

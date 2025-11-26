@@ -89,6 +89,10 @@ export default function VerificationPage() {
     try {
       setLoading(true);
       const response = await fetch('/api/v1/admin/verification/queue');
+      if (!response.ok) {
+        toast.error('Failed to load verification queue');
+        return;
+      }
       const result = await response.json();
 
       if (result.success) {
@@ -104,6 +108,20 @@ export default function VerificationPage() {
     }
   };
 
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Unknown';
+    return formatDistanceToNow(date, { addSuffix: true });
+  };
+
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Handles the approval action for a given entity.
+   * Sets the selected entity, action type, verification status and notes.
+   * @param {string} type - The type of the entity to approve ('professional' or 'company').
+   * @param {Professional|Company} data - The entity to approve.
+   */
+  /*******  99df04cd-f3c3-4a76-9341-4f72b69b12e3  *******/
   const handleApprove = (type: 'professional' | 'company', data: Professional | Company) => {
     setSelectedEntity({ type, data });
     setActionType('approve');
@@ -131,22 +149,27 @@ export default function VerificationPage() {
       const body =
         actionType === 'approve'
           ? {
-              entityType: selectedEntity.type,
-              entityId: selectedEntity.data.id,
-              verificationStatus,
-              notes: notes || null,
-            }
+            entityType: selectedEntity.type,
+            entityId: selectedEntity.data.id,
+            verificationStatus,
+            notes: notes || null,
+          }
           : {
-              entityType: selectedEntity.type,
-              entityId: selectedEntity.data.id,
-              reason: notes,
-            };
+            entityType: selectedEntity.type,
+            entityId: selectedEntity.data.id,
+            reason: notes,
+          };
 
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
+
+      if (!response.ok) {
+        toast.error('Error processing verification');
+        return;
+      }
 
       const result = await response.json();
 
@@ -243,7 +266,7 @@ export default function VerificationPage() {
                     </div>
                     <Badge variant="outline" className="ml-4">
                       <Clock className="w-3 h-3 mr-1" />
-                      {formatDistanceToNow(new Date(professional.createdAt), { addSuffix: true })}
+                      {formatTimeAgo(professional.createdAt)}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -338,7 +361,7 @@ export default function VerificationPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <div className="text-sm text-muted-foreground mb-1">Company Size</div>
-                      <div className="font-medium">{company.companySize.replace(/_/g, ' ')}</div>
+                      <div className="font-medium">{company.companySize?.replace(/_/g, ' ')}</div>
                     </div>
                     {company.companyWebsite && (
                       <div>

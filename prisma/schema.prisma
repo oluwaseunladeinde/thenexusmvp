@@ -5,11 +5,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator erd {
-  provider = "prisma-erd-generator"
-  output   = "./ERD.svg" // You can use .png or .md if you prefer
-  disabled = env("CI")
-}
+// generator erd {
+//   provider = "prisma-erd-generator"
+//   output   = "./ERD.svg" // You can use .png or .md if you prefer
+//   disabled = env("CI")
+// }
 
 generator dbml {
   provider = "prisma-dbml-generator"
@@ -296,28 +296,28 @@ model SavedProfessional {
 model Company {
   id String @id @default(cuid())
 
-  companyName          String @unique
-  companyLogoUrl       String?
-  industry             String
-  companySize          CompanySize
-  headquartersLocation String
+  companyName           String @unique
+  companyLogoUrl        String?
+  industry              String
+  companySize           CompanySize
+  headquartersLocation  String
 
-  companyWebsite     String?
-  companyDescription String? @db.Text
-  linkedinUrl        String?
+  companyWebsite        String?
+  companyDescription    String? @db.Text
+  linkedinUrl           String?
 
-  domain        String       @unique
-  foundedYear   Int?
-  fundingStatus String?
-  remotePolicy  RemotePolicy @default(HYBRID)
-  location      Json? // { headquarters, offices[] } 
+  domain                String       @unique
+  foundedYear           Int?
+  fundingStatus         String?
+  remotePolicy          RemotePolicy @default(HYBRID)
+  location              Json? // { headquarters, offices[] } 
 
-  verificationStatus CompanyVerificationStatus @default(PENDING)
-  verificationDate   DateTime?
-  verificationNotes  String?                    @db.Text
-  verifiedBy         String?
+  verificationStatus    CompanyVerificationStatus @default(PENDING)
+  verificationDate      DateTime?
+  verificationNotes     String?                    @db.Text
+  verifiedBy            String?
 
-  status CompanyStatus @default(ACTIVE)
+  status                CompanyStatus @default(ACTIVE)
 
   subscriptionTier      SubscriptionTier @default(TRIAL)
   subscriptionExpiresAt DateTime?
@@ -350,6 +350,7 @@ enum CompanyVerificationStatus {
   PENDING
   VERIFIED
   PREMIUM
+  UNVERIFIED
 }
 
 enum CompanyStatus {
