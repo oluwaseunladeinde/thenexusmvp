@@ -1,29 +1,200 @@
 /**
  * verificationReminders.ts
- *
  * Service for sending verification reminders and notifications
  */
-
 import { prisma } from '@/lib/database';
 import { subDays } from 'date-fns';
+import { isValidLinkedInUrl } from "../validators/linkedinValidator";
+import { checkUrlAccessible } from "../utils/checkUrlAccessible";
+import { extractDomainFromUrl, extractDomainFromEmail, doDomainsMatch } from "../utils/extractDomain";
+import logger from './logger';
+
+export const verifyLinkedIn = async (linkedinUrl: string) => {
+  if (!isValidLinkedInUrl(linkedinUrl)) {
+    return { success: false, error: "Invalid LinkedIn URL format" };
+  }
+
+  const accessible = await checkUrlAccessible(linkedinUrl);
+  if (!accessible) {
+    return { success: false, error: "LinkedIn URL not reachable" };
+  }
+
+  return { success: true, error: null };
+}
+
+export const updateLinkedInVerificationStatus = async (userId: string, verifierId: string, notes?: string) => {
+  try {
+    const updated = await prisma.professional.update({
+      where: { id: userId },
+      data: {
+        verificationStatus: "BASIC" as const,
+        verificationDate: new Date(),
+        verificationNotes: notes,
+        verifiedBy: verifierId
+      },
+    });
+    return { success: true, user: updated };
+  } catch (error) {
+    return { success: false, user: null };
+  }
+}
+
+export const verifyCompanyDomain = async (websiteUrl: string, hrEmail: string) => {
+  const siteDomain = extractDomainFromUrl(websiteUrl);
+  const emailDomain = extractDomainFromEmail(hrEmail);
+  if (!siteDomain || !emailDomain) {
+    return {
+      success: false,
+      error: "Invalid domain or email format",
+      status: "manual_review",
+    };
+  }
+
+  const domainsMatch = doDomainsMatch(siteDomain, emailDomain);
+  if (!domainsMatch) {
+    return { success: false, error: "Email domain does not match website domain", status: "manual_review" };
+  } else {
+    // Domains match
+    return { success: true, error: null, status: "company_verified" };
+  }
+}
+
 
 export const approveProfessionalVerification = async (
   entityId: string,
-  verificationStatus: 'BASIC' | 'FULL' | 'PREMIUM' | 'VERIFIED',
   notes: string | null,
   userId: string
 ) => {
-  // Implementation for approving professional verification
 
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    return { success: false, error: 'User not found' };
+  }
+
+  const professional = await prisma.professional.findUnique({ where: { id: entityId } });
+  if (!professional) {
+    return { success: false, error: 'User not found' };
+  }
+
+  const professioanlLinkedInURL = professional.linkedinUrl;
+  if (!professioanlLinkedInURL) {
+    return { success: false, error: 'Professional does not have a LinkedIn URL' };
+  }
+
+  const verifyResult = await verifyLinkedIn(professioanlLinkedInURL);
+  if (!verifyResult.success) {
+    return { success: false, error: verifyResult.error };
+  }
+
+  // Update to requested verification status if higher than BASIC
+  const update = await updateLinkedInVerificationStatus(entityId, userId, notes || '');
+  if (!update.success) {
+    return { success: false, error: 'Failed to update verification status' };
+  }
+
+  return { success: true, error: null };
 }
 
 export const approveCompanyVerification = async (
   entityId: string,
-  verificationStatus: 'BASIC' | 'FULL' | 'PREMIUM' | 'VERIFIED',
-  notes: string | null,
   userId: string
 ) => {
-  // Implementation for approving company verification
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    return { success: false, error: 'User not found' };
+  }
+
+  if (user.userType !== 'ADMIN') {
+    return { success: false, error: 'Admin access required' };
+  }
+
+  const company = await prisma.company.findUnique({ where: { id: entityId } });
+  if (!company || !company.companyWebsite) {
+    return {
+      success: false,
+      error: "Company or company website not found",
+      status: "UNVERIFIED",
+    };
+  }
+
+  const websiteDomain = extractDomainFromUrl(company.companyWebsite);
+  if (!websiteDomain) {
+    return {
+      success: false,
+      error: "Invalid company website URL",
+      status: "UNVERIFIED",
+    };
+  }
+
+  // Find HR Partner with ADMIN role
+  const adminHrPartner = await prisma.hrPartner.findFirst({
+    where: {
+      companyId: entityId,
+      roleInPlatform: "ADMIN",
+    },
+    include: {
+      user: true, // to access email
+    },
+  });
+
+  if (!adminHrPartner) {
+    return {
+      success: false,
+      error: "No HR Partner with ADMIN role found for this company",
+      status: "UNVERIFIED",
+    };
+  }
+
+  const hrEmail = adminHrPartner.user.email;
+  const emailDomain = extractDomainFromEmail(hrEmail);
+
+  if (!emailDomain) {
+    return {
+      success: false,
+      error: "Invalid HR Partner email format",
+      status: "UNVERIFIED",
+    };
+  }
+
+  // 3. Compare domains
+  const match = doDomainsMatch(websiteDomain, emailDomain);
+
+  // 4. Compute final verification status
+  const verificationStatus = match ? "VERIFIED" : "UNVERIFIED";
+
+  // 5. Update company verification status
+  let updatedCompany;
+  try {
+    updatedCompany = await prisma.company.update({
+      where: { id: entityId },
+      data: {
+        verificationStatus: verificationStatus as 'VERIFIED' | 'PREMIUM',
+        verificationDate: match ? new Date() : null,
+        verifiedBy: match ? adminHrPartner.userId : null,
+        verificationNotes: match
+          ? "Auto-verified: domain matches HR admin email"
+          : `Manual review: Domain mismatch. Website=${websiteDomain}, Email=${emailDomain}`,
+      },
+    });
+
+    if (!updatedCompany) {
+      return {
+        success: false,
+        error: "Failed to update company verification status",
+        status: "UNVERIFIED",
+      };
+    }
+  } catch (error) {
+    return { success: false, error: 'Error updating company verification status' };
+  }
+
+  return {
+    success: true,
+    match,
+    status: verificationStatus,
+    company: updatedCompany,
+  };
 }
 
 export const rejectProfessionalVerification = async (
@@ -32,6 +203,7 @@ export const rejectProfessionalVerification = async (
   userId: string
 ) => {
   // Implementation for rejecting professional verification
+  throw new Error('Not implemented: rejectProfessionalVerification');
 }
 
 export const rejectCompanyVerification = async (
@@ -40,6 +212,7 @@ export const rejectCompanyVerification = async (
   userId: string
 ) => {
   // Implementation for rejecting company verification
+  throw new Error('Not implemented: rejectCompanyVerification');
 }
 
 
@@ -66,10 +239,12 @@ export async function findProfessionalsNeedingReminders(
     const professionals = await prisma.professional.findMany({
       where: {
         AND: [
-          // Profile is not completed
-          { onboardingCompleted: false },
-          // Or not verified
-          { verificationStatus: 'UNVERIFIED' },
+          {
+            OR: [
+              { onboardingCompleted: false },
+              { verificationStatus: 'UNVERIFIED' },
+            ],
+          },
           // Profile created more than X days ago
           { createdAt: { lte: cutoffDate } },
           // Not deleted
@@ -234,7 +409,7 @@ export async function sendIncompleteProfileReminder(professionalId: string) {
     //   },
     // });
 
-    console.log(`Would send incomplete profile reminder to: ${professional.user.email}`);
+    logger.info(`Would send incomplete profile reminder to: ${professional.user.email}`);
 
     return {
       success: true,
@@ -280,7 +455,7 @@ export async function sendLinkedInVerificationReminder(professionalId: string) {
     //   },
     // });
 
-    console.log(`Would send LinkedIn verification reminder to: ${professional.user.email}`);
+    logger.info(`Would send LinkedIn verification reminder to: ${professional.user.email}`);
 
     return {
       success: true,
@@ -353,9 +528,13 @@ export async function runVerificationReminders() {
   };
 
   try {
+
+    const processedIds = new Set<string>();
+
     // 1. Send incomplete profile reminders
     const professionalsNeedingReminders = await findProfessionalsNeedingReminders();
     for (const professional of professionalsNeedingReminders) {
+      processedIds.add(professional.id);
       const result = await sendIncompleteProfileReminder(professional.id);
       if (result.success) {
         results.incompleteProfileReminders++;
@@ -367,6 +546,7 @@ export async function runVerificationReminders() {
     // 2. Send LinkedIn verification reminders
     const professionalsWithoutLinkedIn = await findProfessionalsWithoutLinkedIn();
     for (const professional of professionalsWithoutLinkedIn) {
+      if (processedIds.has(professional.id)) continue; // Skip if already reminded
       const result = await sendLinkedInVerificationReminder(professional.id);
       if (result.success) {
         results.linkedInReminders++;

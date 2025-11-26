@@ -63,6 +63,7 @@ model Professional {
 }
 
 enum VerificationStatus {
+  VERIFIED
   UNVERIFIED
   BASIC      // LinkedIn verified
   FULL       // Fully verified with references
@@ -392,6 +393,15 @@ export async function GET() {
   return NextResponse.json(results);
 }
 ```
+#### TODO: 
+Add authentication/security check to cron endpoint.
+
+The cron endpoint (lines 385-394) lacks authentication or security validation. Ensure the endpoint is protected against unauthorized invocation using:
+
+ - CRON_SECRET environment variable verification, or
+ - IP whitelisting, or
+ - Vercel cron signature validation (if using Vercel)
+Without protection, this endpoint could be abused to trigger reminders repeatedly.
 
 ### Option 2: External Cron Service
 Use services like:
@@ -446,8 +456,17 @@ Point to: `https://your-domain.com/api/cron/verification-reminders`
 - [ ] Company domain auto-verification works
 - [ ] Reminder system identifies candidates
 - [ ] Notifications are logged correctly
+- [ ] LinkedIn URL format validation edge cases (special characters, internationalized URLs)
+- [ ] Error scenarios (LinkedIn server down, network timeout, invalid certificates)
+- [ ] Permission/authorization boundaries (non-admin attempting verification operations)
+- [ ] Concurrent verification requests (race conditions)
 
 ### Unit Testing (To be implemented)
+Before deploying, implement comprehensive unit tests covering:
+- All service functions (verifyLinkedInProfile, verifyCompanyDomain, queue operations)
+- API endpoint authentication and authorization
+- Error handling paths
+
 ```typescript
 // Example test structure
 describe('LinkedIn Verification', () => {

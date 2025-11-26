@@ -109,12 +109,13 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      await approveProfessionalVerification(
-        entityId,
-        verificationStatus as 'BASIC' | 'FULL' | 'PREMIUM',
-        notes || null,
-        user.id
-      );
+      const result = await approveProfessionalVerification(entityId, notes || null, user.id);
+      if (!result.success) {
+        return NextResponse.json(
+          { success: false, message: result.error || 'Failed to approve verification' },
+          { status: 500 }
+        );
+      }
 
       return NextResponse.json({
         success: true,
@@ -130,8 +131,6 @@ export async function POST(req: NextRequest) {
 
       await approveCompanyVerification(
         entityId,
-        verificationStatus as 'VERIFIED' | 'PREMIUM',
-        notes || null,
         user.id
       );
 
@@ -141,7 +140,9 @@ export async function POST(req: NextRequest) {
       });
     }
   } catch (error) {
-    console.error('Error approving verification:', error);
+    console.error('Error approving verification:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }

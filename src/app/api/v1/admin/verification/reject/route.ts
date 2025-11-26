@@ -48,7 +48,9 @@ const rejectSchema = z.object({
  *       400:
  *         description: Invalid request body
  *       401:
- *         description: Unauthorized - Admin access required
+ *         description: Unauthorized - Authentication required
+ *       403:
+ *         description: Forbidden - Admin access required
  *       500:
  *         description: Internal server error
  */
