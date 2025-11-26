@@ -3,13 +3,13 @@ import Link from 'next/link'
 
 const Footer = () => {
     return (
-        <footer className="bg-[#0A2540] text-white">
+        <footer className="bg-secondary text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     {/* Brand Section */}
                     <div className="col-span-1 md:col-span-2">
                         <div className="flex items-center space-x-2 mb-4">
-                            <div className="w-8 h-8 bg-[#2E8B57] rounded-lg flex items-center justify-center">
+                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                                 <span className="text-white font-bold text-lg">N</span>
                             </div>
                             <span className="font-bold text-xl">theNexus</span>
@@ -23,7 +23,7 @@ const Footer = () => {
                                 href="https://linkedin.com/company/thenexus"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-gray-300 hover:text-[#2E8B57] transition-colors"
+                                className="text-gray-300 hover:text-primary transition-colors"
                                 aria-label="LinkedIn"
                             >
                                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -34,7 +34,7 @@ const Footer = () => {
                                 href="https://x.com/thenexus"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-gray-300 hover:text-[#2E8B57] transition-colors"
+                                className="text-gray-300 hover:text-primary transition-colors"
                                 aria-label="X"
                             >
                                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -49,22 +49,22 @@ const Footer = () => {
                         <h3 className="font-semibold text-lg mb-4">Product</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/features" className="text-gray-300 hover:text-[#2E8B57] transition-colors">
+                                <Link href="/features" className="text-gray-300 hover:text-primary transition-colors">
                                     Features
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/pricing" className="text-gray-300 hover:text-[#2E8B57] transition-colors">
+                                <Link href="/pricing" className="text-gray-300 hover:text-primary transition-colors">
                                     Pricing
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/security" className="text-gray-300 hover:text-[#2E8B57] transition-colors">
+                                <Link href="/security" className="text-gray-300 hover:text-primary transition-colors">
                                     Security
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/integrations" className="text-gray-300 hover:text-[#2E8B57] transition-colors">
+                                <Link href="/integrations" className="text-gray-300 hover:text-primary transition-colors">
                                     Integrations
                                 </Link>
                             </li>
@@ -76,22 +76,22 @@ const Footer = () => {
                         <h3 className="font-semibold text-lg mb-4">Company</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/about" className="text-gray-300 hover:text-[#2E8B57] transition-colors">
+                                <Link href="/about" className="text-gray-300 hover:text-primary transition-colors">
                                     About Us
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/careers" className="text-gray-300 hover:text-[#2E8B57] transition-colors">
+                                <Link href="/careers" className="text-gray-300 hover:text-primary transition-colors">
                                     Careers
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contact" className="text-gray-300 hover:text-[#2E8B57] transition-colors">
+                                <Link href="/contact" className="text-gray-300 hover:text-primary transition-colors">
                                     Contact
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/blog" className="text-gray-300 hover:text-[#2E8B57] transition-colors">
+                                <Link href="/blog" className="text-gray-300 hover:text-primary transition-colors">
                                     Blog
                                 </Link>
                             </li>
@@ -105,10 +105,10 @@ const Footer = () => {
                         © 2024 theNexus. All rights reserved.
                     </p>
                     <div className="flex space-x-6 mt-4 md:mt-0">
-                        <Link href="/privacy" className="text-gray-300 hover:text-[#2E8B57] transition-colors text-sm">
+                        <Link href="/privacy" className="text-gray-300 hover:text-primary transition-colors text-sm">
                             Privacy Policy
                         </Link>
-                        <Link href="/terms" className="text-gray-300 hover:text-[#2E8B57] transition-colors text-sm">
+                        <Link href="/terms" className="text-gray-300 hover:text-primary transition-colors text-sm">
                             Terms of Service
                         </Link>
                     </div>
