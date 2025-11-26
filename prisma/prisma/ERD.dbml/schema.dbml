@@ -49,6 +49,8 @@ Table professionals {
   profileVisibility ProfileVisibility [not null, default: 'PRIVATE']
   verificationStatus VerificationStatus [not null, default: 'UNVERIFIED']
   verificationDate DateTime
+  verificationNotes String
+  verifiedBy String
   linkedinUrl String
   portfolioUrl String
   resumeUrl String
@@ -165,6 +167,8 @@ Table companies {
   location Json
   verificationStatus CompanyVerificationStatus [not null, default: 'PENDING']
   verificationDate DateTime
+  verificationNotes String
+  verifiedBy String
   status CompanyStatus [not null, default: 'ACTIVE']
   subscriptionTier SubscriptionTier [not null, default: 'TRIAL']
   subscriptionExpiresAt DateTime

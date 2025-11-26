@@ -17,7 +17,7 @@ The performance issue can be eliminated by configuring your Clerk session token 
 Go to Clerk Dashboard → Sessions → Customize session token → Claims editor
 Add a claim that maps public metadata into the JWT:
 ### 
-bash```
+json```
 {
   "metadata": "{{user.public_metadata}}"
 }

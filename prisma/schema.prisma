@@ -104,6 +104,8 @@ model Professional {
 
   verificationStatus   VerificationStatus @default(UNVERIFIED)
   verificationDate     DateTime?
+  verificationNotes    String?            @db.Text
+  verifiedBy           String?
 
   linkedinUrl          String?
   portfolioUrl         String?
@@ -312,6 +314,8 @@ model Company {
 
   verificationStatus CompanyVerificationStatus @default(PENDING)
   verificationDate   DateTime?
+  verificationNotes  String?                    @db.Text
+  verifiedBy         String?
 
   status CompanyStatus @default(ACTIVE)
 
